@@ -1,0 +1,143 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "Registered guest or administrator profile",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "firstName": { "type": "string", "minLength": 1, "maxLength": 100 },
+        "lastName": { "type": "string", "minLength": 1, "maxLength": 100 },
+        "email": { "type": "string", "format": "email", "maxLength": 150 },
+        "phone": { "type": "string", "maxLength": 30 },
+        "role": { "type": "string", "enum": ["CUSTOMER", "ADMIN"] },
+        "status": { "type": "string", "enum": ["ACTIVE", "SUSPENDED"] },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["id", "firstName", "lastName", "email", "role", "status"]
+    },
+    "DiningTable": {
+      "title": "DiningTable",
+      "description": "Hotel restaurant dining table configuration",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "tableNumber": { "type": "string", "maxLength": 50 },
+        "capacity": { "type": "integer" },
+        "location": { "type": "string", "maxLength": 100 },
+        "status": { "type": "string", "enum": ["AVAILABLE", "OCCUPIED", "RESERVED", "MAINTENANCE"] }
+      },
+      "required": ["id", "tableNumber", "capacity", "location", "status"]
+    },
+    "MenuCategory": {
+      "title": "MenuCategory",
+      "description": "Cuisine category classification",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "name": { "type": "string", "maxLength": 100 },
+        "description": { "type": "string", "maxLength": 500 },
+        "displayOrder": { "type": "integer" }
+      },
+      "required": ["id", "name", "displayOrder"]
+    },
+    "MenuItem": {
+      "title": "MenuItem",
+      "description": "Gourmet food or beverage item",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "categoryId": { "type": "string", "maxLength": 128 },
+        "name": { "type": "string", "minLength": 1, "maxLength": 150 },
+        "description": { "type": "string", "maxLength": 1000 },
+        "price": { "type": "integer" },
+        "imageUrl": { "type": "string", "maxLength": 1000 },
+        "vegetarian": { "type": "boolean" },
+        "spicy": { "type": "boolean" },
+        "spiceLevel": { "type": "string", "enum": ["None", "Mild", "Medium", "Hot", "Extra Hot"] },
+        "prepTimeMinutes": { "type": "integer" },
+        "available": { "type": "boolean" },
+        "isChefSpecial": { "type": "boolean" }
+      },
+      "required": ["id", "categoryId", "name", "price", "vegetarian", "available"]
+    },
+    "TableBooking": {
+      "title": "TableBooking",
+      "description": "Dining reservation record",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "bookingReference": { "type": "string", "maxLength": 64 },
+        "userId": { "type": "string", "maxLength": 128 },
+        "tableId": { "type": "string", "maxLength": 128 },
+        "bookingDate": { "type": "string", "maxLength": 20 },
+        "startTime": { "type": "string", "maxLength": 10 },
+        "endTime": { "type": "string", "maxLength": 10 },
+        "guestCount": { "type": "integer" },
+        "status": { "type": "string", "enum": ["CONFIRMED", "SEATED", "COMPLETED", "CANCELLED", "REJECTED"] },
+        "specialRequest": { "type": "string", "maxLength": 500 },
+        "tableNumber": { "type": "string", "maxLength": 50 },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["id", "bookingReference", "userId", "tableId", "bookingDate", "startTime", "guestCount", "status"]
+    },
+    "Order": {
+      "title": "Order",
+      "description": "Dining or room service food order",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "orderNumber": { "type": "string", "maxLength": 64 },
+        "userId": { "type": "string", "maxLength": 128 },
+        "orderType": { "type": "string", "enum": ["Dine-in", "Takeaway", "Room Service"] },
+        "tableNumber": { "type": "string", "maxLength": 50 },
+        "bookingReference": { "type": "string", "maxLength": 64 },
+        "roomNumber": { "type": "string", "maxLength": 50 },
+        "customerName": { "type": "string", "maxLength": 150 },
+        "customerPhone": { "type": "string", "maxLength": 30 },
+        "customerEmail": { "type": "string", "format": "email", "maxLength": 150 },
+        "subtotal": { "type": "integer" },
+        "tax": { "type": "integer" },
+        "discount": { "type": "integer" },
+        "discountCode": { "type": "string", "maxLength": 50 },
+        "serviceCharge": { "type": "integer" },
+        "total": { "type": "integer" },
+        "status": { "type": "string", "enum": ["PLACED", "CONFIRMED", "PREPARING", "READY", "COMPLETED", "CANCELLED"] },
+        "paymentStatus": { "type": "string", "enum": ["PENDING", "PAID", "REFUNDED"] },
+        "paymentMethod": { "type": "string", "enum": ["UPI", "Card", "Cash"] },
+        "notes": { "type": "string", "maxLength": 500 },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["id", "orderNumber", "userId", "orderType", "customerName", "customerPhone", "total", "status", "paymentStatus", "paymentMethod"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/UserProfile" },
+      "description": "Private user account profile documents"
+    },
+    "/tables/{tableId}": {
+      "schema": { "$ref": "#/entities/DiningTable" },
+      "description": "Restaurant dining tables catalog"
+    },
+    "/menu_categories/{categoryId}": {
+      "schema": { "$ref": "#/entities/MenuCategory" },
+      "description": "Menu classification categories"
+    },
+    "/menu_items/{itemId}": {
+      "schema": { "$ref": "#/entities/MenuItem" },
+      "description": "Gourmet dishes and beverages"
+    },
+    "/bookings/{bookingId}": {
+      "schema": { "$ref": "#/entities/TableBooking" },
+      "description": "Customer dining table reservations"
+    },
+    "/orders/{orderId}": {
+      "schema": { "$ref": "#/entities/Order" },
+      "description": "Customer food orders and dispatch lifecycle"
+    }
+  }
+}

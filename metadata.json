@@ -1,0 +1,6 @@
+{
+  "name": "ABC Hotel — Luxury Dining & Table Reservations",
+  "description": "ABC Hotel official hotel and restaurant platform. Book tables, order gourmet dining, manage reservations, and track orders in real-time.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

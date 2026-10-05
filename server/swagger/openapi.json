@@ -1,0 +1,214 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "ABC Hotel & Restaurant API",
+    "version": "1.0.0",
+    "description": "Production REST API for ABC Hotel & Restaurant. Supports user authentication, menu discovery, table reservations with conflict prevention, food ordering, and staff administration."
+  },
+  "servers": [
+    {
+      "url": "/api",
+      "description": "App Server API"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "paths": {
+    "/auth/register": {
+      "post": {
+        "summary": "Customer Registration",
+        "tags": ["Authentication"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["firstName", "lastName", "email", "phone", "password", "confirmPassword"],
+                "properties": {
+                  "firstName": { "type": "string", "example": "Jane" },
+                  "lastName": { "type": "string", "example": "Smith" },
+                  "email": { "type": "string", "format": "email", "example": "jane.smith@example.com" },
+                  "phone": { "type": "string", "example": "+91 9876543210" },
+                  "password": { "type": "string", "example": "Password@123" },
+                  "confirmPassword": { "type": "string", "example": "Password@123" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Account created successfully" },
+          "400": { "description": "Validation error or duplicate email" }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "summary": "User Login",
+        "tags": ["Authentication"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email", "password"],
+                "properties": {
+                  "email": { "type": "string", "example": "john.doe@example.com" },
+                  "password": { "type": "string", "example": "Customer@ABC2026!" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Login successful, returns JWT token" },
+          "401": { "description": "Invalid credentials" }
+        }
+      }
+    },
+    "/auth/me": {
+      "get": {
+        "summary": "Current Authenticated User",
+        "tags": ["Authentication"],
+        "security": [{ "BearerAuth": [] }],
+        "responses": {
+          "200": { "description": "Current user profile" },
+          "401": { "description": "Unauthorized" }
+        }
+      }
+    },
+    "/menu": {
+      "get": {
+        "summary": "List Menu Items",
+        "tags": ["Menu"],
+        "parameters": [
+          { "name": "category", "in": "query", "schema": { "type": "string" } },
+          { "name": "search", "in": "query", "schema": { "type": "string" } },
+          { "name": "vegetarian", "in": "query", "schema": { "type": "boolean" } },
+          { "name": "spicy", "in": "query", "schema": { "type": "boolean" } },
+          { "name": "sortBy", "in": "query", "schema": { "type": "string", "enum": ["name", "price_asc", "price_desc", "popular"] } }
+        ],
+        "responses": {
+          "200": { "description": "List of dishes" }
+        }
+      }
+    },
+    "/tables/availability": {
+      "get": {
+        "summary": "Check Table Availability",
+        "tags": ["Tables & Bookings"],
+        "parameters": [
+          { "name": "bookingDate", "in": "query", "required": true, "schema": { "type": "string" }, "example": "2026-09-25" },
+          { "name": "startTime", "in": "query", "required": true, "schema": { "type": "string" }, "example": "19:30" },
+          { "name": "guestCount", "in": "query", "required": true, "schema": { "type": "integer" }, "example": 4 }
+        ],
+        "responses": {
+          "200": { "description": "List of tables with real-time availability status" }
+        }
+      }
+    },
+    "/bookings": {
+      "post": {
+        "summary": "Reserve a Table",
+        "tags": ["Tables & Bookings"],
+        "security": [{ "BearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["tableId", "bookingDate", "startTime", "guestCount"],
+                "properties": {
+                  "tableId": { "type": "string", "example": "tbl-003" },
+                  "bookingDate": { "type": "string", "example": "2026-09-25" },
+                  "startTime": { "type": "string", "example": "19:30" },
+                  "guestCount": { "type": "integer", "example": 4 },
+                  "specialRequest": { "type": "string", "example": "Window seat preferred" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Table reserved successfully with booking reference" },
+          "400": { "description": "Table unavailable or conflict" }
+        }
+      },
+      "get": {
+        "summary": "Get My Bookings",
+        "tags": ["Tables & Bookings"],
+        "security": [{ "BearerAuth": [] }],
+        "responses": {
+          "200": { "description": "List of user bookings" }
+        }
+      }
+    },
+    "/orders": {
+      "post": {
+        "summary": "Place Food Order",
+        "tags": ["Ordering"],
+        "security": [{ "BearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["orderType", "customerName", "customerPhone", "customerEmail", "paymentMethod", "items"],
+                "properties": {
+                  "orderType": { "type": "string", "enum": ["Dine-in", "Takeaway", "Room Service"] },
+                  "tableNumber": { "type": "string" },
+                  "roomNumber": { "type": "string" },
+                  "paymentMethod": { "type": "string", "enum": ["UPI", "Card", "Cash"] },
+                  "items": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "required": ["menuItemId", "quantity"],
+                      "properties": {
+                        "menuItemId": { "type": "string" },
+                        "quantity": { "type": "integer" },
+                        "specialInstructions": { "type": "string" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Order created successfully" }
+        }
+      },
+      "get": {
+        "summary": "Get My Orders",
+        "tags": ["Ordering"],
+        "security": [{ "BearerAuth": [] }],
+        "responses": {
+          "200": { "description": "List of user orders" }
+        }
+      }
+    },
+    "/admin/stats": {
+      "get": {
+        "summary": "Admin Dashboard Analytics",
+        "tags": ["Admin Staff"],
+        "security": [{ "BearerAuth": [] }],
+        "responses": {
+          "200": { "description": "Real-time revenue and operation statistics" }
+        }
+      }
+    }
+  }
+}
