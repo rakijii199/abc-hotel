@@ -161,7 +161,7 @@ function MainApp() {
       case 'stafflogin':
         return <StaffLoginPage navigate={navigate} />;
       case 'admin':
-        return <AdminDashboardPage navigate={navigate} />;
+        return <AdminDashboardPage navigate={navigate} initialTab={routeState?.tab} />;
       case 'kitchen':
         return <KitchenPage navigate={navigate} />;
       case 'delivery':
@@ -201,7 +201,7 @@ function MainApp() {
   if (currentRoute === 'admin') {
     return (
       <div className="h-screen w-full overflow-hidden bg-stone-100 text-stone-900 selection:bg-purple-200 selection:text-purple-900">
-        <AdminDashboardPage navigate={navigate} />
+        <AdminDashboardPage navigate={navigate} initialTab={routeState?.tab} />
       </div>
     );
   }

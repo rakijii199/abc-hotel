@@ -22,10 +22,14 @@ export async function runFirestoreMigration() {
   console.log(`📌 Target Firebase Project ID: ${config.projectId}`);
   console.log(`📌 Target Database ID: ${config.firestoreDatabaseId}`);
 
-  const db = getFirestoreDb();
-  if (!db) {
-    throw new Error('Failed to initialize Firestore server instance!');
-  }
+ const db = getFirestoreDb();
+
+if (!db) {
+  throw new Error(
+    'Failed to initialize Firestore server instance. ' +
+    'Check Firestore connectivity, credentials, project ID, database ID, and Cloud Run service account.'
+  );
+}
 
   // Source Database: hotel_database.json (or backup)
   const sourcePath = fs.existsSync(path.resolve(process.cwd(), 'data/hotel_database_backup.json'))

@@ -10,7 +10,7 @@ function getApiBase(): string {
   if (typeof window !== 'undefined') {
     const host = window.location.hostname;
     if (host.includes('web.app') || host.includes('firebaseapp.com')) {
-      return 'https://ais-pre-4mlfcjwnlezh6laaee6l3m-957856789904.asia-southeast1.run.app/api';
+      return 'https://abc-hotel-backend-471826710112.asia-south1.run.app/api';
     }
   }
   return '/api';

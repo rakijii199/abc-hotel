@@ -57,11 +57,15 @@ import { AdminInventoryView } from '../components/admin/AdminInventoryView.tsx';
 import { AdminTablesView } from '../components/admin/AdminTablesView.tsx';
 import { DeliveryPortalPage } from './DeliveryPortalPage.tsx';
 
-export const AdminDashboardPage: React.FC<{ navigate: (route: string) => void }> = ({ navigate }) => {
+export const AdminDashboardPage: React.FC<{ 
+  navigate: (route: string, state?: any, replace?: boolean) => void;
+  initialTab?: AdminTab;
+}> = ({ navigate, initialTab }) => {
   const { user, isAdmin, isManager, isAuthenticated, isLoading, logout } = useAuth();
   const { error, success, info } = useToast();
 
   const [activeTab, setActiveTab] = useState<AdminTab>(() => {
+    if (initialTab) return initialTab;
     return user?.role === 'MANAGER' ? 'DASHBOARD' : 'POS_ORDER';
   });
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
@@ -71,6 +75,19 @@ export const AdminDashboardPage: React.FC<{ navigate: (route: string) => void }>
   const [selectedDailyDate, setSelectedDailyDate] = useState<string>(
     new Date().toISOString().split('T')[0]
   );
+
+  // Sync activeTab when URL route state changes (e.g. browser back/forward or direct link)
+  useEffect(() => {
+    if (initialTab && initialTab !== activeTab) {
+      setActiveTab(initialTab);
+    }
+  }, [initialTab]);
+
+  const handleTabChange = (tab: AdminTab) => {
+    setActiveTab(tab);
+    navigate('admin', { tab });
+    contentScrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   // Core Data
   const [stats, setStats] = useState<any>(null);
@@ -340,11 +357,11 @@ export const AdminDashboardPage: React.FC<{ navigate: (route: string) => void }>
       setNotifications((prev) => prev.map((item) => (item.id === n.id ? { ...item, read: true } : item)));
     }
     if (n.entityType === 'order') {
-      setActiveTab('ORDERS');
+      handleTabChange('ORDERS');
     } else if (n.entityType === 'booking') {
-      setActiveTab('BOOKINGS');
+      handleTabChange('BOOKINGS');
     } else {
-      setActiveTab('MENU');
+      handleTabChange('MENU');
     }
   };
 
@@ -354,10 +371,7 @@ export const AdminDashboardPage: React.FC<{ navigate: (route: string) => void }>
       <div className="hidden md:flex h-full w-64 shrink-0 flex-col z-40 bg-white">
         <AdminSidebar
           activeTab={activeTab}
-          setActiveTab={(tab) => {
-            setActiveTab(tab);
-            contentScrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
-          }}
+          setActiveTab={(tab) => handleTabChange(tab)}
           onLogout={() => {
             logout();
             navigate('home');
@@ -379,9 +393,8 @@ export const AdminDashboardPage: React.FC<{ navigate: (route: string) => void }>
             <AdminSidebar
               activeTab={activeTab}
               setActiveTab={(tab) => {
-                setActiveTab(tab);
+                handleTabChange(tab);
                 setMobileSidebarOpen(false);
-                contentScrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
               }}
               onLogout={() => {
                 logout();
@@ -424,7 +437,7 @@ export const AdminDashboardPage: React.FC<{ navigate: (route: string) => void }>
                 selectedDate={selectedDailyDate}
                 onDateChange={handleDateChange}
                 onUpdateOrderStatus={handleUpdateOrderStatus}
-                onNavigateToTab={(tab) => setActiveTab(tab as AdminTab)}
+                onNavigateToTab={(tab) => handleTabChange(tab as AdminTab)}
                 onRefresh={() => loadAllData(false)}
               />
             </div>
@@ -440,16 +453,16 @@ export const AdminDashboardPage: React.FC<{ navigate: (route: string) => void }>
                 setOrders((prev) => [newOrder, ...prev]);
                 loadAllData(true);
               }}
-              onNavigateToOrders={() => setActiveTab('ORDERS')}
-              onNavigateToKds={() => setActiveTab('ORDERS')}
+              onNavigateToOrders={() => handleTabChange('ORDERS')}
+              onNavigateToKds={() => handleTabChange('ORDERS')}
             />
           )}
 
           {/* TAB: KITCHEN DISPLAY SYSTEM */}
           {activeTab === 'KITCHEN_KDS' && (
             <KitchenKdsView
-              onBackToAdmin={() => setActiveTab('DASHBOARD')}
-              onNavigateToPos={() => setActiveTab('POS_ORDER')}
+              onBackToAdmin={() => handleTabChange('DASHBOARD')}
+              onNavigateToPos={() => handleTabChange('POS_ORDER')}
             />
           )}
 
