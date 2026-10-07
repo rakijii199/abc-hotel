@@ -390,16 +390,16 @@ export class AdminService {
     // 2. Strict Operational Status Transition Validation (Section 5)
     const isOverride = role === 'ADMIN' || role === 'MANAGER';
     if (!isOverride) {
-      if (current === 'PLACED' && !['PREPARING', 'CONFIRMED', 'CANCELLED'].includes(status)) {
+      if (current === 'PLACED' && !['PREPARING', 'CONFIRMED', 'READY', 'CANCELLED'].includes(status)) {
         throw new Error(`Operational Error: Cannot transition from New Order directly to ${status}.`);
       }
-      if (current === 'CONFIRMED' && !['PREPARING', 'READY', 'CANCELLED'].includes(status)) {
+      if (current === 'CONFIRMED' && !['PREPARING', 'READY', 'SERVED', 'CANCELLED'].includes(status)) {
         throw new Error(`Operational Error: Cannot transition from Confirmed to ${status}.`);
       }
-      if (current === 'PREPARING' && !['READY', 'CANCELLED'].includes(status)) {
+      if (current === 'PREPARING' && !['READY', 'SERVED', 'CANCELLED'].includes(status)) {
         throw new Error(`Operational Error: Cannot transition from Cooking to ${status}.`);
       }
-      if (current === 'READY' && !['SERVED', 'WAITING_FOR_PAYMENT', 'DELIVERY_ASSIGNED', 'CANCELLED'].includes(status)) {
+      if (current === 'READY' && !['SERVED', 'WAITING_FOR_PAYMENT', 'DELIVERY_ASSIGNED', 'COMPLETED', 'CANCELLED'].includes(status)) {
         throw new Error(`Operational Error: Cannot transition from Ready to ${status}.`);
       }
       if (current === 'DELIVERY_ASSIGNED' && !['DELIVERY_ACCEPTED', 'PICKED_UP', 'CANCELLED'].includes(status)) {
