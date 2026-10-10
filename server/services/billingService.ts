@@ -223,6 +223,17 @@ export class BillingService {
       throw new Error('Cannot process payment for a voided or cancelled invoice.');
     }
 
+    // Never record a second collection for a bill that is already settled
+    // (for example paid online before the cashier marks it).
+    if (invoice.paymentStatus === 'PAID' || order.paymentStatus === 'PAID') {
+      const err: any = new Error('This bill has already been paid.');
+      err.status = 409;
+      throw err;
+    }
+    if (order.status === 'CANCELLED') {
+      throw new Error('Cannot collect payment for a cancelled order.');
+    }
+
     const ref = paymentDetails?.reference || `${paymentMethod}-${Date.now().toString().slice(-6)}`;
 
     // Mark Invoice Paid

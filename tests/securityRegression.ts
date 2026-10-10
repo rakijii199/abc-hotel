@@ -193,6 +193,20 @@ export async function runSecurityRegressions(baseUrl: string): Promise<{ passed:
       }
     },
     {
+      name: 'A settled bill cannot be paid (collected) a second time',
+      run: async () => {
+        if (!customerA || !adminToken) return 'setup failed';
+        const order = await placeOrder(customerA);
+        if (!order) return 'setup failed (order)';
+        const gen = await api('POST', `/billing/generate/${order.id}`, { token: adminToken });
+        const invoiceId = gen.json?.data?.invoice?.id;
+        if (!invoiceId) return `setup failed (invoice ${gen.status})`;
+        const first = await api('POST', `/billing/invoice/${invoiceId}/pay`, { token: adminToken, body: { paymentMethod: 'Cash' } });
+        const second = await api('POST', `/billing/invoice/${invoiceId}/pay`, { token: adminToken, body: { paymentMethod: 'Cash' } });
+        return (first.status === 200 && second.status >= 400) || `first ${first.status}, second ${second.status}`;
+      }
+    },
+    {
       name: 'Public health endpoint does not expose environment or memory details',
       run: async () => {
         const res = await api('GET', '/health');

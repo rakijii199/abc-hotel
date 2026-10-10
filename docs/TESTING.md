@@ -11,7 +11,7 @@ or interruption.
 | --- | --- |
 | `npm test` | Full suite (`tests/testRunner.ts`) against the isolated test DB, then cleanup + verification. Exit code is non-zero if a test fails **or** cleanup cannot be verified. |
 | `npm run test:otp` | Phone-OTP / staff login verification, isolated and cleaned. |
-| `npm run test:security` | HTTP security audit. Boots the API server **inside the harness** on port `8091` (`TEST_SERVER_PORT`) backed by the test DB, so audit users are cleaned too. |
+| `npm run test:security` | HTTP security audit plus the security regression checks (`tests/securityRegression.ts`: login backdoor, phone-OTP privilege escalation, order/payment ownership, payment replay, status rules, manager→admin takeover, health exposure). Boots the API server **inside the harness** on port `8091` (`TEST_SERVER_PORT`) backed by the test DB, so audit users are cleaned too. |
 | `npm run test:cleanup` | Recover leftovers from a run that was hard-killed before it could clean up. Safe to run any time. |
 | `npm run test:cleanup:verify` | Self-tests for the cleanup mechanism (uses its own throwaway DB in the OS temp dir). |
 
@@ -97,4 +97,5 @@ cleanup reports. Use `TEST_DB_DIR` to place the test DB on the runner's temp dis
 
 * The database engine rewrites `menuItemRecipes[].updatedAt` on every startup
   (`seedInitialInventory()`); this is engine behaviour, not test data.
-* The 8 Razorpay tests (`TC_PAY_*`) need gateway credentials/network and fail without them.
+* Tests always use the payment provider's sandbox credentials (set by the harness), never the
+  Razorpay keys in `.env`, so the `TC_PAY_*` tests run offline.
