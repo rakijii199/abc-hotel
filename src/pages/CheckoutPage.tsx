@@ -8,7 +8,7 @@
  * 4. Credit/Debit Card – Pay using a card.
  * 5. Pay at Exit – Place your order now and pay later (Dine-in & Takeaway only).
  */
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Utensils,
   ShoppingBag,
@@ -75,6 +75,7 @@ export const CheckoutPage: React.FC<{
   // Active bookings for quick linking
   const [myBookings, setMyBookings] = useState<TableBooking[]>([]);
   const [submitting, setSubmitting] = useState<boolean>(false);
+  const checkoutKeyRef = useRef<{ fingerprint: string; key: string } | null>(null);
   const [paymentStatusMessage, setPaymentStatusMessage] = useState<string>('');
   const [failedOrderRef, setFailedOrderRef] = useState<any | null>(null);
 
@@ -280,7 +281,7 @@ export const CheckoutPage: React.FC<{
       let createdOrder = failedOrderRef;
 
       if (!createdOrder) {
-        createdOrder = await OrderApi.createOrder({
+        const orderPayload = {
           orderType,
           tableNumber: orderType === 'Dine-in' ? tableNumber : undefined,
           bookingReference: orderType === 'Dine-in' ? bookingReference : undefined,
@@ -297,7 +298,21 @@ export const CheckoutPage: React.FC<{
             quantity: i.quantity,
             specialInstructions: i.specialInstructions
           }))
-        });
+        };
+        // Retrying the same order (e.g. after a network error) reuses its
+        // idempotency key so the server never creates a duplicate; any change
+        // to the order gets a fresh key.
+        const payloadFingerprint = JSON.stringify(orderPayload);
+        if (!checkoutKeyRef.current || checkoutKeyRef.current.fingerprint !== payloadFingerprint) {
+          checkoutKeyRef.current = {
+            fingerprint: payloadFingerprint,
+            key:
+              typeof crypto !== 'undefined' && crypto.randomUUID
+                ? crypto.randomUUID()
+                : `idemp_${Date.now()}_${Math.random().toString(36).substring(2, 10)}`
+          };
+        }
+        createdOrder = await OrderApi.createOrder({ ...orderPayload, idempotencyKey: checkoutKeyRef.current.key });
       }
 
       // 2. PAY AT EXIT WORKFLOW (Dine-in & Takeaway)

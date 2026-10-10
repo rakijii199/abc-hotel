@@ -19,6 +19,8 @@ import { useAuth } from '../context/AuthContext.tsx';
 import { useToast } from '../context/ToastContext.tsx';
 import { LUX_IMAGES, hideOnError, luxImage } from '../components/customer/Reveal.tsx';
 
+
+const SHOW_DEMO_LOGINS = import.meta.env.DEV || import.meta.env.VITE_SHOW_DEMO_LOGINS === 'true';
 export const StaffLoginPage: React.FC<{ navigate: (route: string) => void }> = ({ navigate }) => {
   const { login } = useAuth();
   const { error, success } = useToast();
@@ -177,7 +179,9 @@ export const StaffLoginPage: React.FC<{ navigate: (route: string) => void }> = (
               <ArrowRight className="w-4 h-4" />
             </button>
 
-            {/* Quick Demo Access Credentials */}
+            {/* Quick Demo Access Credentials — never shipped in production builds
+                unless a demo deployment explicitly opts in. */}
+            {SHOW_DEMO_LOGINS && (
             <div className="pt-2">
               <p className="text-[10px] font-bold text-stone-400 mb-3 uppercase tracking-[0.2em]">
                 Demo Quick Access (Click to Fill)
@@ -201,6 +205,7 @@ export const StaffLoginPage: React.FC<{ navigate: (route: string) => void }> = (
                 ))}
               </div>
             </div>
+            )}
 
             {/* Switch to Customer Login / Register */}
             <div className="pt-4 border-t border-stone-200/70 text-center">

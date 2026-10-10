@@ -27,6 +27,16 @@ interface AdminTablesViewProps {
   onDeleteTable: (id: string) => Promise<void>;
 }
 
+
+/** Escape staff-entered values written into the printable HTML window. */
+function escapeHtml(value: unknown): string {
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
 export const AdminTablesView: React.FC<AdminTablesViewProps> = ({
   tables,
   onCreateTable,
@@ -156,7 +166,7 @@ export const AdminTablesView: React.FC<AdminTablesViewProps> = ({
       <!DOCTYPE html>
       <html>
         <head>
-          <title>Table Stand — ${tbl.tableNumber}</title>
+          <title>Table Stand — ${escapeHtml(tbl.tableNumber)}</title>
           <style>
             body {
               font-family: system-ui, -apple-system, sans-serif;
@@ -223,11 +233,11 @@ export const AdminTablesView: React.FC<AdminTablesViewProps> = ({
         <body>
           <div class="card">
             <div class="header-badge">ABC HOTEL & RESTAURANT</div>
-            <h1>${tbl.tableNumber}</h1>
-            <div class="subtitle">${tbl.location} • Capacity: ${tbl.capacity} Guests</div>
-            <img src="${qrUrl}" alt="${tbl.tableNumber} QR Code" class="qr-img" />
+            <h1>${escapeHtml(tbl.tableNumber)}</h1>
+            <div class="subtitle">${escapeHtml(tbl.location)} • Capacity: ${escapeHtml(tbl.capacity)} Guests</div>
+            <img src="${escapeHtml(qrUrl)}" alt="${escapeHtml(tbl.tableNumber)} QR Code" class="qr-img" />
             <div class="instructions">📱 Scan to View Menu & Order Directly</div>
-            <div class="footer-note">Table Ref: ${tbl.id}</div>
+            <div class="footer-note">Table Ref: ${escapeHtml(tbl.id)}</div>
           </div>
           <script>
             window.onload = function() {

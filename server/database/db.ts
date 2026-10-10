@@ -203,7 +203,7 @@ class DatabaseEngine {
   public auditLogs: Map<string, AuditLog> = new Map();
   public notifications: Map<string, AdminNotification> = new Map();
 
-  private isInitialized = false;
+  public isInitialized = false;
   private mutexLocks: Map<string, boolean> = new Map(); // Key locks for concurrency safety
   private saveTimeout: NodeJS.Timeout | null = null;
   public dirtySyncQueue: Map<string, { collection: string; id: string; data: any }> = new Map();
@@ -233,7 +233,24 @@ class DatabaseEngine {
     }
   }
 
-  public async initialize(): Promise<void> {
+  private initPromise: Promise<void> | null = null;
+
+  /**
+   * Load the database once. Concurrent callers (module auto-init and
+   * server startup) share the same load instead of running it twice.
+   */
+  public initialize(): Promise<void> {
+    if (this.isInitialized) return Promise.resolve();
+    if (!this.initPromise) {
+      this.initPromise = this.loadDatabase().catch((err) => {
+        this.initPromise = null;
+        throw err;
+      });
+    }
+    return this.initPromise;
+  }
+
+  private async loadDatabase(): Promise<void> {
     if (this.isInitialized) return;
 
     const isProduction = process.env.NODE_ENV === 'production';
@@ -2065,5 +2082,7 @@ class DatabaseEngine {
 }
 
 export const db = new DatabaseEngine();
-// Auto-initialize
-db.initialize();
+// Auto-initialize (server startup awaits the same promise and reports failures)
+db.initialize().catch((err) => {
+  console.error('[DATABASE] Initialization failed:', err?.message || err);
+});

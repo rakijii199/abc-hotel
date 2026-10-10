@@ -10,6 +10,28 @@ import { UserRepository } from '../repositories/userRepository.ts';
 import { NotificationRepository } from '../repositories/notificationRepository.ts';
 import { DiningTable, TableBooking } from '../types/index.ts';
 
+/**
+ * Current date and time at the hotel. Reservation slots are local hotel
+ * times, while Cloud Run instances run in UTC.
+ */
+function hotelNow(offsetDays = 0): { date: string; hours: number; minutes: number } {
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone: config.hotel.timeZone,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hourCycle: 'h23'
+  }).formatToParts(new Date(Date.now() + offsetDays * 86400000));
+  const get = (type: string) => parts.find((p) => p.type === type)?.value || '00';
+  return {
+    date: `${get('year')}-${get('month')}-${get('day')}`,
+    hours: Number(get('hour')),
+    minutes: Number(get('minute'))
+  };
+}
+
 export class BookingService {
   /**
    * Calculate end time given start time and duration (default 30 mins)
@@ -26,10 +48,7 @@ export class BookingService {
    * Check if booking date exceeds 1 month (30 days) in advance
    */
   public static isBeyondOneMonth(dateStr: string): boolean {
-    const d = new Date();
-    d.setDate(d.getDate() + 30);
-    const maxDateStr = d.toISOString().split('T')[0];
-    return dateStr > maxDateStr;
+    return dateStr > hotelNow(30).date;
   }
 
   /**
@@ -52,14 +71,14 @@ export class BookingService {
    * Check if booking date/time is in the past
    */
   public static isPastDateTime(dateStr: string, timeStr: string): boolean {
-    const todayStr = new Date().toISOString().split('T')[0];
+    const now = hotelNow();
+    const todayStr = now.date;
     if (dateStr < todayStr) return true;
     if (dateStr > todayStr) return false;
 
     // Date is today - check time slot against current hour/minute
-    const now = new Date();
-    const currentHours = now.getHours();
-    const currentMinutes = now.getMinutes();
+    const currentHours = now.hours;
+    const currentMinutes = now.minutes;
     const [slotH, slotM] = timeStr.split(':').map(Number);
 
     if (slotH < currentHours) return true;

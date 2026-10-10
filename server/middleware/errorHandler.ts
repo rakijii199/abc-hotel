@@ -103,6 +103,24 @@ export const orderRateLimiter = rateLimit({
 });
 
 /**
+ * Rate Limiter for table reservations (automated booking spam)
+ */
+export const bookingRateLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 20,
+  standardHeaders: 'draft-7',
+  legacyHeaders: false,
+  skip: () => process.env.NODE_ENV === 'test' || process.env.IS_TEST_RUN === 'true',
+  message: {
+    success: false,
+    error: {
+      code: 'BOOKING_RATE_LIMIT',
+      message: 'Too many reservation requests from this network. Please wait a few minutes and try again.'
+    }
+  }
+});
+
+/**
  * Rate Limiter for Payment Operations
  */
 export const paymentRateLimiter = rateLimit({

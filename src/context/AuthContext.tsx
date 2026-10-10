@@ -11,6 +11,7 @@ import React, {
 } from 'react';
 import { SafeUser } from '../types/index.ts';
 import { AuthApi } from '../api/index.ts';
+import { SESSION_EXPIRED_EVENT } from '../api/client.ts';
 
 interface AuthContextType {
   user: SafeUser | null;
@@ -98,6 +99,15 @@ export const AuthProvider: React.FC<{
     return () => {
       isMounted = false;
     };
+  }, []);
+
+  useEffect(() => {
+    const onSessionExpired = () => {
+      setToken(null);
+      setUser(null);
+    };
+    window.addEventListener(SESSION_EXPIRED_EVENT, onSessionExpired);
+    return () => window.removeEventListener(SESSION_EXPIRED_EVENT, onSessionExpired);
   }, []);
 
   /**

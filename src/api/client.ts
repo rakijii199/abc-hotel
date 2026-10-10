@@ -18,6 +18,9 @@ function getApiBase(): string {
 
 const API_BASE = getApiBase();
 
+/** Fired when the server rejects the stored session token (HTTP 401). */
+export const SESSION_EXPIRED_EVENT = 'abc:session-expired';
+
 export class ApiError extends Error {
   public code: string;
   public details?: any;
@@ -65,9 +68,11 @@ export async function request<T = any>(
   }
 
   if (!response.ok || !data.success) {
-    if (response.status === 401) {
-      // Clear expired or invalid token
+    if (response.status === 401 && token) {
+      // Clear expired or invalid token and let the auth context sign out, so
+      // the UI never keeps showing a session the server has rejected.
       localStorage.removeItem('abc_auth_token');
+      window.dispatchEvent(new Event(SESSION_EXPIRED_EVENT));
     }
     const error = data.error || {
       code: 'REQUEST_FAILED',

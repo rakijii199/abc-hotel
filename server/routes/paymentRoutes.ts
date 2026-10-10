@@ -6,6 +6,7 @@
 import { Router } from 'express';
 import { PaymentController } from '../controllers/paymentController.ts';
 import { authenticateToken, requireRole, optionalAuth } from '../middleware/authMiddleware.ts';
+import { paymentRateLimiter } from '../middleware/errorHandler.ts';
 
 export const paymentRouter = Router();
 
@@ -13,14 +14,14 @@ export const paymentRouter = Router();
 paymentRouter.get('/config', PaymentController.getPaymentConfig);
 
 // Customer online payment & attempt endpoints (Authentication required)
-paymentRouter.post('/create', authenticateToken, PaymentController.createPaymentOrder);
-paymentRouter.post('/create-order', authenticateToken, PaymentController.createPaymentOrder);
-paymentRouter.post('/verify', authenticateToken, PaymentController.verifyPayment);
+paymentRouter.post('/create', authenticateToken, paymentRateLimiter, PaymentController.createPaymentOrder);
+paymentRouter.post('/create-order', authenticateToken, paymentRateLimiter, PaymentController.createPaymentOrder);
+paymentRouter.post('/verify', authenticateToken, paymentRateLimiter, PaymentController.verifyPayment);
 paymentRouter.get('/orders/:orderId/status', authenticateToken, PaymentController.getPaymentStatus);
 
 // Unique Payment Attempt Status (for Live QR Polling)
 paymentRouter.get('/attempt/:attemptId/status', authenticateToken, PaymentController.getPaymentAttemptStatus);
-paymentRouter.post('/attempt/:attemptId/confirm-upi', authenticateToken, PaymentController.confirmUpiPayment);
+paymentRouter.post('/attempt/:attemptId/confirm-upi', authenticateToken, paymentRateLimiter, PaymentController.confirmUpiPayment);
 
 // Simulation endpoint is strictly EXCLUDED in production runtime
 if (process.env.NODE_ENV !== 'production') {
