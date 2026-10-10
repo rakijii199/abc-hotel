@@ -45,6 +45,17 @@ export function resetQuotaCircuitBreaker(): void {
  * are not available.
  */
 export function getFirestoreDb(): Firestore | null {
+  // Automated tests never get a Firestore client unless they opt in to the
+  // emulator, so code paths that use the client directly (e.g. order
+  // transactions) cannot reach a live project.
+  if (
+    (process.env.IS_TEST_RUN === 'true' ||
+      process.env.NODE_ENV === 'test') &&
+    !(process.env.USE_REAL_FIRESTORE === 'true' && process.env.FIRESTORE_EMULATOR_HOST)
+  ) {
+    return null;
+  }
+
   if (Date.now() < quotaExhaustedUntil) {
     return null;
   }

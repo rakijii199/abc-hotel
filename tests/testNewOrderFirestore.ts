@@ -5,6 +5,14 @@ import { getFirestoreDb } from '../server/database/firestoreSync.ts';
 import { db as nodeDb } from '../server/database/db.ts';
 
 export async function testNewProductionOrder() {
+  // This script writes a test order into Firestore. It must never target a live
+  // project: only run it against the local Firestore emulator.
+  if (!process.env.FIRESTORE_EMULATOR_HOST || process.env.NODE_ENV === 'production') {
+    throw new Error(
+      '[TEST SAFETY] testNewProductionOrder writes test data to Firestore. Set FIRESTORE_EMULATOR_HOST to run it against the emulator; it will not run against a live database.'
+    );
+  }
+
   console.log('====================================================');
   console.log('🧪 TESTING CREATION OF NEW PRODUCTION ORDER IN FIRESTORE');
   console.log('====================================================');

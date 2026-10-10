@@ -50,8 +50,13 @@ import { runFirestoreMigration } from './migrate.ts';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const DATA_DIR = path.resolve(__dirname, '../../data');
-const DB_FILE = path.join(DATA_DIR, 'hotel_database.json');
+const DEFAULT_DATA_DIR = path.resolve(__dirname, '../../data');
+// ABC_DB_FILE lets the automated test harness point the engine at an isolated
+// test database (see tests/support/testEnvironment.ts). Unset = the normal dev file.
+const DB_FILE = process.env.ABC_DB_FILE
+  ? path.resolve(process.env.ABC_DB_FILE)
+  : path.join(DEFAULT_DATA_DIR, 'hotel_database.json');
+const DATA_DIR = path.dirname(DB_FILE);
 
 interface SerializedDatabase {
   users: User[];

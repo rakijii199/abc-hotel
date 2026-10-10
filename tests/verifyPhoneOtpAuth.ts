@@ -1,11 +1,18 @@
 /**
  * Verification Script for Firebase Phone OTP Customer Auth & Staff Login
  */
-import { AuthService } from '../server/services/authService.ts';
-import { UserRepository } from '../server/repositories/userRepository.ts';
-import { db } from '../server/database/db.ts';
-
+/**
+ * Registers a customer, so it must run against the isolated test database:
+ * `npm run test:otp` (runs inside the cleanup harness).
+ */
 export async function verifyPhoneOtpAuth() {
+  if (!process.env.ABC_DB_FILE || process.env.IS_TEST_RUN !== 'true') {
+    throw new Error('[TEST SAFETY] Run this with `npm run test:otp` (isolated test database + cleanup).');
+  }
+  const { AuthService } = await import('../server/services/authService.ts');
+  const { UserRepository } = await import('../server/repositories/userRepository.ts');
+  const { db } = await import('../server/database/db.ts');
+
   console.log('====================================================');
   console.log('🧪 VERIFYING FIREBASE PHONE OTP & STAFF AUTHENTICATION');
   console.log('====================================================');

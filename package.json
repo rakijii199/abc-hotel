@@ -10,7 +10,11 @@
     "start": "NODE_ENV=production tsx server.ts",
     "clean": "rm -rf dist server.js",
     "lint": "tsc --noEmit",
-    "test": "tsx -e \"import { runAllTests } from './tests/testRunner.ts'; runAllTests().then(r => { console.log(JSON.stringify(r, null, 2)); if (r.failed > 0) process.exit(1); });\""
+    "test": "tsx tests/run.ts",
+    "test:cleanup": "tsx tests/run.ts --cleanup-only",
+    "test:cleanup:verify": "tsx tests/cleanupSelfTest.ts",
+    "test:otp": "tsx tests/run.ts --script otp",
+    "test:security": "tsx tests/run.ts --script security"
   },
   "dependencies": {
     "@google-cloud/firestore": "^9.3.0",

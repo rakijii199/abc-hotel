@@ -8,3 +8,5 @@ coverage/
 !.env.example
 .firebase/
 data/hotel_database.json
+data/test-db/
+data/backups/
