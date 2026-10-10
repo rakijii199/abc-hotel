@@ -11,3 +11,6 @@ yarn-error.log*
 .DS_Store
 *.md
 tests
+# Local databases, backups and test data never ship in the image
+data
+.firebase

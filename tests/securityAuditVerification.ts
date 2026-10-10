@@ -239,6 +239,13 @@ export async function runSecurityAudit(): Promise<{ passed: number; failed: numb
     failed++;
   }
 
+  // Regression checks for the production-hardening fixes
+  console.log('\n--- SECURITY REGRESSION CHECKS ---');
+  const { runSecurityRegressions } = await import('./securityRegression.ts');
+  const regression = await runSecurityRegressions(BASE_URL);
+  passed += regression.passed;
+  failed += regression.failed;
+
   console.log(`\n--- AUDIT COMPLETE: ${passed} PASSED, ${failed} FAILED ---`);
   return { passed, failed };
 }

@@ -56,7 +56,8 @@ async function startServer() {
             'https://images.unsplash.com',
             'https://lh3.googleusercontent.com',
             'https://*.googleusercontent.com',
-            'https://*.razorpay.com'
+            'https://*.razorpay.com',
+            'https://api.qrserver.com' // UPI / table QR images
           ],
           connectSrc: [
             "'self'",
@@ -67,6 +68,8 @@ async function startServer() {
             'https://securetoken.googleapis.com',
             'https://api.razorpay.com',
             'https://lumberjack.razorpay.com',
+            'https://ipapi.co', // delivery address auto-detect
+            'https://nominatim.openstreetmap.org',
             // Vite HMR websocket in development only
             ...(isProduction ? [] : ['ws:', 'wss:'])
           ],

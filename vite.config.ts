@@ -3,7 +3,13 @@ import react from '@vitejs/plugin-react';
 import path from 'path';
 import {defineConfig} from 'vite';
 
-export default defineConfig(() => {
+export default defineConfig(({ command }) => {
+  // A NODE_ENV=development line in the server's .env must never turn
+  // `vite build` into a development bundle (React dev runtime, dev-only UI).
+  if (command === 'build') {
+    process.env.NODE_ENV = 'production';
+    process.env.VITE_USER_NODE_ENV = 'production';
+  }
   return {
     plugins: [react(), tailwindcss()],
     resolve: {

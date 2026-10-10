@@ -83,12 +83,14 @@ export class RazorpayPaymentProvider implements PaymentProvider {
         throw new Error(`Razorpay Order Creation Failed: ${err.message || 'Gateway error'}`);
       }
     } else {
-      if (process.env.NODE_ENV === 'production') {
-        throw new Error('Online payments are not configured. Please choose another payment method.');
-      }
-      // Test / Sandbox Fallback mode
-      const randomPart = Math.random().toString(36).substring(2, 8);
-      providerOrderId = `order_rzp_test_${Date.now()}_${randomPart}`;
+      // No gateway configured (sandbox, or the hotel's direct UPI QR flow, which
+      // is confirmed by cashier verification rather than a gateway signature).
+      // Issue a local reference; signature verification stays fail-closed when
+      // the gateway secret is not configured, so it can never be "verified".
+      const randomPart = crypto.randomBytes(6).toString('hex');
+      providerOrderId = process.env.NODE_ENV === 'production'
+        ? `order_upi_${Date.now()}_${randomPart}`
+        : `order_rzp_test_${Date.now()}_${randomPart}`;
     }
 
     return {

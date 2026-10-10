@@ -258,7 +258,10 @@ class DatabaseEngine {
     // 1. In production, Cloud Run requires Firestore as the authoritative persistent source of truth
     try {
       let fsUsers = await loadCollectionFromFirestore<User>('users');
-      if (!fsUsers || fsUsers.length === 0) {
+      // Automated tests have no Firestore client (reads return empty), so they
+      // never attempt the bootstrap migration.
+      const isIsolatedTestRun = process.env.IS_TEST_RUN === 'true' && process.env.USE_REAL_FIRESTORE !== 'true';
+      if ((!fsUsers || fsUsers.length === 0) && !isIsolatedTestRun) {
         // An empty users collection in production almost always means the wrong
         // project/database ID is configured. Refuse to auto-populate it from the
         // bundled backup unless a first-time bootstrap is explicitly requested.

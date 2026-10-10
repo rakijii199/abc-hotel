@@ -66,9 +66,11 @@ export async function verifyCustomerFirebaseToken(idToken: string): Promise<Veri
   // Handle unit tests / sandbox mocking when specifically configured in test mode
   if ((process.env.IS_TEST_RUN === 'true' || process.env.NODE_ENV === 'test') && process.env.NODE_ENV !== 'production') {
     if (cleanToken.startsWith('mock_valid_token_')) {
-      const parts = cleanToken.split('_');
-      const phone = parts[3] ? `+${parts[3]}` : '+919999988888';
-      const uid = parts[4] || `fb-uid-${Date.now()}`;
+      // Format: mock_valid_token_[test_]<phoneDigits>_<uid>
+      const parts = cleanToken.split('_').slice(3);
+      if (parts[0] === 'test') parts.shift();
+      const phone = parts[0] && /^\d+$/.test(parts[0]) ? `+${parts[0]}` : '+919999988888';
+      const uid = parts.slice(1).join('_') || `fb-uid-${Date.now()}`;
       return {
         uid,
         phoneNumber: phone,
