@@ -167,29 +167,34 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
     })
     .filter((section) => section.items.length > 0);
 
+  const roleLabel =
+    user?.role === 'MANAGER' ? 'Hotel Manager' : user?.role === 'ADMIN' ? 'Administrator' : 'Floor Staff';
+
   return (
-    <aside className="w-64 bg-white text-stone-700 flex flex-col justify-between shrink-0 h-full border-r border-stone-200/80 shadow-2xs select-none">
-      <div className="flex-1 overflow-y-auto min-h-0">
+    <aside className="w-full h-full bg-ink text-ivory/70 flex flex-col justify-between shrink-0 border-r border-white/[0.06] select-none relative overflow-hidden">
+      <div className="absolute -top-24 -left-24 w-72 h-72 rounded-full bg-wine/25 blur-[90px] pointer-events-none" />
+
+      <div className="relative flex-1 overflow-y-auto min-h-0 scrollbar-none">
         {/* Brand Header */}
-        <div className="p-5 border-b border-stone-100 flex items-center gap-3 bg-[#fdfcfb]">
-          <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-amber-700 to-amber-900 flex items-center justify-center text-white font-serif font-bold text-lg shadow-sm ring-2 ring-amber-500/20 shrink-0">
-            ABC
-          </div>
-          <div className="min-w-0">
-            <span className="font-serif font-bold text-stone-900 text-base block leading-tight tracking-tight">
-              ABC HOTEL
-            </span>
-            <span className="inline-block mt-0.5 text-[9px] uppercase tracking-widest text-amber-900 font-bold bg-amber-50 border border-amber-200/80 px-2 py-0.2 rounded-full">
+        <div className="px-5 pt-6 pb-5 flex items-center gap-3">
+          <span className="relative w-10 h-10 shrink-0 flex items-center justify-center border border-gold/60 text-champagne">
+            <span className="absolute inset-[3px] border border-gold/25" />
+            <span className="font-display text-[13px] font-semibold tracking-[0.06em]">ABC</span>
+          </span>
+          <div className="min-w-0 leading-none">
+            <span className="font-display font-semibold text-ivory text-lg tracking-[0.16em] block">ABC HOTEL</span>
+            <span className="text-[9px] uppercase tracking-[0.3em] text-gold font-semibold block mt-1.5">
               Staff Portal
             </span>
           </div>
         </div>
+        <div className="mx-5 lux-hairline opacity-60" />
 
         {/* Navigation Items */}
-        <nav className="p-3 space-y-1.5">
+        <nav className="px-3 py-4 space-y-5" aria-label="Operations">
           {navSections.map((sec, secIdx) => (
-            <div key={sec.title || secIdx} className="space-y-1">
-              {secIdx > 0 && <div className="my-1.5 border-t border-stone-100" />}
+            <div key={sec.title || secIdx} className="space-y-0.5">
+              <p className="px-3 pb-1.5 text-[9.5px] font-bold uppercase tracking-[0.24em] text-ivory/30">{sec.title}</p>
               {sec.items.map((item) => {
                 const Icon = item.icon;
                 const isActive = activeTab === item.id;
@@ -197,18 +202,18 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
                   <button
                     key={item.id}
                     onClick={() => setActiveTab(item.id as AdminTab)}
-                    className={`w-full text-left px-3 py-2 rounded-xl text-xs font-medium transition-all flex items-center justify-between cursor-pointer group ${
+                    aria-current={isActive ? 'page' : undefined}
+                    className={`relative w-full text-left px-3 py-2.5 rounded-lg text-[13px] transition-all duration-300 flex items-center justify-between cursor-pointer group ${
                       isActive
-                        ? 'bg-amber-800 text-white font-bold shadow-xs shadow-amber-900/10'
-                        : 'text-stone-600 hover:text-stone-900 hover:bg-stone-100/80'
+                        ? 'bg-gradient-to-r from-wine to-wine/60 text-ivory font-semibold shadow-[0_10px_24px_-14px_rgba(91,26,38,0.9)]'
+                        : 'text-ivory/60 hover:text-ivory hover:bg-white/[0.05]'
                     }`}
                   >
-                    <div className="flex items-center gap-2.5 min-w-0">
+                    {isActive && <span className="absolute left-0 top-2 bottom-2 w-[3px] rounded-full bg-gold" />}
+                    <div className="flex items-center gap-3 min-w-0">
                       <Icon
                         className={`w-4 h-4 shrink-0 transition-colors ${
-                          isActive
-                            ? 'text-amber-200'
-                            : 'text-stone-400 group-hover:text-stone-700'
+                          isActive ? 'text-champagne' : 'text-ivory/35 group-hover:text-gold'
                         }`}
                       />
                       <span className="truncate">{item.label}</span>
@@ -216,10 +221,8 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
 
                     {item.badge !== undefined && (
                       <span
-                        className={`text-[10px] font-bold px-1.5 py-0.2 rounded-full shrink-0 ${
-                          isActive
-                            ? 'bg-white/20 text-white'
-                            : `border ${item.badgeColor || 'bg-amber-100 text-amber-900 border-amber-200'}`
+                        className={`text-[10px] font-bold min-w-5 h-5 px-1.5 rounded-full shrink-0 flex items-center justify-center ${
+                          isActive ? 'bg-ivory/15 text-ivory' : 'bg-gold/15 text-champagne'
                         }`}
                       >
                         {item.badge}
@@ -232,6 +235,31 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
           ))}
         </nav>
       </div>
+
+      {/* Signed-in staff card */}
+      {user && (
+        <div className="relative p-3 border-t border-white/[0.06]">
+          <div className="flex items-center gap-3 p-2.5 rounded-xl bg-white/[0.04]">
+            <span className="w-9 h-9 rounded-full bg-gradient-to-br from-champagne to-gold text-ink flex items-center justify-center text-sm font-bold shrink-0">
+              {user.firstName?.[0] || 'S'}
+            </span>
+            <div className="min-w-0 flex-1">
+              <p className="text-xs font-semibold text-ivory truncate">
+                {user.firstName} {user.lastName}
+              </p>
+              <p className="text-[10px] uppercase tracking-[0.16em] text-gold/80 truncate">{roleLabel}</p>
+            </div>
+            <button
+              onClick={onLogout}
+              className="w-8 h-8 rounded-lg flex items-center justify-center text-ivory/40 hover:text-rose-300 hover:bg-rose-500/10 transition-colors cursor-pointer shrink-0"
+              aria-label="Log out"
+              title="Log out"
+            >
+              <LogOut className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      )}
     </aside>
   );
 };

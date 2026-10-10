@@ -41,24 +41,34 @@ export const MenuItemCard: React.FC<MenuItemCardProps> = ({ item }) => {
 
   return (
     <>
-      <div
+      <article
         onClick={() => setDetailModalOpen(true)}
-        className={`group bg-white rounded-2xl border border-stone-200/80 shadow-xs hover:shadow-xl transition-all duration-300 flex flex-col overflow-hidden cursor-pointer ${
-          !item.available ? 'opacity-70 grayscale-[30%]' : ''
+        onKeyDown={(e) => {
+          if (e.target === e.currentTarget && (e.key === 'Enter' || e.key === ' ')) {
+            e.preventDefault();
+            setDetailModalOpen(true);
+          }
+        }}
+        tabIndex={0}
+        aria-label={`${item.name}, ${formatCurrency(item.price)}${item.available ? '' : ', sold out'}. View details`}
+        className={`group relative h-full bg-[#fffdf9] border border-stone-200/80 flex flex-col overflow-hidden cursor-pointer transition-[transform,box-shadow,border-color] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-1 hover:border-amber-300/70 hover:shadow-[0_30px_60px_-30px_rgba(26,23,21,0.45)] ${
+          !item.available ? 'opacity-75' : ''
         }`}
       >
         {/* Dish Image Container */}
-        <div className="relative aspect-4/3 overflow-hidden bg-stone-100">
+        <div className="relative aspect-[4/3.4] overflow-hidden bg-stone-100">
           <RestaurantImage
             src={item.imageUrl}
             alt={item.name}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            className={`w-full h-full object-cover transition-transform duration-[1200ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.06] ${
+              !item.available ? 'grayscale-[60%]' : ''
+            }`}
           />
 
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-t from-ink/55 via-transparent to-ink/10 pointer-events-none" />
 
           {/* Top Badges */}
-          <div className="absolute top-3 left-3 right-3 flex justify-between items-start">
+          <div className="absolute top-3 left-3 right-3 flex justify-between items-start gap-2">
             <DietaryBadge
               vegetarian={item.vegetarian}
               spicy={item.spicy}
@@ -67,75 +77,78 @@ export const MenuItemCard: React.FC<MenuItemCardProps> = ({ item }) => {
             />
 
             {!item.available && (
-              <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-rose-600 text-white shadow-md">
+              <span className="px-2.5 py-1 rounded-full text-[10px] uppercase tracking-wider font-bold bg-ink/85 text-ivory backdrop-blur-sm shrink-0">
                 Sold Out
               </span>
             )}
           </div>
 
           {/* Quick Prep Time Pill */}
-          <div className="absolute bottom-3 left-3 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-stone-900/80 backdrop-blur-md text-white text-[11px] font-medium">
-            <Clock className="w-3 h-3 text-amber-400" />
+          <div className="absolute bottom-3 left-3 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-ink/70 backdrop-blur-md text-ivory text-[10.5px] font-medium">
+            <Clock className="w-3 h-3 text-gold" />
             <span>{item.prepTimeMinutes} mins</span>
           </div>
 
           {/* Quick Preview Action */}
-          <div className="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
-            <span className="p-1.5 rounded-full bg-white/90 text-stone-900 text-xs shadow-md flex items-center justify-center">
-              <Eye className="w-4 h-4" />
+          <div className="absolute bottom-3 right-3 opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500">
+            <span className="h-7 px-3 rounded-full bg-ivory/95 text-ink text-[10px] font-bold uppercase tracking-wider flex items-center gap-1.5">
+              <Eye className="w-3.5 h-3.5" /> Details
             </span>
           </div>
         </div>
 
         {/* Content Body */}
-        <div className="p-5 flex-1 flex flex-col justify-between">
-          <div>
-            <div className="flex items-center justify-between gap-2 mb-1.5">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-amber-800 bg-amber-50 px-2 py-0.5 rounded-md border border-amber-200/60">
-                {item.categoryName || 'Dishes'}
+        <div className="p-5 flex-1 flex flex-col">
+          <div className="flex items-center justify-between gap-2">
+            <span className="text-[10px] font-bold uppercase tracking-[0.22em] text-amber-700 truncate">
+              {item.categoryName || 'Dishes'}
+            </span>
+            <span
+              className={`shrink-0 inline-flex items-center gap-1.5 text-[10px] font-semibold ${
+                item.vegetarian ? 'text-emerald-700' : 'text-rose-700'
+              }`}
+            >
+              <span
+                className={`w-3 h-3 border flex items-center justify-center ${
+                  item.vegetarian ? 'border-emerald-600' : 'border-rose-600'
+                }`}
+                aria-hidden="true"
+              >
+                <span className={`w-1.5 h-1.5 rounded-full ${item.vegetarian ? 'bg-emerald-600' : 'bg-rose-600'}`} />
               </span>
-              <span className="text-[11px] font-semibold flex items-center gap-1">
-                {item.vegetarian ? (
-                  <span className="text-emerald-700 flex items-center gap-1">🟢 Vegetarian</span>
-                ) : (
-                  <span className="text-rose-700 flex items-center gap-1">🔴 Non-Vegetarian</span>
-                )}
-              </span>
-            </div>
-            <h3 className="font-serif font-bold text-base text-stone-900 group-hover:text-amber-800 transition-colors leading-snug mb-1">
-              {item.name}
-            </h3>
-            <p className="text-xs text-stone-500 line-clamp-2 leading-relaxed mb-4">
-              {item.description}
-            </p>
+              {item.vegetarian ? 'Vegetarian' : 'Non-Vegetarian'}
+            </span>
           </div>
+          <h3 className="lux-display !font-medium text-[1.6rem] !leading-[1.1] text-stone-900 mt-2.5 transition-colors group-hover:text-wine">
+            {item.name}
+          </h3>
+          <p className="text-[13px] text-stone-500 line-clamp-2 leading-relaxed mt-2 mb-5">
+            {item.description}
+          </p>
 
           {/* Pricing & Add To Cart Button */}
-          <div className="pt-3 border-t border-stone-100 flex items-center justify-between">
-            <div>
-              <span className="text-[10px] text-stone-400 uppercase tracking-wider font-semibold block">Price</span>
-              <span className="text-lg font-bold text-stone-900 font-mono">
-                {formatCurrency(item.price)}
-              </span>
-            </div>
+          <div className="mt-auto pt-4 border-t border-stone-200/70 flex items-center justify-between gap-3">
+            <span className="text-lg font-semibold text-stone-900 font-mono">
+              {formatCurrency(item.price)}
+            </span>
 
             {item.available ? (
               quantity > 0 ? (
                 <div
                   onClick={(e) => e.stopPropagation()}
-                  className="flex items-center bg-amber-700 text-white rounded-xl shadow-xs overflow-hidden"
+                  className="flex items-center h-10 bg-ink text-ivory rounded-full overflow-hidden"
                 >
                   <button
                     onClick={handleDecrement}
-                    className="p-2 hover:bg-amber-800 active:bg-amber-900 transition-colors cursor-pointer"
+                    className="w-10 h-10 flex items-center justify-center hover:bg-white/10 transition-colors cursor-pointer"
                     aria-label="Decrease quantity"
                   >
                     <Minus className="w-3.5 h-3.5" />
                   </button>
-                  <span className="px-2.5 text-xs font-bold font-mono">{quantity}</span>
+                  <span className="min-w-6 text-center text-xs font-bold font-mono" aria-live="polite">{quantity}</span>
                   <button
                     onClick={handleIncrement}
-                    className="p-2 hover:bg-amber-800 active:bg-amber-900 transition-colors cursor-pointer"
+                    className="w-10 h-10 flex items-center justify-center hover:bg-white/10 transition-colors cursor-pointer"
                     aria-label="Increase quantity"
                   >
                     <Plus className="w-3.5 h-3.5" />
@@ -144,10 +157,11 @@ export const MenuItemCard: React.FC<MenuItemCardProps> = ({ item }) => {
               ) : (
                 <button
                   onClick={handleAdd}
-                  className="flex items-center gap-1.5 px-4 py-2 text-xs font-bold text-amber-900 bg-amber-100 hover:bg-amber-700 hover:text-white active:bg-amber-800 rounded-xl transition-all shadow-2xs cursor-pointer"
+                  className="h-10 flex items-center gap-1.5 px-4 text-[10.5px] font-bold uppercase tracking-[0.14em] text-ink border border-ink/80 hover:bg-ink hover:text-ivory active:scale-[0.97] rounded-full transition-all duration-300 cursor-pointer"
+                  aria-label={`Add ${item.name} to cart`}
                 >
                   <Plus className="w-3.5 h-3.5" />
-                  Add to Cart
+                  Add
                 </button>
               )
             ) : (
@@ -155,7 +169,7 @@ export const MenuItemCard: React.FC<MenuItemCardProps> = ({ item }) => {
             )}
           </div>
         </div>
-      </div>
+      </article>
 
       {/* Dish Detail Modal */}
       <DishDetailModal
@@ -197,10 +211,10 @@ export const DishDetailModal: React.FC<{
 
         <div>
           <div className="flex items-baseline justify-between mb-2">
-            <span className="text-xs uppercase tracking-wider font-semibold text-amber-800">
+            <span className="text-[10px] uppercase tracking-[0.24em] font-bold text-amber-700">
               {item.categoryName}
             </span>
-            <span className="text-2xl font-bold font-mono text-stone-900">
+            <span className="text-2xl font-semibold font-mono text-stone-900">
               {formatCurrency(item.price)}
             </span>
           </div>
@@ -246,7 +260,7 @@ export const DishDetailModal: React.FC<{
         <div className="pt-4 border-t border-stone-100 flex items-center justify-between">
           <button
             onClick={onClose}
-            className="px-4 py-2.5 text-sm font-medium text-stone-600 hover:text-stone-900 hover:bg-stone-100 rounded-xl transition-colors"
+            className="px-4 py-2.5 text-sm font-medium text-stone-600 hover:text-stone-900 hover:bg-stone-100 rounded-full transition-colors cursor-pointer"
           >
             Close
           </button>
@@ -255,17 +269,19 @@ export const DishDetailModal: React.FC<{
             quantity > 0 ? (
               <div className="flex items-center gap-3">
                 <span className="text-xs text-stone-500 font-medium">In Cart:</span>
-                <div className="flex items-center bg-amber-700 text-white rounded-xl shadow-xs overflow-hidden">
+                <div className="flex items-center bg-ink text-ivory rounded-full overflow-hidden">
                   <button
                     onClick={onDecrement}
-                    className="p-2.5 hover:bg-amber-800 transition-colors"
+                    className="p-3 hover:bg-white/10 transition-colors cursor-pointer"
+                    aria-label="Decrease quantity"
                   >
                     <Minus className="w-4 h-4" />
                   </button>
                   <span className="px-3 text-sm font-bold font-mono">{quantity}</span>
                   <button
                     onClick={onIncrement}
-                    className="p-2.5 hover:bg-amber-800 transition-colors"
+                    className="p-3 hover:bg-white/10 transition-colors cursor-pointer"
+                    aria-label="Increase quantity"
                   >
                     <Plus className="w-4 h-4" />
                   </button>
@@ -277,7 +293,7 @@ export const DishDetailModal: React.FC<{
                   onAdd(e);
                   onClose();
                 }}
-                className="px-6 py-2.5 text-sm font-bold text-white bg-amber-700 hover:bg-amber-800 rounded-xl shadow-md transition-all flex items-center gap-2"
+                className="lux-btn lux-btn-wine"
               >
                 <Plus className="w-4 h-4" />
                 Add to Cart ({formatCurrency(item.price)})

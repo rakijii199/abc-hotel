@@ -8,6 +8,7 @@ import { ToastProvider } from './context/ToastContext.tsx';
 import { Navbar } from './components/common/Navbar.tsx';
 import { Footer } from './components/common/Footer.tsx';
 import { parseUrlToRoute, routeToUrl } from './utils/router.ts';
+import { LazyMotion, MotionConfig, domAnimation } from 'motion/react';
 
 // Pages
 import { HomePage } from './pages/HomePage.tsx';
@@ -182,7 +183,7 @@ function MainApp() {
   // Dedicated Kitchen Department Display
   if (currentRoute === 'kitchen') {
     return (
-      <main className="animate-in fade-in duration-200">
+      <main className="lux-ops animate-in fade-in duration-200">
         <KitchenPage navigate={navigate} />
       </main>
     );
@@ -191,7 +192,7 @@ function MainApp() {
   // Full-screen dedicated Delivery Portal
   if (currentRoute === 'delivery') {
     return (
-      <main className="animate-in fade-in duration-200">
+      <main className="lux-ops animate-in fade-in duration-200">
         <DeliveryPortalPage navigate={navigate} />
       </main>
     );
@@ -200,14 +201,16 @@ function MainApp() {
   // Full-screen dedicated Operations Suite view when on admin route
   if (currentRoute === 'admin') {
     return (
-      <div className="h-screen w-full overflow-hidden bg-stone-100 text-stone-900 selection:bg-purple-200 selection:text-purple-900">
+      <div className="lux-ops h-screen w-full overflow-hidden bg-stone-100 text-stone-900">
         <AdminDashboardPage navigate={navigate} initialTab={routeState?.tab} />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex flex-col justify-between bg-[#faf8f5] text-stone-900 selection:bg-amber-100 selection:text-amber-900">
+    <LazyMotion features={domAnimation} strict>
+    <MotionConfig reducedMotion="user">
+    <div className="lux min-h-screen flex flex-col justify-between overflow-x-clip">
       <div>
         {(isAdmin || isManager) && (
           <div className="bg-purple-950 text-purple-200 px-4 py-2 text-xs flex items-center justify-between border-b border-purple-800/60 sticky top-0 z-50">
@@ -230,6 +233,8 @@ function MainApp() {
       </div>
       <Footer navigate={navigate} />
     </div>
+    </MotionConfig>
+    </LazyMotion>
   );
 }
 

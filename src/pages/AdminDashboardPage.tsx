@@ -366,9 +366,9 @@ export const AdminDashboardPage: React.FC<{
   };
 
   return (
-    <div className="flex h-screen w-full overflow-hidden bg-stone-100/70">
+    <div className="flex h-screen w-full overflow-hidden bg-[#f4efe7]">
       {/* Desktop Sidebar (Static on Left) */}
-      <div className="hidden md:flex h-full w-64 shrink-0 flex-col z-40 bg-white">
+      <div className="hidden lg:flex h-full w-64 shrink-0 flex-col z-40 bg-ink">
         <AdminSidebar
           activeTab={activeTab}
           setActiveTab={(tab) => handleTabChange(tab)}
@@ -384,12 +384,12 @@ export const AdminDashboardPage: React.FC<{
 
       {/* Mobile Drawer */}
       {mobileSidebarOpen && (
-        <div className="fixed inset-0 z-50 flex md:hidden">
+        <div className="fixed inset-0 z-50 flex lg:hidden">
           <div
             className="fixed inset-0 bg-black/60 backdrop-blur-xs"
             onClick={() => setMobileSidebarOpen(false)}
           />
-          <div className="relative z-50 w-72 max-w-full h-full bg-white">
+          <div className="relative z-50 w-72 max-w-full h-full bg-ink animate-[lux-rise_0.3s_var(--ease-lux)]">
             <AdminSidebar
               activeTab={activeTab}
               setActiveTab={(tab) => {

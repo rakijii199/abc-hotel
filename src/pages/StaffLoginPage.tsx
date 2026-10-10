@@ -3,9 +3,21 @@
  * Clean, Minimal, Production-Grade Authentication UI
  */
 import React, { useState } from 'react';
-import { Shield, Lock, User as UserIcon, ArrowRight, ArrowLeft } from 'lucide-react';
+import {
+  Shield,
+  Lock,
+  User as UserIcon,
+  ArrowRight,
+  ArrowLeft,
+  ShieldCheck,
+  Briefcase,
+  ConciergeBell,
+  ChefHat,
+  Truck
+} from 'lucide-react';
 import { useAuth } from '../context/AuthContext.tsx';
 import { useToast } from '../context/ToastContext.tsx';
+import { LUX_IMAGES, hideOnError, luxImage } from '../components/customer/Reveal.tsx';
 
 export const StaffLoginPage: React.FC<{ navigate: (route: string) => void }> = ({ navigate }) => {
   const { login } = useAuth();
@@ -44,89 +56,113 @@ export const StaffLoginPage: React.FC<{ navigate: (route: string) => void }> = (
     }
   };
 
+  const demoAccounts = [
+    { username: 'admin', label: 'Admin', icon: ShieldCheck },
+    { username: 'manager', label: 'Manager', icon: Briefcase },
+    { username: 'staff', label: 'Staff', icon: ConciergeBell },
+    { username: 'kitchen', label: 'Kitchen', icon: ChefHat },
+    { username: 'delivery', label: 'Delivery', icon: Truck }
+  ];
+
+  const inputClass =
+    'w-full h-12 pl-11 pr-4 bg-white/70 border border-stone-200 rounded-xl text-base sm:text-sm text-stone-900 placeholder:text-stone-400 focus:border-amber-500 focus:bg-white focus:ring-4 focus:ring-amber-200/40 transition-all outline-none';
+
   return (
-    <div className="min-h-[85vh] flex items-center justify-center p-4 sm:p-6 lg:p-8 bg-stone-100">
-      <div className="max-w-4xl w-full bg-white rounded-3xl shadow-2xl overflow-hidden border border-stone-200 grid grid-cols-1 lg:grid-cols-12">
-        {/* Left Side: Brand Banner */}
-        <div className="lg:col-span-5 bg-gradient-to-br from-stone-900 via-stone-900 to-purple-950 text-white p-6 sm:p-8 lg:p-10 flex flex-col justify-between relative overflow-hidden">
-          <div className="absolute inset-0 opacity-15">
-            <img
-              src="https://images.unsplash.com/photo-1544025162-d76694265947?w=800&auto=format&fit=crop&q=80"
-              alt="Hotel Operations"
-              className="w-full h-full object-cover"
-            />
+    <div className="relative min-h-[calc(100svh-4rem)] flex items-center justify-center px-4 py-10 sm:p-8 lg:p-12 bg-ink overflow-hidden lux-grain">
+      {/* Backdrop */}
+      <img
+        src={luxImage(LUX_IMAGES.interior, 2000)}
+        alt=""
+        aria-hidden="true"
+        onError={hideOnError}
+        className="absolute inset-0 w-full h-full object-cover opacity-30 lux-kenburns"
+      />
+      <div className="absolute inset-0 bg-gradient-to-br from-ink via-ink/80 to-wine/40" />
+      <div className="absolute -top-32 -right-32 w-[520px] h-[520px] rounded-full bg-wine/30 blur-[130px] pointer-events-none" />
+
+      <div className="relative w-full max-w-5xl grid grid-cols-1 lg:grid-cols-12 rounded-[1.5rem] overflow-hidden border border-white/10 shadow-[0_50px_120px_-40px_rgba(0,0,0,0.9)] animate-[lux-rise_0.8s_var(--ease-lux)]">
+        {/* Left Side: Brand Panel (glass) */}
+        <div className="lg:col-span-5 relative bg-white/[0.04] backdrop-blur-xl text-ivory p-7 sm:p-10 flex flex-col justify-between gap-10 overflow-hidden">
+          <div className="absolute inset-0 opacity-25 pointer-events-none">
+            <img src={luxImage(LUX_IMAGES.dishE, 900)} alt="" aria-hidden="true" onError={hideOnError} className="w-full h-full object-cover" />
+            <div className="absolute inset-0 bg-gradient-to-b from-ink/70 via-ink/60 to-ink" />
           </div>
 
-          <div className="relative z-10 space-y-4">
+          <div className="relative space-y-10">
             <button
               onClick={() => navigate('home')}
-              className="inline-flex items-center gap-2 text-xs font-semibold text-amber-300 hover:text-white transition-colors cursor-pointer bg-white/10 px-3 py-1.5 rounded-full border border-white/15 min-h-[36px]"
+              className="inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-champagne/90 hover:text-ivory transition-colors cursor-pointer min-h-[36px]"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
               <span>Back to Guest Portal</span>
             </button>
 
-            <div className="pt-2 sm:pt-4 space-y-1.5 sm:space-y-2">
-              <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-amber-600 flex items-center justify-center font-serif font-bold text-lg sm:text-xl text-white shadow-lg">
-                ABC
-              </div>
-              <h2 className="font-serif font-bold text-xl sm:text-2xl text-white">Internal Staff Portal</h2>
-              <p className="text-[11px] sm:text-xs text-stone-300 tracking-wider uppercase font-semibold">
-                ABC Hotel Operations Suite
+            <div>
+              <span className="relative w-14 h-14 flex items-center justify-center border border-gold/60 text-champagne">
+                <span className="absolute inset-[4px] border border-gold/25" />
+                <span className="font-display text-lg font-semibold tracking-[0.06em]">ABC</span>
+              </span>
+              <p className="lux-eyebrow text-gold mt-8">ABC Hotel Operations Suite</p>
+              <h2 className="lux-display text-[clamp(2.4rem,4.5vw,3.5rem)] text-ivory mt-4">
+                Internal <em className="font-normal text-champagne">Staff Portal</em>
+              </h2>
+              <p className="text-sm text-ivory/60 leading-relaxed mt-5 max-w-sm">
+                Secure authentication for hotel administration, restaurant managers, floor staff, kitchen display
+                systems, and delivery riders.
               </p>
             </div>
           </div>
 
-          <div className="relative z-10 space-y-2 sm:space-y-3 py-4 sm:py-6 border-y border-white/10 my-4 sm:my-6">
-            <p className="text-xs text-stone-300 leading-relaxed font-light">
-              Secure authentication for hotel administration, restaurant managers, floor staff, kitchen display systems, and delivery riders.
-            </p>
-          </div>
-
-          <div className="relative z-10 p-3 sm:p-3.5 rounded-xl bg-white/10 border border-white/15 text-[11px] text-stone-300 flex items-center gap-2">
-            <Shield className="w-4 h-4 text-amber-400 shrink-0" />
+          <div className="relative flex items-center gap-3 text-[11px] text-ivory/55 border-t border-white/10 pt-5">
+            <Shield className="w-4 h-4 text-gold shrink-0" />
             <span>Staff access is monitored and restricted to authorized personnel.</span>
           </div>
         </div>
 
         {/* Right Side: Staff Form */}
-        <div className="lg:col-span-7 p-5 sm:p-8 lg:p-10 flex flex-col justify-center space-y-6">
+        <div className="lg:col-span-7 bg-[#fffdf9] p-6 sm:p-10 lg:p-12 flex flex-col justify-center gap-7">
           <div>
-            <span className="inline-block px-3 py-1 rounded-full bg-purple-100 text-purple-800 text-[10px] font-bold uppercase tracking-wider mb-2">
-              Employee Login
-            </span>
-            <h3 className="font-serif font-bold text-xl sm:text-2xl text-stone-900">Login as Staff</h3>
-            <p className="text-xs text-stone-500 mt-1">
+            <p className="lux-eyebrow text-amber-700">Employee Login</p>
+            <h3 className="lux-display text-4xl sm:text-5xl text-stone-900 mt-3">Login as Staff</h3>
+            <p className="text-sm text-stone-500 mt-3">
               Enter your assigned employee username or email address and password.
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-1.5">
-              <label className="text-xs font-bold text-stone-700">Username or Email</label>
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div className="space-y-2">
+              <label htmlFor="staff-username" className="text-[11px] font-bold uppercase tracking-[0.14em] text-stone-600">
+                Username or Email
+              </label>
               <div className="relative">
-                <UserIcon className="w-4 h-4 text-stone-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                <UserIcon className="w-4 h-4 text-stone-400 absolute left-4 top-1/2 -translate-y-1/2" />
                 <input
+                  id="staff-username"
                   type="text"
+                  autoComplete="username"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   placeholder="Enter Username or Email"
-                  className="w-full pl-10 pr-3.5 py-3 bg-stone-50 border border-stone-200 rounded-xl text-base sm:text-xs text-stone-900 focus:border-amber-600 focus:bg-white transition-all outline-none"
+                  className={inputClass}
                   required
                 />
               </div>
             </div>
 
-            <div className="space-y-1.5">
-              <label className="text-xs font-bold text-stone-700">Password</label>
+            <div className="space-y-2">
+              <label htmlFor="staff-password" className="text-[11px] font-bold uppercase tracking-[0.14em] text-stone-600">
+                Password
+              </label>
               <div className="relative">
-                <Lock className="w-4 h-4 text-stone-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                <Lock className="w-4 h-4 text-stone-400 absolute left-4 top-1/2 -translate-y-1/2" />
                 <input
+                  id="staff-password"
                   type="password"
+                  autoComplete="current-password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter Password"
-                  className="w-full pl-10 pr-3.5 py-3 bg-stone-50 border border-stone-200 rounded-xl text-base sm:text-xs text-stone-900 focus:border-amber-600 focus:bg-white transition-all outline-none"
+                  className={inputClass}
                   required
                 />
               </div>
@@ -135,7 +171,7 @@ export const StaffLoginPage: React.FC<{ navigate: (route: string) => void }> = (
             <button
               type="submit"
               disabled={submitting}
-              className="w-full py-3.5 bg-stone-900 hover:bg-stone-800 active:bg-black text-amber-300 font-bold text-xs rounded-xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 mt-2 min-h-[44px]"
+              className="lux-btn lux-btn-wine w-full !min-h-[3.25rem] disabled:opacity-60 disabled:cursor-not-allowed"
             >
               <span>{submitting ? 'Authenticating...' : 'Login to Staff Portal'}</span>
               <ArrowRight className="w-4 h-4" />
@@ -143,61 +179,37 @@ export const StaffLoginPage: React.FC<{ navigate: (route: string) => void }> = (
 
             {/* Quick Demo Access Credentials */}
             <div className="pt-2">
-              <p className="text-[11px] font-semibold text-stone-500 mb-2 uppercase tracking-wider">
-                Demo Quick Access (Click to Fill):
+              <p className="text-[10px] font-bold text-stone-400 mb-3 uppercase tracking-[0.2em]">
+                Demo Quick Access (Click to Fill)
               </p>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5 text-xs">
-                <button
-                  type="button"
-                  onClick={() => { setUsername('admin'); setPassword('Password@123'); }}
-                  className="px-2.5 py-1.5 bg-stone-50 hover:bg-amber-50 hover:border-amber-300 border border-stone-200 rounded-lg text-left transition-colors cursor-pointer"
-                >
-                  <span className="font-bold block text-stone-800">👑 Admin</span>
-                  <span className="text-[10px] text-stone-500 font-mono">admin / Password@123</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => { setUsername('manager'); setPassword('Password@123'); }}
-                  className="px-2.5 py-1.5 bg-stone-50 hover:bg-amber-50 hover:border-amber-300 border border-stone-200 rounded-lg text-left transition-colors cursor-pointer"
-                >
-                  <span className="font-bold block text-stone-800">👔 Manager</span>
-                  <span className="text-[10px] text-stone-500 font-mono">manager / Password@123</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => { setUsername('staff'); setPassword('Password@123'); }}
-                  className="px-2.5 py-1.5 bg-stone-50 hover:bg-amber-50 hover:border-amber-300 border border-stone-200 rounded-lg text-left transition-colors cursor-pointer"
-                >
-                  <span className="font-bold block text-stone-800">🛎️ Staff</span>
-                  <span className="text-[10px] text-stone-500 font-mono">staff / Password@123</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => { setUsername('kitchen'); setPassword('Password@123'); }}
-                  className="px-2.5 py-1.5 bg-stone-50 hover:bg-amber-50 hover:border-amber-300 border border-stone-200 rounded-lg text-left transition-colors cursor-pointer"
-                >
-                  <span className="font-bold block text-stone-800">🍳 Kitchen</span>
-                  <span className="text-[10px] text-stone-500 font-mono">kitchen / Password@123</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => { setUsername('delivery'); setPassword('Password@123'); }}
-                  className="px-2.5 py-1.5 bg-stone-50 hover:bg-amber-50 hover:border-amber-300 border border-stone-200 rounded-lg text-left transition-colors cursor-pointer col-span-2 sm:col-span-1"
-                >
-                  <span className="font-bold block text-stone-800">🚴 Delivery</span>
-                  <span className="text-[10px] text-stone-500 font-mono">delivery / Password@123</span>
-                </button>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                {demoAccounts.map(({ username: demoUser, label, icon: Icon }) => (
+                  <button
+                    key={demoUser}
+                    type="button"
+                    onClick={() => { setUsername(demoUser); setPassword('Password@123'); }}
+                    className={`group px-3 py-2.5 bg-white border rounded-xl text-left transition-all cursor-pointer hover:-translate-y-0.5 hover:shadow-[0_12px_24px_-16px_rgba(26,23,21,0.5)] ${
+                      username === demoUser ? 'border-amber-500 ring-2 ring-amber-200/60' : 'border-stone-200 hover:border-amber-300'
+                    }`}
+                  >
+                    <span className="flex items-center gap-2 font-semibold text-xs text-stone-800">
+                      <Icon className="w-3.5 h-3.5 text-amber-600" />
+                      {label}
+                    </span>
+                    <span className="text-[10px] text-stone-400 font-mono block mt-0.5">{demoUser} / Password@123</span>
+                  </button>
+                ))}
               </div>
             </div>
 
             {/* Switch to Customer Login / Register */}
-            <div className="pt-4 border-t border-stone-100 text-center">
+            <div className="pt-4 border-t border-stone-200/70 text-center">
               <button
                 type="button"
                 onClick={() => navigate('customer-auth')}
                 className="inline-flex items-center gap-1.5 text-xs font-semibold text-stone-600 hover:text-stone-900 cursor-pointer transition-colors min-h-[44px] px-3"
               >
-                <span>Are you a guest? <strong>Login / Register as Customer →</strong></span>
+                <span>Are you a guest? <strong className="text-wine">Login / Register as Customer →</strong></span>
               </button>
             </div>
           </form>

@@ -1,5 +1,25 @@
 @import "tailwindcss";
 
+/* ---------------------------------------------------------------------------
+ * Brand tokens (additive only — they create new utilities such as bg-wine,
+ * text-gold, font-display and do not alter any existing utility).
+ * ------------------------------------------------------------------------- */
+@theme {
+  --color-ink: #0e0c0b;
+  --color-charcoal: #1a1715;
+  --color-wine: #5b1a26;
+  --color-wine-light: #74253a;
+  --color-gold: #c9a76a;
+  --color-champagne: #e6d3ac;
+  --color-ivory: #f7f2ea;
+  --color-cream: #efe7da;
+
+  --font-display: 'Cormorant Garamond', 'Playfair Display', Georgia, serif;
+  --font-lux: 'Manrope', 'Poppins', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  --ease-lux: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
 @layer base {
   body, table, th, td, button, input, select, textarea {
     font-family: 'Poppins', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -31,4 +51,388 @@
   padding-top: 0px !important;
   padding-bottom: 0px !important;
   vertical-align: middle !important;
+}
+
+/* ---------------------------------------------------------------------------
+ * ABC luxury theme scopes
+ *  .lux     — customer-facing layout wrapper (immersive, editorial)
+ *  .lux-ops — staff shells: admin/manager suite, kitchen KDS, delivery portal
+ *             (same palette, denser and more legible typography)
+ * Tailwind v4 utilities resolve colors, fonts and radii through CSS variables,
+ * so re-declaring them inside a scope re-skins existing markup without
+ * touching component logic. Nothing outside these wrappers is affected.
+ * ------------------------------------------------------------------------- */
+.lux,
+.lux-ops {
+  /* Champagne → bronze accent scale (replaces the bright amber) */
+  --color-amber-50: #fbf7f0;
+  --color-amber-100: #f4ebdb;
+  --color-amber-200: #e9d8b9;
+  --color-amber-300: #dcc293;
+  --color-amber-400: #cfad73;
+  --color-amber-500: #b8925a;
+  --color-amber-600: #8f6c3b;
+  --color-amber-700: #7a5a30;
+  --color-amber-800: #634826;
+  --color-amber-900: #4b361d;
+  --color-amber-950: #2c1f11;
+
+  /* Warm charcoal neutrals */
+  --color-stone-50: #faf7f2;
+  --color-stone-100: #f2ede5;
+  --color-stone-200: #e5ddd1;
+  --color-stone-300: #d2c8b9;
+  --color-stone-400: #a59c8f;
+  --color-stone-500: #7b7266;
+  --color-stone-600: #5e564c;
+  --color-stone-700: #48413a;
+  --color-stone-800: #2b2723;
+  --color-stone-900: #1a1715;
+  --color-stone-950: #0e0c0b;
+
+  --font-sans: var(--font-lux);
+  --font-serif: var(--font-display);
+
+  /* Slightly tighter, more tailored corners */
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.625rem;
+  --radius-2xl: 0.875rem;
+  --radius-3xl: 1.25rem;
+
+  font-variant-numeric: lining-nums;
+}
+
+.lux {
+  --font-mono: var(--font-lux);
+  background-color: var(--color-ivory);
+  color: var(--color-stone-900);
+  font-family: var(--font-lux);
+  letter-spacing: -0.006em;
+}
+
+.lux-ops {
+  /* Order numbers and SKUs stay in true monospace for fast scanning */
+  --font-mono: ui-monospace, 'Cascadia Mono', 'SFMono-Regular', Menlo, Consolas, monospace;
+  font-family: var(--font-lux);
+  letter-spacing: -0.004em;
+}
+
+@layer base {
+  :where(.lux, .lux-ops) :where(button, input, select, textarea, table, th, td) {
+    font-family: var(--font-lux);
+    letter-spacing: -0.006em;
+  }
+
+  :where(.lux, .lux-ops) :where(h1, h2, h3, h4) {
+    font-family: var(--font-display);
+    letter-spacing: -0.01em;
+  }
+
+  :where(.lux, .lux-ops) ::selection {
+    background: var(--color-champagne);
+    color: var(--color-ink);
+  }
+}
+
+/* Cormorant has a small x-height; normalise legacy serif text to stay legible */
+:is(.lux, .lux-ops) :where(h1, h2, h3, h4, .font-serif):not(.lux-display) {
+  font-weight: 600;
+}
+/* Headings only: fixed-size tiles and avatars must keep their natural size */
+:is(.lux, .lux-ops) :where(h1, h2, h3, h4):not(.lux-display) {
+  font-size-adjust: 0.5;
+}
+/* Serif figures (KPIs, totals) in dashboards: same optical size as body text */
+.lux-ops .font-serif:not(h1, h2, h3, h4) {
+  font-size-adjust: 0.5;
+}
+
+:is(.lux, .lux-ops) .font-mono {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+:is(.lux, .lux-ops) :focus-visible {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 2px;
+}
+
+.lux .scrollbar-none,
+.lux-ops .scrollbar-none {
+  scrollbar-width: none;
+}
+.lux .scrollbar-none::-webkit-scrollbar,
+.lux-ops .scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
+@layer components {
+/* --- Editorial typography ------------------------------------------------- */
+.lux-display {
+  font-family: var(--font-display);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 0.98;
+}
+
+.lux-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-family: var(--font-lux);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+}
+.lux-eyebrow::before {
+  content: '';
+  width: 2rem;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.6;
+}
+
+/* --- Buttons -------------------------------------------------------------- */
+.lux-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.625rem;
+  min-height: 3rem;
+  padding: 0 1.75rem;
+  border-radius: 999px;
+  font-family: var(--font-lux);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  cursor: pointer;
+  overflow: hidden;
+  isolation: isolate;
+  transition: transform 0.4s var(--ease-lux), box-shadow 0.4s var(--ease-lux),
+    background-color 0.4s var(--ease-lux), color 0.4s var(--ease-lux), border-color 0.4s var(--ease-lux);
+}
+.lux-btn:active {
+  transform: scale(0.98);
+}
+.lux-btn svg {
+  transition: transform 0.4s var(--ease-lux);
+}
+.lux-btn:hover svg:last-child {
+  transform: translateX(3px);
+}
+
+.lux-btn-gold {
+  color: var(--color-ink);
+  background: linear-gradient(135deg, #ead7ae 0%, #c9a76a 55%, #b08c50 100%);
+  box-shadow: 0 10px 30px -12px rgba(201, 167, 106, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.45);
+}
+.lux-btn-gold:hover {
+  box-shadow: 0 16px 40px -12px rgba(201, 167, 106, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.55);
+  transform: translateY(-1px);
+}
+
+.lux-btn-wine {
+  color: var(--color-ivory);
+  background: var(--color-wine);
+  box-shadow: 0 10px 30px -14px rgba(91, 26, 38, 0.8);
+}
+.lux-btn-wine:hover {
+  background: var(--color-wine-light);
+  transform: translateY(-1px);
+}
+
+.lux-btn-ghost {
+  color: var(--color-ivory);
+  border: 1px solid rgba(247, 242, 234, 0.35);
+  background: rgba(247, 242, 234, 0.04);
+  backdrop-filter: blur(8px);
+}
+.lux-btn-ghost:hover {
+  border-color: var(--color-champagne);
+  background: rgba(247, 242, 234, 0.1);
+}
+
+.lux-btn-outline {
+  color: var(--color-ink);
+  border: 1px solid rgba(26, 23, 21, 0.25);
+}
+.lux-btn-outline:hover {
+  border-color: var(--color-ink);
+  background: var(--color-ink);
+  color: var(--color-ivory);
+}
+
+/* Animated underline link */
+.lux-link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.lux-link::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -4px;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.5s var(--ease-lux);
+}
+.lux-link:hover::after,
+.lux-link[aria-current='page']::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+/* --- Surfaces & texture --------------------------------------------------- */
+.lux-grain::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.07;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Break out of a centered page container to span the full viewport width */
+.lux-bleed {
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+}
+
+.lux-hairline {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(201, 167, 106, 0.6), transparent);
+}
+
+.lux-card {
+  background: #fffdf9;
+  border: 1px solid rgba(26, 23, 21, 0.08);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.8) inset, 0 20px 40px -32px rgba(26, 23, 21, 0.35);
+}
+
+/* --- Motion --------------------------------------------------------------- */
+@keyframes lux-kenburns {
+  from { transform: scale(1.08) translate3d(0, 0, 0); }
+  to { transform: scale(1.18) translate3d(-1.5%, -1%, 0); }
+}
+.lux-kenburns {
+  animation: lux-kenburns 24s var(--ease-lux) infinite alternate;
+  will-change: transform;
+}
+
+@keyframes lux-spin-slow {
+  to { transform: rotate(360deg); }
+}
+.lux-spin-slow {
+  animation: lux-spin-slow 60s linear infinite;
+}
+
+@keyframes lux-float {
+  0%, 100% { transform: translate3d(0, 0, var(--z, 0)); }
+  50% { transform: translate3d(0, -8px, var(--z, 0)); }
+}
+
+@keyframes lux-pop {
+  0% { transform: scale(0.4); opacity: 0; }
+  60% { transform: scale(1.15); opacity: 1; }
+  100% { transform: scale(1); }
+}
+
+@keyframes lux-drop {
+  from { opacity: 0; transform: translateY(-6px) scale(0.98); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes lux-rise {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes lux-scroll-cue {
+  0% { transform: scaleY(0); transform-origin: top; }
+  45% { transform: scaleY(1); transform-origin: top; }
+  55% { transform: scaleY(1); transform-origin: bottom; }
+  100% { transform: scaleY(0); transform-origin: bottom; }
+}
+.lux-scroll-cue {
+  animation: lux-scroll-cue 2.4s var(--ease-lux) infinite;
+}
+
+/* 3D layered hero stage */
+.lux-stage {
+  perspective: 1400px;
+  perspective-origin: 50% 40%;
+}
+.lux-stage-inner {
+  transform-style: preserve-3d;
+  transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+  transition: transform 0.9s var(--ease-lux);
+  will-change: transform;
+}
+.lux-layer {
+  position: absolute;
+  transform: translate3d(0, 0, var(--z, 0));
+  transform-style: preserve-3d;
+}
+.lux-layer-float {
+  animation: lux-float 9s ease-in-out infinite;
+}
+
+/* Image zoom on hover */
+.lux-zoom img {
+  transition: transform 1.2s var(--ease-lux);
+}
+.lux-zoom:hover img {
+  transform: scale(1.06);
+}
+
+} /* end @layer components */
+
+@media (prefers-reduced-motion: reduce) {
+  :is(.lux, .lux-ops) *,
+  :is(.lux, .lux-ops) *::before,
+  :is(.lux, .lux-ops) *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+  .lux-stage-inner {
+    transform: none !important;
+  }
+}
+
+/* The home page ends on a full-bleed call to action, so the footer sits flush */
+.lux:has(.lux-home) > footer {
+  margin-top: 0;
+}
+
+/* ---------------------------------------------------------------------------
+ * Touch ergonomics (phones & tablets only)
+ * Gives interactive controls a comfortable minimum tap height on coarse
+ * pointers without changing mouse/trackpad layouts. Lives in the base layer
+ * with zero specificity, so any explicit min-h-* utility still wins.
+ * Staff dashboards use a slightly smaller minimum to stay information-dense.
+ * ------------------------------------------------------------------------- */
+@media (pointer: coarse) {
+  @layer base {
+    .lux :where(button, [role='tab'], select, input:not([type='checkbox'], [type='radio'], [type='range'], [type='hidden'])) {
+      min-height: 40px;
+    }
+    .lux-ops :where(button, [role='tab'], select, input:not([type='checkbox'], [type='radio'], [type='range'], [type='hidden'])) {
+      min-height: 36px;
+    }
+    /* Icon-only buttons get a square target as well */
+    :where(.lux, .lux-ops) :where(button:not(:has(> span, > div)):has(> svg:only-child)) {
+      min-width: 36px;
+    }
+  }
 }

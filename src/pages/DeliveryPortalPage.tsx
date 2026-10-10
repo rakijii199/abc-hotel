@@ -129,19 +129,20 @@ export const DeliveryPortalPage: React.FC<{
   const currentTabOrders = getTabOrders();
 
   return (
-    <div className="min-h-screen bg-stone-100 flex flex-col font-sans">
+    <div className="min-h-screen bg-[#f4efe7] flex flex-col font-sans">
       {/* Top Navigation Bar */}
-      <header className="sticky top-0 z-30 bg-white border-b border-stone-200/90 shadow-xs">
+      <header className="sticky top-0 z-30 bg-ink text-ivory border-b border-gold/20 shadow-[0_12px_30px_-18px_rgba(0,0,0,0.7)]">
         <div className="max-w-4xl mx-auto px-4 py-3.5 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-amber-600 flex items-center justify-center text-white shadow-sm">
-              <Truck className="w-5 h-5" />
+            <div className="relative w-10 h-10 flex items-center justify-center border border-gold/60 text-champagne">
+              <span className="absolute inset-[3px] border border-gold/25" />
+              <Truck className="w-[18px] h-[18px]" strokeWidth={1.6} />
             </div>
             <div>
-              <h1 className="font-bold text-base text-stone-900 leading-tight">Delivery Portal</h1>
-              <p className="text-xs text-stone-500 font-medium flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block animate-pulse" />
-                Rider: <span className="font-semibold text-stone-800">{user?.firstName || 'Delivery Staff'}</span>
+              <h1 className="lux-display text-xl text-ivory !leading-tight">Delivery Portal</h1>
+              <p className="text-xs text-ivory/55 font-medium flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 inline-block animate-pulse" />
+                Rider: <span className="font-semibold text-champagne">{user?.firstName || 'Delivery Staff'}</span>
               </p>
             </div>
           </div>
@@ -150,8 +151,9 @@ export const DeliveryPortalPage: React.FC<{
             <button
               onClick={() => fetchDeliveryOrders(true)}
               disabled={refreshing}
-              className="p-2 text-stone-600 hover:text-stone-900 hover:bg-stone-100 rounded-xl transition-colors cursor-pointer border border-stone-200"
+              className="p-2 text-ivory/70 hover:text-ivory hover:bg-white/10 rounded-lg transition-colors cursor-pointer border border-white/15"
               title="Refresh Orders"
+              aria-label="Refresh Orders"
             >
               <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin text-amber-600' : ''}`} />
             </button>
@@ -161,7 +163,7 @@ export const DeliveryPortalPage: React.FC<{
                 logout();
                 navigate('staff-login');
               }}
-              className="px-3 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 hover:text-rose-800 rounded-xl text-xs font-semibold transition-colors cursor-pointer flex items-center gap-1.5 border border-rose-200"
+              className="px-3 py-2 bg-rose-500/10 hover:bg-rose-500/20 text-rose-200 rounded-lg text-xs font-semibold transition-colors cursor-pointer flex items-center gap-1.5 border border-rose-400/30"
             >
               <LogOut className="w-3.5 h-3.5" />
               <span>Log Out</span>
@@ -171,7 +173,7 @@ export const DeliveryPortalPage: React.FC<{
       </header>
 
       {/* 3 Main Filter Tabs: New Order, Accepted, Delivered */}
-      <div className="bg-white border-b border-stone-200 sticky top-[65px] z-20 shadow-xs">
+      <div className="bg-[#fffdf9]/90 backdrop-blur-xl border-b border-stone-200 sticky top-[65px] z-20 shadow-[0_10px_24px_-20px_rgba(26,23,21,0.5)]">
         <div className="max-w-4xl mx-auto px-4 py-2.5">
           <div className="grid grid-cols-3 gap-2 bg-stone-100 p-1.5 rounded-2xl">
             {/* Tab 1: New Order */}

@@ -1,8 +1,9 @@
 /**
  * Primary Navigation Bar for ABC Hotel
  * Differentiates Customer, Staff Admin, Hotel Manager, Kitchen, and Delivery Rider workflows
+ * Presentation: transparent over the home hero, refined dark glass once scrolled.
  */
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   UtensilsCrossed,
   Calendar,
@@ -13,9 +14,11 @@ import {
   Menu as MenuIcon,
   X,
   ChevronRight,
+  ChevronDown,
   LayoutDashboard,
   ChefHat,
-  Truck
+  Truck,
+  ArrowRight
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext.tsx';
 import { useCart } from '../../context/CartContext.tsx';
@@ -30,9 +33,51 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
   const { itemCount } = useCart();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const isStaffOrManager = isAdmin || isManager;
   const isSpecialRole = isStaffOrManager || isKitchen || isDelivery;
+
+  // Float transparently over the cinematic home hero (customers & guests only)
+  const overlay = currentRoute === 'home' && !isSpecialRole;
+  const solid = !overlay || scrolled || mobileMenuOpen;
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 24);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  // Close menus with Escape / outside click
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setMobileMenuOpen(false);
+        setUserDropdownOpen(false);
+      }
+    };
+    const onClick = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setUserDropdownOpen(false);
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    document.addEventListener('mousedown', onClick);
+    return () => {
+      window.removeEventListener('keydown', onKey);
+      document.removeEventListener('mousedown', onClick);
+    };
+  }, []);
+
+  // Prevent background scroll while the mobile drawer is open
+  useEffect(() => {
+    document.body.style.overflow = mobileMenuOpen ? 'hidden' : '';
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [mobileMenuOpen]);
 
   const handleNav = (route: string, state?: any) => {
     navigate(route, state);
@@ -58,23 +103,53 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
     return 'home';
   };
 
+  const roleAvatarClass = isStaffOrManager
+    ? 'bg-gradient-to-tr from-purple-800 to-indigo-600 text-white'
+    : isKitchen
+    ? 'bg-gradient-to-tr from-orange-600 to-amber-600 text-white'
+    : isDelivery
+    ? 'bg-gradient-to-tr from-emerald-600 to-teal-700 text-white'
+    : 'bg-gradient-to-br from-champagne to-gold text-ink';
+
+  const roleBadgeClass = isStaffOrManager
+    ? 'bg-purple-100 text-purple-800'
+    : isKitchen
+    ? 'bg-orange-100 text-orange-800'
+    : isDelivery
+    ? 'bg-emerald-100 text-emerald-800'
+    : 'bg-amber-100 text-amber-800';
+
+  const navLink = (active: boolean) =>
+    `lux-link py-2 text-[11px] font-semibold uppercase tracking-[0.2em] transition-colors cursor-pointer ${
+      active ? 'text-champagne' : 'text-ivory/75 hover:text-ivory'
+    }`;
+
   return (
-    <header className="sticky top-0 z-40 bg-[#faf8f5]/95 backdrop-blur-md border-b border-amber-900/10 shadow-xs">
-      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16 sm:h-20">
+    <header
+      className={`${overlay ? 'fixed' : 'sticky'} inset-x-0 top-0 z-40 transition-[background-color,box-shadow,border-color] duration-500 ${
+        solid
+          ? 'bg-ink/90 backdrop-blur-xl border-b border-white/[0.06] shadow-[0_10px_40px_-20px_rgba(0,0,0,0.6)]'
+          : 'bg-gradient-to-b from-black/50 to-transparent border-b border-transparent'
+      }`}
+    >
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className={`flex items-center justify-between transition-[height] duration-500 ${solid && !mobileMenuOpen ? 'h-16 sm:h-[4.5rem]' : 'h-16 sm:h-20'}`}>
           {/* Brand Logo */}
-          <div
+          <button
+            type="button"
             onClick={() => handleNav(getRoleLandingRoute())}
-            className="flex items-center gap-2.5 sm:gap-3 cursor-pointer group shrink-0"
+            className="flex items-center gap-3 cursor-pointer group shrink-0 text-left"
+            aria-label="ABC Hotel home"
           >
-            <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl bg-gradient-to-br from-amber-700 via-amber-800 to-stone-900 flex items-center justify-center text-amber-100 shadow-md group-hover:scale-105 transition-transform">
-              <span className="font-serif font-bold text-base sm:text-xl tracking-wider text-amber-200">ABC</span>
-            </div>
-            <div>
-              <span className="font-serif font-bold text-base sm:text-xl tracking-tight text-stone-900 block leading-tight">
+            <span className="relative w-10 h-10 sm:w-11 sm:h-11 flex items-center justify-center border border-gold/60 text-champagne transition-colors group-hover:border-champagne">
+              <span className="absolute inset-[3px] border border-gold/25" />
+              <span className="font-display text-[13px] sm:text-[15px] font-semibold tracking-[0.06em]">ABC</span>
+            </span>
+            <span className="leading-none hidden min-[360px]:block">
+              <span className="font-display text-lg sm:text-xl font-semibold tracking-[0.18em] text-ivory block">
                 ABC HOTEL
               </span>
-              <span className="text-[9px] sm:text-[10px] tracking-[0.18em] uppercase font-semibold text-amber-800 block">
+              <span className="text-[8.5px] sm:text-[9px] tracking-[0.32em] uppercase font-semibold text-gold block mt-1">
                 {isDelivery
                   ? 'Delivery Staff Portal'
                   : isKitchen
@@ -85,66 +160,49 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
                   ? 'Staff Operations Suite'
                   : 'Luxury Dining & Suites'}
               </span>
-            </div>
-          </div>
+            </span>
+          </button>
 
           {/* Desktop Navigation Links */}
-          <nav className="hidden md:flex items-center gap-1 lg:gap-2">
+          <nav className="hidden md:flex items-center gap-6 lg:gap-8" aria-label="Primary">
             {!isSpecialRole ? (
               // Customer Navigation Links ONLY
               <>
                 <button
                   onClick={() => handleNav('home')}
-                  className={`px-3.5 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer ${
-                    currentRoute === 'home'
-                      ? 'text-amber-900 bg-amber-100/70 font-semibold'
-                      : 'text-stone-600 hover:text-stone-900 hover:bg-stone-200/50'
-                  }`}
+                  aria-current={currentRoute === 'home' ? 'page' : undefined}
+                  className={navLink(currentRoute === 'home')}
                 >
                   Home
                 </button>
                 <button
                   onClick={() => handleNav('menu')}
-                  className={`px-3.5 py-2 text-sm font-medium rounded-lg transition-colors flex items-center gap-1.5 cursor-pointer ${
-                    currentRoute === 'menu'
-                      ? 'text-amber-900 bg-amber-100/70 font-semibold'
-                      : 'text-stone-600 hover:text-stone-900 hover:bg-stone-200/50'
-                  }`}
+                  aria-current={currentRoute === 'menu' ? 'page' : undefined}
+                  className={navLink(currentRoute === 'menu')}
                 >
-                  <UtensilsCrossed className="w-4 h-4 text-amber-700" />
                   Menu
                 </button>
                 <button
                   onClick={handleBookTableClick}
-                  className={`px-3.5 py-2 text-sm font-medium rounded-lg transition-colors flex items-center gap-1.5 cursor-pointer ${
-                    currentRoute === 'book-table'
-                      ? 'text-amber-900 bg-amber-100/70 font-semibold'
-                      : 'text-stone-600 hover:text-stone-900 hover:bg-stone-200/50'
-                  }`}
+                  aria-current={currentRoute === 'book-table' ? 'page' : undefined}
+                  className={navLink(currentRoute === 'book-table')}
                 >
-                  <Calendar className="w-4 h-4 text-amber-700" />
-                  Book a Table
+                  Reservations
                 </button>
 
                 {isAuthenticated && (
                   <>
                     <button
                       onClick={() => handleNav('orders')}
-                      className={`px-3.5 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer ${
-                        currentRoute === 'my-orders' || currentRoute === 'orders'
-                          ? 'text-amber-900 bg-amber-100/70 font-semibold'
-                          : 'text-stone-600 hover:text-stone-900 hover:bg-stone-200/50'
-                      }`}
+                      aria-current={currentRoute === 'my-orders' || currentRoute === 'orders' ? 'page' : undefined}
+                      className={navLink(currentRoute === 'my-orders' || currentRoute === 'orders')}
                     >
                       My Orders
                     </button>
                     <button
                       onClick={() => handleNav('bookings')}
-                      className={`px-3.5 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer ${
-                        currentRoute === 'my-bookings' || currentRoute === 'bookings'
-                          ? 'text-amber-900 bg-amber-100/70 font-semibold'
-                          : 'text-stone-600 hover:text-stone-900 hover:bg-stone-200/50'
-                      }`}
+                      aria-current={currentRoute === 'my-bookings' || currentRoute === 'bookings' ? 'page' : undefined}
+                      className={`${navLink(currentRoute === 'my-bookings' || currentRoute === 'bookings')} hidden lg:inline-flex`}
                     >
                       My Bookings
                     </button>
@@ -155,7 +213,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
               // Delivery staff link
               <button
                 onClick={() => handleNav('delivery')}
-                className="px-4 py-2 text-sm font-bold rounded-xl transition-all flex items-center gap-2 cursor-pointer text-amber-950 bg-amber-100 border border-amber-300 shadow-xs"
+                className="px-4 py-2 text-xs font-bold rounded-full transition-all flex items-center gap-2 cursor-pointer text-amber-950 bg-amber-100 border border-amber-300"
               >
                 <Truck className="w-4 h-4 text-amber-700" />
                 Delivery Dispatch Board
@@ -164,7 +222,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
               // Kitchen link
               <button
                 onClick={() => handleNav('kitchen')}
-                className="px-4 py-2 text-sm font-bold rounded-xl transition-all flex items-center gap-2 cursor-pointer text-orange-950 bg-orange-100 border border-orange-300 shadow-xs"
+                className="px-4 py-2 text-xs font-bold rounded-full transition-all flex items-center gap-2 cursor-pointer text-orange-950 bg-orange-100 border border-orange-300"
               >
                 <ChefHat className="w-4 h-4 text-orange-700" />
                 Kitchen Display System
@@ -173,30 +231,31 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
               // Staff Admin / Manager link
               <button
                 onClick={() => handleNav('admin')}
-                className={`px-4 py-2 text-sm font-bold rounded-xl transition-all flex items-center gap-2 cursor-pointer ${
-                  currentRoute === 'admin'
-                    ? 'text-purple-950 bg-purple-100 border border-purple-300 shadow-xs'
-                    : 'text-purple-800 hover:text-purple-950 hover:bg-purple-50'
-                }`}
+                className="px-4 py-2 text-xs font-bold rounded-full transition-all flex items-center gap-2 cursor-pointer text-purple-100 bg-purple-900/60 border border-purple-400/40 hover:bg-purple-800/70"
               >
-                <Shield className="w-4 h-4 text-purple-700" />
+                <Shield className="w-4 h-4 text-purple-300" />
                 {isManager ? 'Hotel Manager Suite' : 'Staff Operations Suite'}
               </button>
             )}
           </nav>
 
           {/* Right Action Icons & User Menu */}
-          <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex items-center gap-1 sm:gap-3 shrink-0">
             {/* Customer Cart Button (Hidden for all internal staff) */}
             {!isSpecialRole && (
               <button
                 onClick={() => handleNav('cart')}
-                className="relative p-2 sm:p-2.5 text-stone-700 hover:text-amber-900 hover:bg-amber-100/60 rounded-xl transition-all cursor-pointer"
-                aria-label="Shopping Cart"
+                className={`relative w-10 h-10 flex items-center justify-center rounded-full transition-colors cursor-pointer ${
+                  currentRoute === 'cart' ? 'text-champagne bg-white/10' : 'text-ivory/85 hover:text-ivory hover:bg-white/10'
+                }`}
+                aria-label={`Shopping cart, ${itemCount} ${itemCount === 1 ? 'item' : 'items'}`}
               >
-                <ShoppingBag className="w-5 h-5" />
+                <ShoppingBag className="w-[18px] h-[18px]" strokeWidth={1.6} />
                 {itemCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-amber-700 text-white text-[10px] sm:text-[11px] font-bold w-4 h-4 sm:w-5 sm:h-5 rounded-full flex items-center justify-center shadow-xs">
+                  <span
+                    key={itemCount}
+                    className="absolute top-0.5 right-0.5 min-w-[18px] h-[18px] px-1 rounded-full bg-gold text-ink text-[10px] font-extrabold flex items-center justify-center ring-2 ring-ink animate-[lux-pop_0.4s_var(--ease-lux)]"
+                  >
                     {itemCount}
                   </span>
                 )}
@@ -205,47 +264,33 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
 
             {/* User Dropdown or Login CTA (Desktop) */}
             {isAuthenticated && user ? (
-              <div className="relative hidden md:block">
+              <div className="relative hidden md:block" ref={dropdownRef}>
                 <button
                   onClick={() => setUserDropdownOpen(!userDropdownOpen)}
-                  className="flex items-center gap-2 p-1.5 pl-3 rounded-full bg-stone-100 hover:bg-amber-100/50 border border-stone-200 transition-colors cursor-pointer"
+                  aria-haspopup="menu"
+                  aria-expanded={userDropdownOpen}
+                  className="flex items-center gap-2 p-1 pl-3.5 rounded-full border border-white/15 hover:border-gold/60 bg-white/[0.04] transition-colors cursor-pointer"
                 >
-                  <span className="text-xs font-semibold text-stone-800 max-w-[100px] truncate">
+                  <span className="text-xs font-semibold text-ivory max-w-[100px] truncate">
                     {user.firstName}
                   </span>
-                  <div
-                    className={`w-8 h-8 rounded-full text-white flex items-center justify-center text-xs font-bold shadow-xs ${
-                      isStaffOrManager
-                        ? 'bg-gradient-to-tr from-purple-800 to-indigo-600'
-                        : isKitchen
-                        ? 'bg-gradient-to-tr from-orange-600 to-amber-600'
-                        : isDelivery
-                        ? 'bg-gradient-to-tr from-emerald-600 to-teal-700'
-                        : 'bg-gradient-to-tr from-amber-700 to-amber-500'
-                    }`}
-                  >
+                  <ChevronDown className={`w-3.5 h-3.5 text-ivory/60 transition-transform ${userDropdownOpen ? 'rotate-180' : ''}`} />
+                  <span className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${roleAvatarClass}`}>
                     {user.firstName[0]}
-                  </div>
+                  </span>
                 </button>
 
                 {userDropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-2xl border border-stone-200 py-2 z-50 animate-in fade-in zoom-in-95">
-                    <div className="px-4 py-2.5 border-b border-stone-100">
-                      <p className="text-xs text-stone-500">Logged in as</p>
-                      <p className="text-sm font-semibold text-stone-900 truncate">
+                  <div
+                    role="menu"
+                    className="absolute right-0 mt-3 w-64 bg-[#fffdf9] rounded-2xl shadow-[0_30px_60px_-20px_rgba(0,0,0,0.45)] border border-stone-200/80 py-2 z-50 origin-top-right animate-[lux-drop_0.25s_var(--ease-lux)]"
+                  >
+                    <div className="px-4 pt-2 pb-3 border-b border-stone-100">
+                      <p className="text-[10px] uppercase tracking-[0.2em] text-stone-400 font-semibold">Signed in as</p>
+                      <p className="font-display text-lg font-semibold text-stone-900 truncate mt-0.5">
                         {user.firstName} {user.lastName}
                       </p>
-                      <span
-                        className={`inline-block mt-1 text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full ${
-                          isStaffOrManager
-                            ? 'bg-purple-100 text-purple-800'
-                            : isKitchen
-                            ? 'bg-orange-100 text-orange-800'
-                            : isDelivery
-                            ? 'bg-emerald-100 text-emerald-800'
-                            : 'bg-amber-100 text-amber-800'
-                        }`}
-                      >
+                      <span className={`inline-block mt-1 text-[9px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full ${roleBadgeClass}`}>
                         {user.role}
                       </span>
                     </div>
@@ -253,6 +298,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
                     {isDelivery ? (
                       // Delivery Rider menu
                       <button
+                        role="menuitem"
                         onClick={() => handleNav('delivery')}
                         className="w-full text-left px-4 py-2.5 text-sm font-semibold text-emerald-800 hover:bg-emerald-50 flex items-center gap-2.5 cursor-pointer"
                       >
@@ -262,6 +308,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
                     ) : isKitchen ? (
                       // Kitchen menu
                       <button
+                        role="menuitem"
                         onClick={() => handleNav('kitchen')}
                         className="w-full text-left px-4 py-2.5 text-sm font-semibold text-orange-800 hover:bg-orange-50 flex items-center gap-2.5 cursor-pointer"
                       >
@@ -271,6 +318,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
                     ) : isStaffOrManager ? (
                       // Staff Admin & Manager menu
                       <button
+                        role="menuitem"
                         onClick={() => handleNav('admin')}
                         className="w-full text-left px-4 py-2.5 text-sm font-semibold text-purple-800 hover:bg-purple-50 flex items-center gap-2.5 cursor-pointer"
                       >
@@ -279,46 +327,35 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
                       </button>
                     ) : (
                       // Customer account menu items
-                      <>
-                        <button
-                          onClick={() => handleNav('dashboard')}
-                          className="w-full text-left px-4 py-2.5 text-sm text-stone-700 hover:bg-amber-50 flex items-center gap-2.5 cursor-pointer"
-                        >
-                          <UserIcon className="w-4 h-4 text-amber-700" />
-                          Dashboard
-                        </button>
-                        <button
-                          onClick={() => handleNav('profile')}
-                          className="w-full text-left px-4 py-2.5 text-sm text-stone-700 hover:bg-amber-50 flex items-center gap-2.5 cursor-pointer"
-                        >
-                          <UserIcon className="w-4 h-4 text-stone-500" />
-                          Profile & Settings
-                        </button>
-                        <button
-                          onClick={() => handleNav('my-orders')}
-                          className="w-full text-left px-4 py-2.5 text-sm text-stone-700 hover:bg-amber-50 flex items-center gap-2.5 cursor-pointer"
-                        >
-                          <ShoppingBag className="w-4 h-4 text-stone-500" />
-                          My Orders
-                        </button>
-                        <button
-                          onClick={() => handleNav('my-bookings')}
-                          className="w-full text-left px-4 py-2.5 text-sm text-stone-700 hover:bg-amber-50 flex items-center gap-2.5 cursor-pointer"
-                        >
-                          <Calendar className="w-4 h-4 text-stone-500" />
-                          My Bookings
-                        </button>
-                      </>
+                      <div className="py-1">
+                        {[
+                          { route: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+                          { route: 'profile', label: 'Profile & Settings', icon: UserIcon },
+                          { route: 'my-orders', label: 'My Orders', icon: ShoppingBag },
+                          { route: 'my-bookings', label: 'My Bookings', icon: Calendar }
+                        ].map(({ route, label, icon: Icon }) => (
+                          <button
+                            key={route}
+                            role="menuitem"
+                            onClick={() => handleNav(route)}
+                            className="w-full text-left px-4 py-2.5 text-sm text-stone-700 hover:bg-amber-50 hover:text-stone-900 flex items-center gap-3 cursor-pointer transition-colors"
+                          >
+                            <Icon className="w-4 h-4 text-amber-600" strokeWidth={1.75} />
+                            {label}
+                          </button>
+                        ))}
+                      </div>
                     )}
 
-                    <div className="border-t border-stone-100 mt-1">
+                    <div className="border-t border-stone-100 mt-1 pt-1">
                       <button
+                        role="menuitem"
                         onClick={() => {
                           logout();
                           setUserDropdownOpen(false);
                           handleNav('login');
                         }}
-                        className="w-full text-left px-4 py-2.5 text-sm text-rose-600 hover:bg-rose-50 flex items-center gap-2.5 font-medium cursor-pointer"
+                        className="w-full text-left px-4 py-2.5 text-sm text-rose-700 hover:bg-rose-50 flex items-center gap-3 font-medium cursor-pointer"
                       >
                         <LogOut className="w-4 h-4" />
                         Log Out
@@ -328,43 +365,45 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
                 )}
               </div>
             ) : (
-              <div className="hidden md:flex items-center gap-2">
+              <div className="hidden md:flex items-center gap-4">
                 <button
                   onClick={() => handleNav('customer-auth')}
-                  className="px-3.5 py-1.5 text-xs font-semibold text-white bg-amber-700 hover:bg-amber-800 rounded-xl shadow-xs transition-all cursor-pointer flex items-center gap-1.5"
+                  className="text-[11px] font-semibold uppercase tracking-[0.2em] text-ivory/80 hover:text-ivory transition-colors cursor-pointer lux-link"
                 >
-                  <UserIcon className="w-3.5 h-3.5" />
-                  <span>Customer Login</span>
+                  Sign In
                 </button>
                 <button
                   onClick={() => handleNav('customer-register')}
-                  className="px-3 py-1.5 text-xs font-semibold text-amber-900 bg-amber-50 hover:bg-amber-100 border border-amber-300 rounded-xl transition-colors cursor-pointer"
+                  className="text-[11px] font-semibold uppercase tracking-[0.2em] text-ivory/80 hover:text-ivory transition-colors cursor-pointer lux-link"
                 >
-                  <span>Register</span>
+                  Register
                 </button>
                 <button
                   onClick={() => handleNav('staff-login')}
-                  className="px-3 py-1.5 text-xs font-semibold text-stone-700 hover:text-stone-900 border border-stone-300 rounded-xl hover:bg-stone-100 transition-colors cursor-pointer flex items-center gap-1.5"
+                  className="text-[10px] font-semibold uppercase tracking-[0.18em] text-ivory/45 hover:text-ivory/80 transition-colors cursor-pointer flex items-center gap-1.5"
+                  title="Login as Staff"
                 >
-                  <Shield className="w-3.5 h-3.5 text-stone-600" />
-                  <span>Login as Staff</span>
+                  <Shield className="w-3 h-3" />
+                  <span>Staff</span>
                 </button>
               </div>
+            )}
+
+            {/* Primary reservation CTA (customers & guests, large screens) */}
+            {!isSpecialRole && (
+              <button
+                onClick={handleBookTableClick}
+                className="hidden lg:inline-flex lux-btn lux-btn-gold !min-h-[2.5rem] !px-5 !text-[10.5px] ml-1"
+              >
+                Reserve a Table
+              </button>
             )}
 
             {/* Mobile Header Quick User Access / Login */}
             {isAuthenticated && user ? (
               <button
                 onClick={() => handleNav(isSpecialRole ? getRoleLandingRoute() : 'dashboard')}
-                className={`md:hidden w-8 h-8 rounded-full text-white flex items-center justify-center text-xs font-bold shadow-xs cursor-pointer ${
-                  isStaffOrManager
-                    ? 'bg-gradient-to-tr from-purple-800 to-indigo-600'
-                    : isKitchen
-                    ? 'bg-gradient-to-tr from-orange-600 to-amber-600'
-                    : isDelivery
-                    ? 'bg-gradient-to-tr from-emerald-600 to-teal-700'
-                    : 'bg-gradient-to-tr from-amber-700 to-amber-500'
-                }`}
+                className={`md:hidden w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold cursor-pointer ${roleAvatarClass}`}
                 aria-label="User Account"
                 title={`${user.firstName} (${user.role})`}
               >
@@ -373,10 +412,10 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
             ) : (
               <button
                 onClick={() => handleNav('customer-auth')}
-                className="md:hidden flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-bold text-amber-900 bg-amber-100/90 hover:bg-amber-200 border border-amber-300/80 transition-colors cursor-pointer"
+                className="md:hidden flex items-center gap-1.5 px-3 h-9 rounded-full text-[10px] font-bold uppercase tracking-[0.16em] text-ivory border border-white/20 hover:border-gold/70 transition-colors cursor-pointer"
                 aria-label="Customer Login"
               >
-                <UserIcon className="w-3.5 h-3.5 text-amber-800" />
+                <UserIcon className="w-3.5 h-3.5 text-champagne" />
                 <span>Login</span>
               </button>
             )}
@@ -384,10 +423,11 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
             {/* Mobile Menu Toggle Button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2 text-stone-700 hover:bg-stone-100 active:bg-stone-200 rounded-xl transition-colors cursor-pointer"
+              className="md:hidden w-10 h-10 flex items-center justify-center text-ivory hover:bg-white/10 rounded-full transition-colors cursor-pointer"
               aria-label="Toggle navigation menu"
+              aria-expanded={mobileMenuOpen}
             >
-              {mobileMenuOpen ? <X className="w-6 h-6 text-amber-900" /> : <MenuIcon className="w-6 h-6" />}
+              {mobileMenuOpen ? <X className="w-6 h-6 text-champagne" /> : <MenuIcon className="w-6 h-6" strokeWidth={1.5} />}
             </button>
           </div>
         </div>
@@ -395,58 +435,33 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
 
       {/* Mobile Drawer */}
       {mobileMenuOpen && (
-        <div className="md:hidden fixed inset-x-0 top-16 sm:top-20 bg-[#faf8f5] border-b border-stone-200 shadow-2xl z-50 max-h-[calc(100vh-4rem)] overflow-y-auto pb-8 animate-in slide-in-from-top duration-200">
-          <div className="p-4 space-y-4">
+        <div className="md:hidden fixed inset-x-0 top-16 sm:top-20 bottom-0 bg-ink z-50 overflow-y-auto pb-10 animate-[lux-drop_0.3s_var(--ease-lux)]">
+          <div className="px-5 pt-6 space-y-8">
             {/* Navigation Links */}
-            <div className="space-y-1 bg-white rounded-2xl border border-stone-200/80 p-2 shadow-xs">
+            <nav className="space-y-1" aria-label="Mobile">
               {!isSpecialRole ? (
                 // Customer mobile links
                 <>
-                  <button
-                    onClick={() => handleNav('home')}
-                    className={`w-full text-left px-4 py-3 text-sm font-medium rounded-xl flex items-center justify-between cursor-pointer ${
-                      currentRoute === 'home' ? 'bg-amber-50 text-amber-900 font-bold' : 'text-stone-800 hover:bg-stone-50'
-                    }`}
-                  >
-                    <span>Home Overview</span>
-                    <ChevronRight className="w-4 h-4 text-stone-400" />
-                  </button>
-                  <button
-                    onClick={() => handleNav('menu')}
-                    className={`w-full text-left px-4 py-3 text-sm font-medium rounded-xl flex items-center justify-between cursor-pointer ${
-                      currentRoute === 'menu' ? 'bg-amber-50 text-amber-900 font-bold' : 'text-stone-800 hover:bg-stone-50'
-                    }`}
-                  >
-                    <div className="flex items-center gap-2.5">
-                      <UtensilsCrossed className="w-4 h-4 text-amber-700" />
-                      <span>Gourmet Menu</span>
-                    </div>
-                    <ChevronRight className="w-4 h-4 text-stone-400" />
-                  </button>
-                  <button
-                    onClick={handleBookTableClick}
-                    className={`w-full text-left px-4 py-3 text-sm font-medium rounded-xl flex items-center justify-between cursor-pointer ${
-                      currentRoute === 'book-table' ? 'bg-amber-50 text-amber-900 font-bold' : 'text-stone-800 hover:bg-stone-50'
-                    }`}
-                  >
-                    <div className="flex items-center gap-2.5">
-                      <Calendar className="w-4 h-4 text-amber-700" />
-                      <span>Reserve a Table</span>
-                    </div>
-                    <ChevronRight className="w-4 h-4 text-stone-400" />
-                  </button>
-                  <button
-                    onClick={() => handleNav('cart')}
-                    className={`w-full text-left px-4 py-3 text-sm font-medium rounded-xl flex items-center justify-between cursor-pointer ${
-                      currentRoute === 'cart' ? 'bg-amber-50 text-amber-900 font-bold' : 'text-stone-800 hover:bg-stone-50'
-                    }`}
-                  >
-                    <div className="flex items-center gap-2.5">
-                      <ShoppingBag className="w-4 h-4 text-amber-700" />
-                      <span>Shopping Cart ({itemCount})</span>
-                    </div>
-                    <ChevronRight className="w-4 h-4 text-stone-400" />
-                  </button>
+                  {[
+                    { key: 'home', label: 'Home', active: currentRoute === 'home', onClick: () => handleNav('home') },
+                    { key: 'menu', label: 'The Menu', active: currentRoute === 'menu', onClick: () => handleNav('menu') },
+                    { key: 'book', label: 'Reserve a Table', active: currentRoute === 'book-table', onClick: handleBookTableClick },
+                    { key: 'cart', label: `Your Cart (${itemCount})`, active: currentRoute === 'cart', onClick: () => handleNav('cart') }
+                  ].map((link, i) => (
+                    <button
+                      key={link.key}
+                      onClick={link.onClick}
+                      className={`w-full text-left py-3 flex items-center justify-between border-b border-white/[0.07] cursor-pointer group ${
+                        link.active ? 'text-champagne' : 'text-ivory'
+                      }`}
+                    >
+                      <span className="flex items-baseline gap-4">
+                        <span className="text-[10px] font-semibold text-gold/70 tracking-widest">0{i + 1}</span>
+                        <span className="font-display text-3xl font-medium">{link.label}</span>
+                      </span>
+                      <ArrowRight className="w-4 h-4 text-gold/70 group-hover:translate-x-1 transition-transform" />
+                    </button>
+                  ))}
                 </>
               ) : isDelivery ? (
                 // Delivery Staff mobile link
@@ -485,75 +500,43 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
                   <ChevronRight className="w-4 h-4 text-purple-500" />
                 </button>
               )}
-            </div>
+            </nav>
 
             {/* Authenticated Actions on Mobile */}
             {isAuthenticated && user && (
-              <div className="space-y-1 bg-white rounded-2xl border border-stone-200/80 p-2 shadow-xs">
-                <div className="px-4 py-2 border-b border-stone-100 flex items-center justify-between">
+              <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-2">
+                <div className="px-3 py-3 border-b border-white/10 flex items-center justify-between">
                   <div>
-                    <p className="text-xs text-stone-500">Logged in as</p>
-                    <p className="text-sm font-bold text-stone-900">
+                    <p className="text-[10px] uppercase tracking-[0.2em] text-ivory/50">Signed in as</p>
+                    <p className="font-display text-xl text-ivory">
                       {user.firstName} {user.lastName}
                     </p>
                   </div>
-                  <span
-                    className={`px-2 py-0.5 rounded-full text-[10px] uppercase font-bold tracking-wider ${
-                      isStaffOrManager
-                        ? 'bg-purple-100 text-purple-800'
-                        : isKitchen
-                        ? 'bg-orange-100 text-orange-800'
-                        : isDelivery
-                        ? 'bg-emerald-100 text-emerald-800'
-                        : 'bg-amber-100 text-amber-800'
-                    }`}
-                  >
+                  <span className={`px-2 py-0.5 rounded-full text-[9px] uppercase font-bold tracking-wider ${roleBadgeClass}`}>
                     {user.role}
                   </span>
                 </div>
 
                 {!isSpecialRole && (
                   <>
-                    <button
-                      onClick={() => handleNav('dashboard')}
-                      className="w-full text-left px-4 py-2.5 text-sm font-medium text-stone-700 hover:bg-stone-50 flex items-center justify-between rounded-xl cursor-pointer"
-                    >
-                      <div className="flex items-center gap-2.5">
-                        <UserIcon className="w-4 h-4 text-amber-700" />
-                        <span>Customer Dashboard</span>
-                      </div>
-                      <ChevronRight className="w-4 h-4 text-stone-400" />
-                    </button>
-                    <button
-                      onClick={() => handleNav('my-orders')}
-                      className="w-full text-left px-4 py-2.5 text-sm font-medium text-stone-700 hover:bg-stone-50 flex items-center justify-between rounded-xl cursor-pointer"
-                    >
-                      <div className="flex items-center gap-2.5">
-                        <ShoppingBag className="w-4 h-4 text-stone-500" />
-                        <span>My Orders</span>
-                      </div>
-                      <ChevronRight className="w-4 h-4 text-stone-400" />
-                    </button>
-                    <button
-                      onClick={() => handleNav('my-bookings')}
-                      className="w-full text-left px-4 py-2.5 text-sm font-medium text-stone-700 hover:bg-stone-50 flex items-center justify-between rounded-xl cursor-pointer"
-                    >
-                      <div className="flex items-center gap-2.5">
-                        <Calendar className="w-4 h-4 text-stone-500" />
-                        <span>My Bookings</span>
-                      </div>
-                      <ChevronRight className="w-4 h-4 text-stone-400" />
-                    </button>
-                    <button
-                      onClick={() => handleNav('profile')}
-                      className="w-full text-left px-4 py-2.5 text-sm font-medium text-stone-700 hover:bg-stone-50 flex items-center justify-between rounded-xl cursor-pointer"
-                    >
-                      <div className="flex items-center gap-2.5">
-                        <UserIcon className="w-4 h-4 text-stone-500" />
-                        <span>Profile & Settings</span>
-                      </div>
-                      <ChevronRight className="w-4 h-4 text-stone-400" />
-                    </button>
+                    {[
+                      { route: 'dashboard', label: 'Customer Dashboard', icon: LayoutDashboard },
+                      { route: 'my-orders', label: 'My Orders', icon: ShoppingBag },
+                      { route: 'my-bookings', label: 'My Bookings', icon: Calendar },
+                      { route: 'profile', label: 'Profile & Settings', icon: UserIcon }
+                    ].map(({ route, label, icon: Icon }) => (
+                      <button
+                        key={route}
+                        onClick={() => handleNav(route)}
+                        className="w-full text-left px-3 py-3 text-sm font-medium text-ivory/85 hover:bg-white/5 flex items-center justify-between rounded-xl cursor-pointer min-h-[44px]"
+                      >
+                        <span className="flex items-center gap-3">
+                          <Icon className="w-4 h-4 text-gold" strokeWidth={1.75} />
+                          <span>{label}</span>
+                        </span>
+                        <ChevronRight className="w-4 h-4 text-ivory/30" />
+                      </button>
+                    ))}
                   </>
                 )}
 
@@ -563,68 +546,55 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
                     setMobileMenuOpen(false);
                     handleNav('login');
                   }}
-                  className="w-full text-left px-4 py-2.5 text-sm text-rose-600 hover:bg-rose-50 flex items-center justify-between rounded-xl cursor-pointer font-medium"
+                  className="w-full text-left px-3 py-3 text-sm text-rose-300 hover:bg-rose-500/10 flex items-center gap-3 rounded-xl cursor-pointer font-medium min-h-[44px]"
                 >
-                  <div className="flex items-center gap-2.5">
-                    <LogOut className="w-4 h-4" />
-                    <span>Log Out</span>
-                  </div>
+                  <LogOut className="w-4 h-4" />
+                  <span>Log Out</span>
                 </button>
               </div>
             )}
 
             {/* Unauthenticated Actions on Mobile */}
             {!isAuthenticated && (
-              <div className="space-y-3 bg-white rounded-2xl border border-stone-200/80 p-3.5 shadow-xs">
+              <div className="space-y-4">
                 <div>
-                  <div className="flex items-center gap-2">
-                    <UserIcon className="w-4 h-4 text-amber-700" />
-                    <span className="text-xs font-bold uppercase tracking-wider text-stone-900">
-                      Customer Dining Account
-                    </span>
-                  </div>
-                  <p className="text-[11px] text-stone-500 mt-0.5">
+                  <p className="lux-eyebrow text-gold">Guest Account</p>
+                  <p className="text-sm text-ivory/60 mt-2 leading-relaxed">
                     Login with phone OTP or register to reserve tables and track orders.
                   </p>
                 </div>
 
-                <div className="grid grid-cols-2 gap-2">
-                  <button
-                    onClick={() => handleNav('customer-auth')}
-                    className="w-full py-3 px-3 rounded-xl bg-amber-700 hover:bg-amber-800 active:bg-amber-900 text-white font-bold text-xs shadow-xs flex items-center justify-center gap-1.5 cursor-pointer min-h-[44px]"
-                  >
-                    <UserIcon className="w-3.5 h-3.5 shrink-0" />
-                    <span>Customer Login</span>
+                <div className="grid grid-cols-2 gap-3">
+                  <button onClick={() => handleNav('customer-auth')} className="lux-btn lux-btn-gold w-full !px-3">
+                    Customer Login
                   </button>
-
-                  <button
-                    onClick={() => handleNav('customer-register')}
-                    className="w-full py-3 px-3 rounded-xl bg-amber-50 hover:bg-amber-100 active:bg-amber-200 text-amber-900 border border-amber-300 font-bold text-xs flex items-center justify-center gap-1 cursor-pointer min-h-[44px]"
-                  >
-                    <span>Register</span>
-                    <ChevronRight className="w-3.5 h-3.5 text-amber-700" />
+                  <button onClick={() => handleNav('customer-register')} className="lux-btn lux-btn-ghost w-full !px-3">
+                    Register
                   </button>
                 </div>
 
                 {/* Staff Login Flow on Mobile */}
-                <div className="pt-2 border-t border-stone-100">
-                  <button
-                    onClick={() => handleNav('staff-login')}
-                    className="w-full py-2.5 px-3.5 rounded-xl bg-stone-50 hover:bg-stone-100 active:bg-stone-200 text-stone-800 border border-stone-200 font-semibold text-xs flex items-center justify-between cursor-pointer min-h-[44px] transition-colors"
-                  >
-                    <div className="flex items-center gap-2.5">
-                      <div className="w-7 h-7 rounded-lg bg-purple-100 text-purple-800 flex items-center justify-center shrink-0">
-                        <Shield className="w-3.5 h-3.5" />
-                      </div>
-                      <div className="text-left">
-                        <span className="font-bold block text-stone-900 text-xs">Login as Staff</span>
-                        <span className="text-[10px] text-stone-500 block leading-tight">Admin, Kitchen & Delivery portal</span>
-                      </div>
-                    </div>
-                    <ChevronRight className="w-4 h-4 text-stone-400" />
-                  </button>
-                </div>
+                <button
+                  onClick={() => handleNav('staff-login')}
+                  className="w-full py-3 px-4 rounded-xl border border-white/10 text-ivory/70 hover:text-ivory hover:border-white/25 flex items-center justify-between cursor-pointer min-h-[44px] transition-colors"
+                >
+                  <span className="flex items-center gap-3">
+                    <Shield className="w-4 h-4 text-purple-300" />
+                    <span className="text-left">
+                      <span className="font-semibold block text-xs">Login as Staff</span>
+                      <span className="text-[10px] text-ivory/45 block leading-tight">Admin, Kitchen & Delivery portal</span>
+                    </span>
+                  </span>
+                  <ChevronRight className="w-4 h-4 text-ivory/30" />
+                </button>
               </div>
+            )}
+
+            {!isSpecialRole && (
+              <button onClick={handleBookTableClick} className="lux-btn lux-btn-wine w-full">
+                <UtensilsCrossed className="w-4 h-4" />
+                Reserve a Table
+              </button>
             )}
           </div>
         </div>

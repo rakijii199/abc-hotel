@@ -43,35 +43,36 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({
   const [staffDropdownOpen, setStaffDropdownOpen] = useState(false);
 
   return (
-    <header className="bg-white border-b border-stone-200/80 px-4 sm:px-8 py-3 flex items-center justify-between sticky top-0 z-30 shadow-2xs">
+    <header className="bg-[#fffdf9]/85 backdrop-blur-xl border-b border-stone-200/80 px-4 sm:px-8 py-3 flex items-center justify-between sticky top-0 z-30 shadow-[0_10px_30px_-24px_rgba(26,23,21,0.5)]">
       {/* Left: Mobile Menu Toggle & Title */}
       <div className="flex items-center gap-3">
         <button
           onClick={onToggleMobileSidebar}
-          className="md:hidden p-2 text-stone-700 hover:bg-stone-100 rounded-xl cursor-pointer"
+          className="lg:hidden p-2 text-stone-700 hover:bg-stone-100 rounded-xl cursor-pointer"
           aria-label="Toggle admin sidebar"
         >
           <Menu className="w-5 h-5" />
         </button>
 
         <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-lg bg-amber-800 text-amber-200 flex items-center justify-center font-serif font-bold text-sm shadow-xs hidden sm:flex">
-            ABC
-          </div>
+          <span className="lg:hidden relative w-9 h-9 items-center justify-center border border-amber-600/60 text-amber-800 hidden sm:flex">
+            <span className="absolute inset-[3px] border border-amber-600/25" />
+            <span className="font-display text-[12px] font-semibold tracking-[0.06em]">ABC</span>
+          </span>
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="font-serif font-bold text-base sm:text-lg text-stone-900 leading-tight">
+              <h1 className="lux-display text-lg sm:text-2xl text-stone-900 !leading-tight">
                 ABC Hotel Operations Suite
               </h1>
-              <span className={`px-2 py-0.5 rounded-md font-bold text-[10px] uppercase tracking-wider hidden md:inline-block ${
+              <span className={`px-2.5 py-0.5 rounded-full font-bold text-[9.5px] uppercase tracking-[0.18em] hidden md:inline-block ${
                 user?.role === 'MANAGER'
-                  ? 'bg-purple-100 text-purple-800'
-                  : 'bg-blue-100 text-blue-800'
+                  ? 'bg-wine text-champagne'
+                  : 'bg-ink text-champagne'
               }`}>
                 {user?.role === 'MANAGER' ? 'Manager' : 'Staff'}
               </span>
             </div>
-            <p className="text-[11px] text-stone-500 hidden sm:block">
+            <p className="text-[11px] text-stone-500 hidden sm:block mt-0.5">
               {user?.role === 'MANAGER' 
                 ? 'Centralized analytics, catalog command & configuration center' 
                 : 'Centralized restaurant floor, kitchen dispatch & catalog command center'}
@@ -197,12 +198,12 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({
               setStaffDropdownOpen(!staffDropdownOpen);
               setNotifDropdownOpen(false);
             }}
-            className="flex items-center gap-2 p-1.5 pl-2.5 rounded-full bg-stone-100 hover:bg-purple-100/60 border border-stone-200 transition-colors cursor-pointer"
+            className="flex items-center gap-2 p-1 pl-3 rounded-full bg-white hover:border-amber-400 border border-stone-200 transition-colors cursor-pointer"
           >
             <span className="text-xs font-bold text-stone-800 max-w-[90px] truncate hidden sm:inline-block">
               {user?.firstName || 'Admin'}
             </span>
-            <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-purple-800 to-indigo-600 text-white flex items-center justify-center text-xs font-bold shadow-xs">
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-champagne to-gold text-ink flex items-center justify-center text-xs font-bold">
               {user?.firstName?.[0] || 'A'}
             </div>
           </button>
@@ -210,7 +211,7 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({
           {staffDropdownOpen && (
             <div className="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-2xl border border-stone-200 py-2 z-50 animate-in fade-in zoom-in-95">
               <div className="px-4 py-2.5 border-b border-stone-100">
-                <p className="text-[10px] uppercase font-bold text-purple-700 tracking-wider">
+                <p className="text-[10px] uppercase font-bold text-amber-700 tracking-[0.16em]">
                   Hotel Staff Account
                 </p>
                 <p className="text-xs font-bold text-stone-900 truncate">

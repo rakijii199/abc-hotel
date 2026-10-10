@@ -17,6 +17,7 @@ import { BookingApi, OrderApi, MenuApi } from '../api/index.ts';
 import { useAuth } from '../context/AuthContext.tsx';
 import { formatCurrency, formatDate, formatTime, getOrderStatusBadge } from '../utils/formatters.ts';
 import { Spinner } from '../components/common/Footer.tsx';
+import { PageHero, LUX_IMAGES, luxImage } from '../components/customer/Reveal.tsx';
 
 export const CustomerDashboardPage: React.FC<{
   navigate: (route: string, state?: any) => void;
@@ -71,39 +72,29 @@ export const CustomerDashboardPage: React.FC<{
   }
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-8 space-y-10">
       {/* Welcome Banner */}
-      <div className="bg-gradient-to-r from-amber-800 via-amber-900 to-stone-900 text-white rounded-3xl p-8 sm:p-10 shadow-xl relative overflow-hidden flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-        <div className="relative z-10 space-y-2">
-          <span className="text-xs font-bold uppercase tracking-widest text-amber-300 flex items-center gap-1.5">
-            <Sparkles className="w-3.5 h-3.5" /> Guest Privilege Portal
-          </span>
-          <h1 className="font-serif text-3xl sm:text-4xl font-bold tracking-tight">
-            Welcome back, {user?.firstName}!
-          </h1>
-          <p className="text-stone-300 text-sm max-w-xl leading-relaxed">
-            Manage your fine dining reservations, order gourmet delicacies, and review past experiences with ABC Hotel.
-          </p>
-        </div>
-
+      <PageHero
+        eyebrow="Guest Privilege Portal"
+        title={
+          <>
+            Welcome back, <em className="font-normal text-champagne">{user?.firstName}</em>
+          </>
+        }
+        description="Manage your fine dining reservations, order gourmet delicacies, and review past experiences with ABC Hotel."
+      >
         {/* Quick Actions */}
-        <div className="flex flex-wrap gap-3 relative z-10">
-          <button
-            onClick={() => navigate('book-table')}
-            className="px-6 py-3 rounded-xl bg-white text-stone-900 hover:bg-amber-50 font-bold text-xs uppercase tracking-wider shadow-md transition-all flex items-center gap-2 cursor-pointer"
-          >
-            <Calendar className="w-4 h-4 text-amber-700" />
+        <div className="flex flex-wrap gap-3">
+          <button onClick={() => navigate('book-table')} className="lux-btn lux-btn-gold">
+            <Calendar className="w-4 h-4" />
             Book a Table
           </button>
-          <button
-            onClick={() => navigate('menu')}
-            className="px-6 py-3 rounded-xl bg-amber-700/80 hover:bg-amber-700 border border-amber-400/30 text-white font-bold text-xs uppercase tracking-wider shadow-md transition-all flex items-center gap-2 cursor-pointer"
-          >
-            <UtensilsCrossed className="w-4 h-4 text-amber-300" />
+          <button onClick={() => navigate('menu')} className="lux-btn lux-btn-ghost">
+            <UtensilsCrossed className="w-4 h-4 text-champagne" />
             Order Food
           </button>
         </div>
-      </div>
+      </PageHero>
 
       {/* Main Highlights Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

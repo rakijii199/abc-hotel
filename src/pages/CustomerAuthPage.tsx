@@ -20,6 +20,7 @@ import { RecaptchaVerifier, signInWithPhoneNumber, ConfirmationResult } from 'fi
 import { auth } from '../firebase/config.ts';
 import { useAuth } from '../context/AuthContext.tsx';
 import { useToast } from '../context/ToastContext.tsx';
+import { PageHero, LUX_IMAGES, luxImage } from '../components/customer/Reveal.tsx';
 
 interface CustomerAuthPageProps {
   navigate: (route: string, state?: any, replace?: boolean) => void;
@@ -292,17 +293,28 @@ export const CustomerAuthPage: React.FC<CustomerAuthPageProps> = ({
   };
 
   return (
-    <div className="min-h-[85vh] flex items-center justify-center p-4 sm:p-6 lg:p-8 bg-stone-100">
+    <div className="relative min-h-[calc(100svh-4rem)] flex items-center justify-center p-4 py-10 sm:p-6 lg:p-10 bg-ink overflow-hidden lux-grain">
+      <img
+        src={luxImage(LUX_IMAGES.interior, 1800)}
+        alt=""
+        aria-hidden="true"
+        className="absolute inset-0 w-full h-full object-cover opacity-35 lux-kenburns"
+        onError={(e) => (e.currentTarget.style.visibility = 'hidden')}
+      />
+      <div className="absolute inset-0 bg-gradient-to-br from-ink/80 via-ink/50 to-wine/40" />
+      <div className="absolute -bottom-40 -left-40 w-[560px] h-[560px] rounded-full bg-wine/30 blur-[140px] pointer-events-none" />
+
       {/* Invisible Firebase Recaptcha Container */}
       <div id="recaptcha-container"></div>
 
-      <div className="max-w-xl w-full bg-white rounded-3xl shadow-2xl overflow-hidden border border-stone-200">
+      <div className="relative max-w-xl w-full bg-[#fffdf9]/95 backdrop-blur-xl rounded-[1.5rem] shadow-[0_50px_120px_-30px_rgba(0,0,0,0.9)] overflow-hidden border border-white/15 animate-[lux-rise_0.7s_var(--ease-lux)]">
         {/* Header Banner */}
-        <div className="bg-gradient-to-r from-stone-900 via-stone-900 to-amber-950 text-white p-5 sm:p-8 text-center relative">
-          <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-amber-600 flex items-center justify-center font-serif font-bold text-lg sm:text-xl text-white shadow-lg mx-auto mb-2 sm:mb-3">
-            ABC
+        <div className="bg-ink/85 backdrop-blur-xl text-white p-5 sm:p-8 text-center relative border-b border-gold/20">
+          <div className="relative w-12 h-12 flex items-center justify-center border border-gold/60 text-champagne mx-auto mb-3">
+            <span className="absolute inset-[3px] border border-gold/25" />
+            <span className="font-display font-semibold text-[15px] tracking-[0.06em]">ABC</span>
           </div>
-          <h2 className="font-serif font-bold text-xl sm:text-2xl text-amber-300">ABC HOTEL</h2>
+          <h2 className="lux-display text-2xl sm:text-3xl tracking-[0.16em] text-ivory">ABC HOTEL</h2>
           <p className="text-[11px] sm:text-xs text-stone-300 tracking-wider uppercase font-semibold mt-0.5 sm:mt-1">
             Privilege Customer Dining & Order Portal
           </p>
@@ -317,7 +329,7 @@ export const CustomerAuthPage: React.FC<CustomerAuthPageProps> = ({
                 navigate('login', { returnTo, message }, true);
               }}
               className={`flex-1 py-2 sm:py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer min-h-[40px] flex items-center justify-center ${
-                mode === 'login' ? 'bg-amber-600 text-white shadow-md' : 'text-stone-300 hover:text-white'
+                mode === 'login' ? 'bg-gradient-to-br from-champagne to-gold text-ink shadow-md' : 'text-stone-300 hover:text-white'
               }`}
             >
               <span>Login</span>
@@ -330,7 +342,7 @@ export const CustomerAuthPage: React.FC<CustomerAuthPageProps> = ({
                 navigate('register', { returnTo, message }, true);
               }}
               className={`flex-1 py-2 sm:py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer min-h-[40px] flex items-center justify-center ${
-                mode === 'register' ? 'bg-amber-600 text-white shadow-md' : 'text-stone-300 hover:text-white'
+                mode === 'register' ? 'bg-gradient-to-br from-champagne to-gold text-ink shadow-md' : 'text-stone-300 hover:text-white'
               }`}
             >
               <span>Register</span>
@@ -458,7 +470,7 @@ export const CustomerAuthPage: React.FC<CustomerAuthPageProps> = ({
                 type="submit"
                 id="send-otp-btn"
                 disabled={loading}
-                className="w-full py-3.5 bg-amber-700 hover:bg-amber-800 active:bg-amber-900 text-white font-bold text-xs rounded-xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 mt-4 min-h-[44px]"
+                className="lux-btn lux-btn-wine w-full mt-4 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <span>{loading ? 'Sending SMS OTP...' : mode === 'register' ? 'Send OTP to Register' : 'Send OTP to Login'}</span>
                 <ArrowRight className="w-4 h-4" />
@@ -507,7 +519,7 @@ export const CustomerAuthPage: React.FC<CustomerAuthPageProps> = ({
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-3.5 bg-stone-900 hover:bg-stone-800 active:bg-black text-amber-300 font-bold text-xs rounded-xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 min-h-[44px]"
+                className="lux-btn lux-btn-wine w-full disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <span>{loading ? 'Verifying OTP...' : mode === 'register' ? 'Verify OTP & Complete Registration' : 'Verify OTP & Login'}</span>
                 <CheckCircle2 className="w-4 h-4 text-amber-400" />

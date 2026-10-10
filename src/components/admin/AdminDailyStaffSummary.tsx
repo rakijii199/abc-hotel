@@ -963,7 +963,7 @@ export const AdminDailyStaffSummary: React.FC<AdminDailyStaffSummaryProps> = ({
           {/* 1. Successful order, 2. Total Amount, 3. Cancelled Orders,                */}
           {/* 4. Online Orders, 5. Offline Orders                                       */}
           {/* ========================================================================= */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2">
+          <div className="grid grid-cols-2 lg:grid-cols-5 gap-2 [&>*:last-child]:col-span-2 lg:[&>*:last-child]:col-span-1">
             {/* Metric 1: SUCCESSFUL ORDER */}
             <div className="bg-white p-3 rounded-xl border border-stone-200 shadow-2xs space-y-1 hover:border-emerald-500 transition-colors">
               <div className="flex items-center justify-between text-stone-400">

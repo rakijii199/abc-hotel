@@ -858,12 +858,12 @@ export const AdminInventoryView: React.FC = () => {
               </div>
 
               {/* Period Flow Selector: All Time vs Specific Month */}
-              <div className="flex items-center gap-2 shrink-0">
+              <div className="flex flex-wrap items-center gap-2 sm:shrink-0">
                 <div className="flex items-center bg-stone-100 p-0.5 rounded-xl border border-stone-200/80">
                   <button
                     type="button"
                     onClick={() => setFlowScope('ALL')}
-                    className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                    className={`px-2.5 py-1 rounded-lg text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
                       flowScope === 'ALL'
                         ? 'bg-amber-800 text-white shadow-2xs'
                         : 'text-stone-600 hover:text-stone-900'
@@ -877,7 +877,7 @@ export const AdminInventoryView: React.FC = () => {
                       setFlowScope('MONTH');
                       setOverviewMonth(new Date().toISOString().substring(0, 7));
                     }}
-                    className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                    className={`px-2.5 py-1 rounded-lg text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
                       flowScope === 'MONTH' && overviewMonth === new Date().toISOString().substring(0, 7)
                         ? 'bg-amber-800 text-white shadow-2xs'
                         : 'text-stone-600 hover:text-stone-900'
@@ -891,7 +891,7 @@ export const AdminInventoryView: React.FC = () => {
                       setFlowScope('MONTH');
                       setOverviewMonth('2026-09');
                     }}
-                    className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                    className={`px-2.5 py-1 rounded-lg text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
                       flowScope === 'MONTH' && overviewMonth === '2026-09'
                         ? 'bg-amber-800 text-white shadow-2xs'
                         : 'text-stone-600 hover:text-stone-900'
@@ -901,7 +901,7 @@ export const AdminInventoryView: React.FC = () => {
                   </button>
                 </div>
 
-                <div className="flex items-center gap-1.5 bg-stone-50 px-2.5 py-1.5 rounded-xl border border-stone-200">
+                <div className="flex items-center gap-1.5 bg-stone-50 px-2.5 py-1.5 rounded-xl border border-stone-200 min-w-0">
                   <span className="text-[10px] font-bold text-stone-400 uppercase whitespace-nowrap">Month:</span>
                   <input
                     type="month"
