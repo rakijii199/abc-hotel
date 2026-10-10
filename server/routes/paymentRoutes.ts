@@ -16,18 +16,18 @@ paymentRouter.get('/config', PaymentController.getPaymentConfig);
 paymentRouter.post('/create', authenticateToken, PaymentController.createPaymentOrder);
 paymentRouter.post('/create-order', authenticateToken, PaymentController.createPaymentOrder);
 paymentRouter.post('/verify', authenticateToken, PaymentController.verifyPayment);
-paymentRouter.get('/orders/:orderId/status', optionalAuth, PaymentController.getPaymentStatus);
+paymentRouter.get('/orders/:orderId/status', authenticateToken, PaymentController.getPaymentStatus);
 
 // Unique Payment Attempt Status (for Live QR Polling)
-paymentRouter.get('/attempt/:attemptId/status', optionalAuth, PaymentController.getPaymentAttemptStatus);
-paymentRouter.post('/attempt/:attemptId/confirm-upi', optionalAuth, PaymentController.confirmUpiPayment);
+paymentRouter.get('/attempt/:attemptId/status', authenticateToken, PaymentController.getPaymentAttemptStatus);
+paymentRouter.post('/attempt/:attemptId/confirm-upi', authenticateToken, PaymentController.confirmUpiPayment);
 
 // Simulation endpoint is strictly EXCLUDED in production runtime
 if (process.env.NODE_ENV !== 'production') {
   paymentRouter.post('/attempt/:attemptId/simulate-success', optionalAuth, PaymentController.simulateUpiPaymentSuccess);
 }
 
-paymentRouter.post('/attempt/:attemptId/cancel', optionalAuth, PaymentController.cancelPaymentAttempt);
+paymentRouter.post('/attempt/:attemptId/cancel', authenticateToken, PaymentController.cancelPaymentAttempt);
 
 // Webhook endpoints (Gateway signature verified cryptographically)
 paymentRouter.post('/webhook', PaymentController.handleWebhook);

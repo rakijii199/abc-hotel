@@ -253,11 +253,11 @@ router.get('/recipes/:menuItemId', (req, res) => {
  * PUT /api/inventory/recipes/:menuItemId
  * Save / Update ingredient recipe mapping for a menu item
  */
-router.put('/recipes/:menuItemId', (req, res) => {
+router.put('/recipes/:menuItemId', async (req, res) => {
   try {
     const user = (req as any).user;
     const { ingredients } = req.body;
-    const recipe = InventoryService.saveRecipe({
+    const recipe = await InventoryService.saveRecipe({
       menuItemId: req.params.menuItemId,
       ingredients,
       userId: user?.id

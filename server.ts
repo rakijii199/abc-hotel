@@ -14,6 +14,12 @@ import { db } from './server/database/db.ts';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// A background promise that rejects (e.g. a non-awaited Firestore write) must
+// never take the whole instance down; log it so it can be alerted on instead.
+process.on('unhandledRejection', (reason: any) => {
+  console.error('[UNHANDLED REJECTION]', reason?.message || reason);
+});
+
 async function startServer() {
   const app = express();
   const PORT = config.port;
@@ -128,7 +134,18 @@ async function startServer() {
   });
 
   // Body Parsing Middleware (Restricted to 2MB to prevent large-payload DoS)
-  app.use(express.json({ limit: '2mb' }));
+  // The raw body is kept for the payment webhook, whose HMAC must be computed
+  // over the exact bytes Razorpay sent (re-serialised JSON never matches).
+  app.use(
+    express.json({
+      limit: '2mb',
+      verify: (req, _res, buf) => {
+        if (req.url?.startsWith('/api/payments/webhook')) {
+          (req as any).rawBody = buf.toString('utf8');
+        }
+      }
+    })
+  );
   app.use(express.urlencoded({ extended: true, limit: '2mb' }));
 
   // Ensure Database Engine is initialized

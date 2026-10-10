@@ -129,6 +129,12 @@ export function assertSafeTestEnvironment(env: TestEnvironment, opts: { requireM
 export function applyTestProcessEnv(env: TestEnvironment): void {
   process.env.IS_TEST_RUN = 'true';
   process.env.ABC_DB_FILE = env.dbFile;
+  // Tests must never reach the real payment gateway: use the provider's
+  // built-in sandbox credentials instead of any keys from .env.
+  process.env.RAZORPAY_KEY_ID = 'rzp_test_abchotel_demo';
+  process.env.RAZORPAY_KEY_SECRET = 'secret_test_abchotel_demo';
+  process.env.RAZORPAY_WEBHOOK_SECRET = 'whsec_test_abchotel_demo';
+  process.env.PAYMENT_ENVIRONMENT = 'test';
 }
 
 function isProcessAlive(pid: number): boolean {

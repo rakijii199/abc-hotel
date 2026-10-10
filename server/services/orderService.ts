@@ -469,6 +469,12 @@ export class OrderService {
       throw new Error('Unauthorized access to update this order.');
     }
 
+    // Customers may only cancel their own order; kitchen/service statuses are
+    // set by staff through the admin and kitchen endpoints.
+    if (!isAdmin && newStatus !== 'CANCELLED') {
+      throw new Error('You can only cancel your order.');
+    }
+
     // Customers can only cancel an order if it is still in PLACED status
     if (!isAdmin && newStatus === 'CANCELLED') {
       if (order.status !== 'PLACED') {

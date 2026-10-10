@@ -6,6 +6,7 @@ import { AuthenticatedRequest } from '../middleware/authMiddleware.ts';
 import { BookingService } from '../services/bookingService.ts';
 import { OrderService } from '../services/orderService.ts';
 import { AdminService } from '../services/adminService.ts';
+import { OrderRepository } from '../repositories/orderRepository.ts';
 
 export class BookingController {
   public static async createBooking(req: AuthenticatedRequest, res: Response): Promise<void> {
@@ -263,6 +264,19 @@ export class OrderController {
           error: { code: 'INVALID_ITEMS', message: 'No items provided to add.' }
         });
         return;
+      }
+
+      // Customers may only add to their own orders; staff roles may add to any.
+      const isStaff = !!req.user && req.user.role !== 'CUSTOMER';
+      if (!isStaff) {
+        const order = await OrderRepository.getById(req.params.id);
+        if (!order || !req.user || order.userId !== req.user.id) {
+          res.status(404).json({
+            success: false,
+            error: { code: 'ORDER_NOT_FOUND', message: 'Order not found.' }
+          });
+          return;
+        }
       }
 
       const updated = await AdminService.addItemsToOrder(req.params.id, itemsToAdd, req.user);

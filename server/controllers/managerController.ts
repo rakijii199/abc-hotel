@@ -11,6 +11,16 @@ import { OrderRepository } from '../repositories/orderRepository.ts';
 import { TableRepository } from '../repositories/tableRepository.ts';
 import { User, UserRole, UserStatus } from '../types/index.ts';
 
+/**
+ * Employee management may only touch employee accounts the caller outranks:
+ * never customer accounts, and only an ADMIN may modify an ADMIN account.
+ */
+function canManageAccount(actorRole: string | undefined, target: User): boolean {
+  if (target.role === 'CUSTOMER') return false;
+  if (target.role === 'ADMIN' && actorRole !== 'ADMIN') return false;
+  return true;
+}
+
 export class ManagerController {
   /**
    * Get all hotel employees with search & role/status filters
@@ -97,7 +107,14 @@ export class ManagerController {
         return;
       }
 
-      const passwordHash = await bcrypt.hash(password || 'Password@123', 10);
+      if (!password || typeof password !== 'string' || password.length < 8) {
+        res.status(400).json({
+          success: false,
+          error: { code: 'PASSWORD_REQUIRED', message: 'A password of at least 8 characters is required for new employees.' }
+        });
+        return;
+      }
+      const passwordHash = await bcrypt.hash(password, 10);
       const employeeId = `usr-emp-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
 
       const newEmployee: User = {
@@ -156,7 +173,7 @@ export class ManagerController {
       const { firstName, lastName, email, phone, role, status } = req.body;
 
       const user = await UserRepository.findById(id);
-      if (!user) {
+      if (!user || !canManageAccount(req.user?.role, user)) {
         res.status(404).json({
           success: false,
           error: { code: 'EMPLOYEE_NOT_FOUND', message: 'Employee not found.' }
@@ -237,7 +254,7 @@ export class ManagerController {
       }
 
       const user = await UserRepository.findById(id);
-      if (!user) {
+      if (!user || !canManageAccount(req.user?.role, user)) {
         res.status(404).json({
           success: false,
           error: { code: 'NOT_FOUND', message: 'Employee not found.' }
@@ -287,7 +304,7 @@ export class ManagerController {
       const { newPassword } = req.body;
 
       const user = await UserRepository.findById(id);
-      if (!user) {
+      if (!user || !canManageAccount(req.user?.role, user)) {
         res.status(404).json({
           success: false,
           error: { code: 'NOT_FOUND', message: 'Employee not found.' }
@@ -338,7 +355,7 @@ export class ManagerController {
       }
 
       const user = await UserRepository.findById(id);
-      if (!user) {
+      if (!user || !canManageAccount(req.user?.role, user)) {
         res.status(404).json({
           success: false,
           error: { code: 'NOT_FOUND', message: 'Employee not found.' }

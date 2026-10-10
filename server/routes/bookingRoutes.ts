@@ -7,6 +7,7 @@ import { BillingController } from '../controllers/billingController.ts';
 import { authenticateToken, optionalAuth } from '../middleware/authMiddleware.ts';
 import { validateBody } from '../middleware/errorHandler.ts';
 import {
+  addOrderItemsSchema,
   createBookingSchema,
   createOrderSchema,
   updateOrderStatusSchema
@@ -31,6 +32,6 @@ orderRouter.get('/', authenticateToken, OrderController.getMyOrders);
 orderRouter.get('/my-orders', authenticateToken, OrderController.getMyOrders);
 orderRouter.post('/', optionalAuth, validateBody(createOrderSchema), OrderController.createOrder);
 orderRouter.get('/:id', optionalAuth, OrderController.getOrderById);
-orderRouter.post('/:id/items', optionalAuth, OrderController.addOrderItems);
+orderRouter.post('/:id/items', authenticateToken, validateBody(addOrderItemsSchema), OrderController.addOrderItems);
 orderRouter.put('/:id/status', authenticateToken, validateBody(updateOrderStatusSchema), OrderController.updateOrderStatus);
 orderRouter.post('/:id/request-bill', optionalAuth, BillingController.requestBill);

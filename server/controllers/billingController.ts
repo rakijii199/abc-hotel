@@ -236,7 +236,7 @@ export class BillingController {
    */
   public static async updateSettings(req: AuthenticatedRequest, res: Response): Promise<void> {
     try {
-      const settings = InvoiceRepository.updateSettings(req.body || {});
+      const settings = await InvoiceRepository.updateSettings(req.body || {});
       res.status(200).json({ success: true, data: settings, message: 'Billing settings updated successfully.' });
     } catch (err: any) {
       res.status(400).json({

@@ -7,7 +7,20 @@ import { config } from '../config/index.ts';
 import { db } from '../database/db.ts';
 import { UserRepository } from '../repositories/userRepository.ts';
 import { SafeUser, User, UserRole } from '../types/index.ts';
-import { verifyCustomerFirebaseToken } from '../config/firebaseAdmin.ts';
+import { verifyCustomerFirebaseToken, VerifiedCustomerToken } from '../config/firebaseAdmin.ts';
+
+const STAFF_PHONE_LOGIN_ERROR = 'Staff accounts must sign in through the staff portal with username and password.';
+
+/**
+ * The phone number used for OTP login must come from the verified Firebase
+ * token itself (phone sign-in provider), never from the request body.
+ */
+function requireVerifiedPhone(token: VerifiedCustomerToken): string {
+  if (!token.phoneNumber || (token.signInProvider && token.signInProvider !== 'phone')) {
+    throw new Error('Phone verification is required. Please verify your phone number with OTP.');
+  }
+  return token.phoneNumber;
+}
 
 export class AuthService {
   public static generateToken(user: SafeUser | User): string {
@@ -73,11 +86,7 @@ export class AuthService {
     // Cryptographically verify the client's Firebase ID token
     const verifiedToken = await verifyCustomerFirebaseToken(data.idToken);
     const verifiedUid = verifiedToken.uid;
-    const verifiedPhone = verifiedToken.phoneNumber || data.phone || '';
-
-    if (!verifiedPhone && !verifiedUid) {
-      throw new Error('Unable to verify customer identity from Firebase token.');
-    }
+    const verifiedPhone = requireVerifiedPhone(verifiedToken);
 
     const cleanPhone = verifiedPhone.trim();
     const cleanDigits = cleanPhone.replace(/[^\d]/g, '').slice(-10);
@@ -95,17 +104,32 @@ export class AuthService {
         throw new Error('Account credentials conflict. Please contact hotel customer support.');
       }
 
-      // Update existing user profile while strictly preserving employee roles (ADMIN/MANAGER/STAFF/KITCHEN/DELIVERY)
-      const targetRole = existingUser.role && existingUser.role !== 'CUSTOMER' ? existingUser.role : 'CUSTOMER';
+      // Phone OTP can never be used to obtain an employee session.
+      if (existingUser.role && existingUser.role !== 'CUSTOMER') {
+        console.warn(`[SECURITY EVENT] Phone registration refused for non-customer account ${existingUser.id}`);
+        throw new Error(STAFF_PHONE_LOGIN_ERROR);
+      }
+
+      // An email can only be attached if no other account owns it.
+      let emailUpdate: { email?: string } = {};
+      if (data.email?.trim()) {
+        const requestedEmail = data.email.toLowerCase().trim();
+        const owner = await UserRepository.findByEmail(requestedEmail);
+        if (owner && owner.id !== existingUser.id) {
+          throw new Error('An account with this email address already exists.');
+        }
+        emailUpdate = { email: requestedEmail };
+      }
+
       await UserRepository.update(existingUser.id, {
-        role: targetRole,
+        role: 'CUSTOMER',
         firstName: data.fullName?.trim().split(' ')[0] || existingUser.firstName,
         lastName: data.fullName?.trim().split(' ').slice(1).join(' ') || existingUser.lastName,
         firebaseUid: verifiedUid,
         authProvider: 'PHONE',
         normalizedPhone,
         lastLoginAt: new Date().toISOString(),
-        ...(data.email ? { email: data.email.toLowerCase().trim() } : {})
+        ...emailUpdate
       });
       const updated = (await UserRepository.findById(existingUser.id))!;
       const safeUser = UserRepository.toSafeUser(updated);
@@ -118,6 +142,9 @@ export class AuthService {
     const lastName = nameParts.slice(1).join(' ') || '';
     const userId = `usr-cust-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
     const email = data.email?.trim() ? data.email.toLowerCase().trim() : `${cleanDigits || verifiedUid.slice(-8)}@customer.abchotel.com`;
+    if (await UserRepository.findByEmail(email)) {
+      throw new Error('An account with this email address already exists.');
+    }
 
     const newUser: User = {
       id: userId,
@@ -152,7 +179,7 @@ export class AuthService {
     // Cryptographically verify the client's Firebase ID token
     const verifiedToken = await verifyCustomerFirebaseToken(data.idToken);
     const verifiedUid = verifiedToken.uid;
-    const verifiedPhone = verifiedToken.phoneNumber || data.phone || '';
+    const verifiedPhone = requireVerifiedPhone(verifiedToken);
     const cleanDigits = verifiedPhone.trim().replace(/[^\d]/g, '').slice(-10);
 
     // Look up by verified UID first, then verified phone
@@ -173,10 +200,13 @@ export class AuthService {
       throw new Error('Your account is inactive or suspended. Please contact hotel customer support.');
     }
 
-    // Maintain existing role while recording login timestamp
-    const targetRole = user.role && user.role !== 'CUSTOMER' ? user.role : 'CUSTOMER';
+    // Phone OTP can never be used to obtain an employee session.
+    if (user.role && user.role !== 'CUSTOMER') {
+      console.warn(`[SECURITY EVENT] Phone login refused for non-customer account ${user.id}`);
+      throw new Error(STAFF_PHONE_LOGIN_ERROR);
+    }
+
     await UserRepository.update(user.id, {
-      role: targetRole,
       firebaseUid: verifiedUid,
       authProvider: 'PHONE',
       lastLoginAt: new Date().toISOString()
@@ -212,17 +242,7 @@ export class AuthService {
       throw new Error('Your account has been suspended. Please contact hotel concierge.');
     }
 
-    let isMatch = await bcrypt.compare(credentials.password, user.passwordHash);
-    // Seamlessly support standard hotel staff default password variants
-    if (!isMatch && ['ADMIN', 'MANAGER', 'KITCHEN', 'DELIVERY', 'STAFF'].includes(user.role)) {
-      const allowedDefaults = ['Password@123', 'Password123!', 'Admin@123'];
-      if (allowedDefaults.includes(credentials.password)) {
-        isMatch = true;
-        const newHash = await bcrypt.hash(credentials.password, 10);
-        await UserRepository.update(user.id, { passwordHash: newHash });
-      }
-    }
-
+    const isMatch = !!user.passwordHash && (await bcrypt.compare(credentials.password, user.passwordHash));
     if (!isMatch) {
       throw new Error('Invalid username/email or password.');
     }
