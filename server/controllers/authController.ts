@@ -118,7 +118,7 @@ export class UserController {
       return;
     }
 
-    const user = AuthService.getUserById(req.user.id);
+    const user = await AuthService.getUserById(req.user.id);
     res.status(200).json({
       success: true,
       data: user

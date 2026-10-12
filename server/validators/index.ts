@@ -132,6 +132,21 @@ export const createBookingSchema = z.object({
   specialRequest: z.string().max(300).optional()
 });
 
+const addOrderItemSchema = z.object({
+  menuItemId: z.string().min(1, 'Menu item ID is required'),
+  quantity: z.number().int().min(1, 'Quantity must be at least 1').max(20),
+  specialInstructions: z.string().max(100).optional()
+});
+
+// Clients send the list as `items` (customer) or `itemsToAdd` (staff POS).
+export const addOrderItemsSchema = z.object({
+  items: z.array(addOrderItemSchema).min(1).max(50).optional(),
+  itemsToAdd: z.array(addOrderItemSchema).min(1).max(50).optional()
+}).refine((data) => !!(data.items || data.itemsToAdd), {
+  message: 'No items provided to add.',
+  path: ['items']
+});
+
 export const createOrderSchema = z.object({
   orderType: z.enum(['Dine-in', 'Takeaway', 'Room Service', 'Delivery']),
   tableNumber: z.string().optional(),

@@ -14,8 +14,15 @@ import { db } from './server/database/db.ts';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// A background promise that rejects (e.g. a non-awaited Firestore write) must
+// never take the whole instance down; log it so it can be alerted on instead.
+process.on('unhandledRejection', (reason: any) => {
+  console.error('[UNHANDLED REJECTION]', reason?.message || reason);
+});
+
 async function startServer() {
   const app = express();
+  const isProduction = process.env.NODE_ENV === 'production';
   const PORT = config.port;
 
   // Trust first proxy hop (Google Cloud Run / Load Balancer) for accurate client IP in rate limiters
@@ -35,9 +42,11 @@ async function startServer() {
             "'unsafe-inline'", // Required for Vite SPA runtime
             'https://checkout.razorpay.com',
             'https://apis.google.com',
-            'https://www.gstatic.com'
+            'https://www.gstatic.com',
+            'https://www.google.com', // reCAPTCHA for Firebase phone OTP
+            'https://www.recaptcha.net'
           ],
-          scriptSrcAttr: ["'unsafe-inline'"],
+          scriptSrcAttr: isProduction ? ["'none'"] : ["'unsafe-inline'"],
           styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
           fontSrc: ["'self'", 'https://fonts.gstatic.com', 'data:'],
           imgSrc: [
@@ -47,7 +56,8 @@ async function startServer() {
             'https://images.unsplash.com',
             'https://lh3.googleusercontent.com',
             'https://*.googleusercontent.com',
-            'https://*.razorpay.com'
+            'https://*.razorpay.com',
+            'https://api.qrserver.com' // UPI / table QR images
           ],
           connectSrc: [
             "'self'",
@@ -58,23 +68,26 @@ async function startServer() {
             'https://securetoken.googleapis.com',
             'https://api.razorpay.com',
             'https://lumberjack.razorpay.com',
-            'ws:',
-            'wss:'
+            'https://ipapi.co', // delivery address auto-detect
+            'https://nominatim.openstreetmap.org',
+            // Vite HMR websocket in development only
+            ...(isProduction ? [] : ['ws:', 'wss:'])
           ],
           frameSrc: [
             "'self'",
             'https://api.razorpay.com',
             'https://checkout.razorpay.com',
-            'https://*.firebaseapp.com'
+            'https://*.firebaseapp.com',
+            'https://www.google.com',
+            'https://www.recaptcha.net'
           ],
-          frameAncestors: [
-            "'self'",
-            'https://*.google.com',
-            'https://*.run.app',
-            'https://*.web.app'
-          ],
+          // Anyone can host a page on *.web.app / *.run.app, so production only
+          // allows same-origin framing (clickjacking). Dev keeps AI Studio preview.
+          frameAncestors: isProduction
+            ? ["'self'"]
+            : ["'self'", 'https://*.google.com', 'https://*.run.app', 'https://*.web.app'],
           objectSrc: ["'none'"],
-          upgradeInsecureRequests: process.env.NODE_ENV === 'production' ? [] : null
+          upgradeInsecureRequests: isProduction ? [] : null
         }
       },
       crossOriginEmbedderPolicy: false,
@@ -86,21 +99,22 @@ async function startServer() {
   // Additional Security Headers
   app.use((_req, res, next) => {
     res.setHeader('X-Content-Type-Options', 'nosniff');
-    res.setHeader('X-XSS-Protection', '1; mode=block');
+    // The legacy XSS auditor is disabled per current OWASP guidance; CSP replaces it.
+    res.setHeader('X-XSS-Protection', '0');
     res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
     res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=(self)');
     next();
   });
 
-  // Strict CORS Allowlist (No Wildcards with Credentials)
+  // Strict CORS allowlist. Production accepts only exact origins (anyone can
+  // host a page on *.web.app / *.run.app, so suffix matching is dev-only).
   const allowedOrigins = [
-    'http://localhost:3000',
-    'http://localhost:5173',
-    'http://127.0.0.1:3000',
-    'http://127.0.0.1:5173',
+    ...(isProduction
+      ? []
+      : ['http://localhost:3000', 'http://localhost:5173', 'http://127.0.0.1:3000', 'http://127.0.0.1:5173']),
     'https://restaurant-com-2a275.web.app',
     'https://restaurant-com-2a275.firebaseapp.com',
-    ...(process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',').map((s) => s.trim()) : [])
+    ...(process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',').map((s) => s.trim()).filter(Boolean) : [])
   ];
 
   app.use((req, res, next) => {
@@ -108,9 +122,8 @@ async function startServer() {
     if (origin) {
       const isAllowed =
         allowedOrigins.includes(origin) ||
-        origin.endsWith('.run.app') ||
-        origin.endsWith('.web.app') ||
-        origin.endsWith('.firebaseapp.com');
+        (!isProduction &&
+          (origin.endsWith('.run.app') || origin.endsWith('.web.app') || origin.endsWith('.firebaseapp.com')));
 
       if (isAllowed) {
         res.setHeader('Access-Control-Allow-Origin', origin);
@@ -128,7 +141,18 @@ async function startServer() {
   });
 
   // Body Parsing Middleware (Restricted to 2MB to prevent large-payload DoS)
-  app.use(express.json({ limit: '2mb' }));
+  // The raw body is kept for the payment webhook, whose HMAC must be computed
+  // over the exact bytes Razorpay sent (re-serialised JSON never matches).
+  app.use(
+    express.json({
+      limit: '2mb',
+      verify: (req, _res, buf) => {
+        if (req.url?.startsWith('/api/payments/webhook')) {
+          (req as any).rawBody = buf.toString('utf8');
+        }
+      }
+    })
+  );
   app.use(express.urlencoded({ extended: true, limit: '2mb' }));
 
   // Ensure Database Engine is initialized
@@ -140,10 +164,13 @@ async function startServer() {
   // Mount API router
   app.use('/api', apiRouter);
 
-  // Serve Swagger OpenAPI JSON
-  app.get('/api/openapi.json', (_req, res) => {
-    res.sendFile(path.join(__dirname, 'server/swagger/openapi.json'));
-  });
+  // Serve Swagger OpenAPI JSON (development only; it documents demo credentials
+  // and the full attack surface).
+  if (!isProduction) {
+    app.get('/api/openapi.json', (_req, res) => {
+      res.sendFile(path.join(__dirname, 'server/swagger/openapi.json'));
+    });
+  }
 
   // Explicit 404 Handler for /api/* - NEVER fall through to index.html for API requests
   app.all('/api/*', (_req, res) => {
@@ -160,7 +187,7 @@ async function startServer() {
   app.use(globalErrorHandler);
 
   // Vite middleware in dev or static files in production
-  if (process.env.NODE_ENV === 'production') {
+  if (isProduction) {
     const distPath = path.resolve(__dirname, 'dist');
     app.use(express.static(distPath));
     app.get('*', (_req, res) => {

@@ -1575,7 +1575,8 @@ export async function runAllTests(): Promise<{
   const passedCount = results.filter((r) => r.status === 'PASSED').length;
   const failedCount = results.filter((r) => r.status === 'FAILED').length;
 
-  delete process.env.IS_TEST_RUN;
+  // IS_TEST_RUN intentionally stays set: the engine's debounced persist and Firestore
+  // delta-sync fire after this returns, and must still see the test guard.
 
   return {
     total: results.length,

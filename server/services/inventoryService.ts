@@ -584,16 +584,24 @@ export class InventoryService {
           .get();
 
         const now = new Date().toISOString();
+        // Firestore transactions require every read before any write, so total
+        // the quantity per ingredient, read all ingredients, then update.
+        const restoreQtyByItem = new Map<string, number>();
         for (const doc of movQuery.docs) {
           const mov = doc.data() as StockMovement;
-          const invRef = fsDb.collection('inventoryItems').doc(mov.inventoryItemId);
-          const invDoc = await transaction.get(invRef);
-          if (invDoc.exists) {
-            const currentStock = (invDoc.data() as InventoryItem).currentStock;
-            const restoredStock = Number((currentStock + Math.abs(mov.quantity)).toFixed(2));
-            transaction.update(invRef, { currentStock: restoredStock, updatedAt: now });
-          }
+          restoreQtyByItem.set(
+            mov.inventoryItemId,
+            (restoreQtyByItem.get(mov.inventoryItemId) || 0) + Math.abs(mov.quantity)
+          );
         }
+        const invRefs = [...restoreQtyByItem.keys()].map((id) => fsDb.collection('inventoryItems').doc(id));
+        const invDocs = await Promise.all(invRefs.map((ref) => transaction.get(ref)));
+        invDocs.forEach((invDoc, i) => {
+          if (!invDoc.exists) return;
+          const currentStock = (invDoc.data() as InventoryItem).currentStock;
+          const restoredStock = Number((currentStock + (restoreQtyByItem.get(invDoc.id) || 0)).toFixed(2));
+          transaction.update(invRefs[i], { currentStock: restoredStock, updatedAt: now });
+        });
 
         transaction.set(restoreRef, { orderId, restoredAt: now });
         return true;

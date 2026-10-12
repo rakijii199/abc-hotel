@@ -1,13 +1,14 @@
 /**
  * ABC Hotel — Full-Stack Application Client Root
  */
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, Suspense, lazy } from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext.tsx';
 import { CartProvider } from './context/CartContext.tsx';
 import { ToastProvider } from './context/ToastContext.tsx';
 import { Navbar } from './components/common/Navbar.tsx';
 import { Footer } from './components/common/Footer.tsx';
 import { parseUrlToRoute, routeToUrl } from './utils/router.ts';
+import { LazyMotion, MotionConfig, domAnimation } from 'motion/react';
 
 // Pages
 import { HomePage } from './pages/HomePage.tsx';
@@ -20,18 +21,28 @@ import { MyOrdersPage } from './pages/MyOrdersPage.tsx';
 import { MyBookingsPage } from './pages/MyBookingsPage.tsx';
 import { CustomerDashboardPage } from './pages/CustomerDashboardPage.tsx';
 import { ProfilePage } from './pages/ProfilePage.tsx';
-import { CustomerAuthPage } from './pages/CustomerAuthPage.tsx';
 import { StaffLoginPage } from './pages/StaffLoginPage.tsx';
-import { AdminDashboardPage } from './pages/AdminDashboardPage.tsx';
-import { KitchenPage } from './pages/KitchenPage.tsx';
-import { ApiDocsPage } from './pages/ApiDocsPage.tsx';
-import { SystemDocsPage } from './pages/SystemDocsPage.tsx';
-import { SystemTestsPage } from './pages/SystemTestsPage.tsx';
-import { PublicInvoicePage } from './pages/PublicInvoicePage.tsx';
-import { DeliveryPortalPage } from './pages/DeliveryPortalPage.tsx';
+
+// Staff dashboards, docs, the public invoice and the Firebase-backed sign-in
+// page load on demand, keeping them out of the bundle every visitor downloads.
+const CustomerAuthPage = lazy(() => import('./pages/CustomerAuthPage.tsx').then((m) => ({ default: m.CustomerAuthPage })));
+const AdminDashboardPage = lazy(() => import('./pages/AdminDashboardPage.tsx').then((m) => ({ default: m.AdminDashboardPage })));
+const KitchenPage = lazy(() => import('./pages/KitchenPage.tsx').then((m) => ({ default: m.KitchenPage })));
+const ApiDocsPage = lazy(() => import('./pages/ApiDocsPage.tsx').then((m) => ({ default: m.ApiDocsPage })));
+const SystemDocsPage = lazy(() => import('./pages/SystemDocsPage.tsx').then((m) => ({ default: m.SystemDocsPage })));
+const SystemTestsPage = lazy(() => import('./pages/SystemTestsPage.tsx').then((m) => ({ default: m.SystemTestsPage })));
+const PublicInvoicePage = lazy(() => import('./pages/PublicInvoicePage.tsx').then((m) => ({ default: m.PublicInvoicePage })));
+const DeliveryPortalPage = lazy(() => import('./pages/DeliveryPortalPage.tsx').then((m) => ({ default: m.DeliveryPortalPage })));
+
+const PageLoader: React.FC = () => (
+  <div className="min-h-[50vh] flex items-center justify-center" role="status" aria-live="polite">
+    <span className="w-8 h-8 rounded-full border-2 border-stone-300 border-t-amber-600 animate-spin" aria-hidden="true" />
+    <span className="sr-only">Loading…</span>
+  </div>
+);
 
 function MainApp() {
-  const { isAdmin, isKitchen, isManager, isDelivery, user } = useAuth();
+  const { isAdmin, isKitchen, isManager, isDelivery, user, isLoading } = useAuth();
 
   // Initialize route directly from browser URL
   const [currentRoute, setCurrentRoute] = useState<string>(() => {
@@ -89,6 +100,9 @@ function MainApp() {
 
   // Default to role-specific route on initial login or route access
   useEffect(() => {
+    // Wait for the stored session to be restored; otherwise reloading a staff
+    // page sees "no user" and bounces to the login screen.
+    if (isLoading) return;
     const hasAccessToAdmin = isAdmin || isManager;
     if (isDelivery) {
       // Delivery staff should ONLY access the delivery dispatch portal
@@ -110,7 +124,7 @@ function MainApp() {
         navigate('staff-login', { message: 'Please login with authorized employee credentials.' }, true);
       }
     }
-  }, [isAdmin, isKitchen, isManager, isDelivery, currentRoute, navigate]);
+  }, [isAdmin, isKitchen, isManager, isDelivery, isLoading, currentRoute, navigate]);
 
   const renderRoute = () => {
     switch (currentRoute) {
@@ -182,8 +196,10 @@ function MainApp() {
   // Dedicated Kitchen Department Display
   if (currentRoute === 'kitchen') {
     return (
-      <main className="animate-in fade-in duration-200">
-        <KitchenPage navigate={navigate} />
+      <main className="lux-ops animate-in fade-in duration-200">
+        <Suspense fallback={<PageLoader />}>
+          <KitchenPage navigate={navigate} />
+        </Suspense>
       </main>
     );
   }
@@ -191,8 +207,10 @@ function MainApp() {
   // Full-screen dedicated Delivery Portal
   if (currentRoute === 'delivery') {
     return (
-      <main className="animate-in fade-in duration-200">
-        <DeliveryPortalPage navigate={navigate} />
+      <main className="lux-ops animate-in fade-in duration-200">
+        <Suspense fallback={<PageLoader />}>
+          <DeliveryPortalPage navigate={navigate} />
+        </Suspense>
       </main>
     );
   }
@@ -200,14 +218,18 @@ function MainApp() {
   // Full-screen dedicated Operations Suite view when on admin route
   if (currentRoute === 'admin') {
     return (
-      <div className="h-screen w-full overflow-hidden bg-stone-100 text-stone-900 selection:bg-purple-200 selection:text-purple-900">
-        <AdminDashboardPage navigate={navigate} initialTab={routeState?.tab} />
+      <div className="lux-ops h-screen w-full overflow-hidden bg-stone-100 text-stone-900">
+        <Suspense fallback={<PageLoader />}>
+          <AdminDashboardPage navigate={navigate} initialTab={routeState?.tab} />
+        </Suspense>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex flex-col justify-between bg-[#faf8f5] text-stone-900 selection:bg-amber-100 selection:text-amber-900">
+    <LazyMotion features={domAnimation} strict>
+    <MotionConfig reducedMotion="user">
+    <div className="lux min-h-screen flex flex-col justify-between overflow-x-clip">
       <div>
         {(isAdmin || isManager) && (
           <div className="bg-purple-950 text-purple-200 px-4 py-2 text-xs flex items-center justify-between border-b border-purple-800/60 sticky top-0 z-50">
@@ -225,11 +247,13 @@ function MainApp() {
         )}
         <Navbar currentRoute={currentRoute} navigate={navigate} />
         <main className="animate-in fade-in duration-300">
-          {renderRoute()}
+          <Suspense fallback={<PageLoader />}>{renderRoute()}</Suspense>
         </main>
       </div>
       <Footer navigate={navigate} />
     </div>
+    </MotionConfig>
+    </LazyMotion>
   );
 }
 

@@ -30,6 +30,7 @@ import { Modal, Spinner } from '../components/common/Footer.tsx';
 import { useAuth } from '../context/AuthContext.tsx';
 import { useToast } from '../context/ToastContext.tsx';
 import { formatDate, formatTime, getBookingStatusBadge } from '../utils/formatters.ts';
+import { PageHero, LUX_IMAGES, luxImage } from '../components/customer/Reveal.tsx';
 
 interface TableWithAvail extends DiningTable {
   isAvailable: boolean;
@@ -374,21 +375,18 @@ export const BookTablePage: React.FC<{ navigate: (route: string, state?: any) =>
   const isToday = bookingDate === todayStr;
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-8 space-y-10">
       {/* Header Banner */}
-      <div className="bg-gradient-to-r from-stone-900 via-amber-950 to-stone-900 text-white rounded-3xl p-8 sm:p-10 relative overflow-hidden shadow-xl">
-        <div className="relative z-10 max-w-2xl space-y-3">
-          <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-amber-400">
-            <Sparkles className="w-3.5 h-3.5" /> ABC Restaurant Reservations
-          </div>
-          <h1 className="font-serif text-3xl sm:text-4xl font-bold tracking-tight">
-            Reserve Your Luxury Dining Table
-          </h1>
-          <p className="text-stone-300 text-sm leading-relaxed">
-            Select your preferred dining date (within 1 month), meal time slot (30-minute holding), and party size. Our live conflict prevention engine guarantees instant confirmation.
-          </p>
-        </div>
-      </div>
+      <PageHero
+        eyebrow="ABC Restaurant Reservations"
+        title={
+          <>
+            Reserve your <em className="font-normal text-champagne">dining table</em>
+          </>
+        }
+        description="Select your preferred dining date (within 1 month), meal time slot (30-minute holding), and party size. Our live conflict prevention engine guarantees instant confirmation."
+        image={luxImage(LUX_IMAGES.diningRoom, 1800)}
+      />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Left Column: Form Controls */}
@@ -457,7 +455,7 @@ export const BookTablePage: React.FC<{ navigate: (route: string, state?: any) =>
                   <Sun className="w-3 h-3 text-amber-600" />
                   <span>Lunch Service</span>
                 </div>
-                <div className="grid grid-cols-4 gap-1.5">
+                <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-3 xl:grid-cols-4 gap-1.5">
                   {LUNCH_SLOTS.map((slot) => {
                     const isPast = isSlotInPast(bookingDate, slot);
                     const isSelected = startTime === slot;
@@ -469,7 +467,7 @@ export const BookTablePage: React.FC<{ navigate: (route: string, state?: any) =>
                         disabled={isPast}
                         onClick={() => handleSlotSelect(slot)}
                         title={isPast ? 'Time slot has passed for today' : `Book ${formatTime(slot)} (30m holding)`}
-                        className={`py-2 px-1 text-xs rounded-xl border transition-all text-center relative ${
+                        className={`min-h-11 py-2 px-1 text-xs rounded-xl border transition-all text-center relative ${
                           isSelected
                             ? 'bg-amber-700 text-white font-bold border-amber-700 shadow-xs'
                             : isPast
@@ -490,7 +488,7 @@ export const BookTablePage: React.FC<{ navigate: (route: string, state?: any) =>
                   <Moon className="w-3 h-3 text-indigo-600" />
                   <span>Dinner Service</span>
                 </div>
-                <div className="grid grid-cols-4 gap-1.5">
+                <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-3 xl:grid-cols-4 gap-1.5">
                   {DINNER_SLOTS.map((slot) => {
                     const isPast = isSlotInPast(bookingDate, slot);
                     const isSelected = startTime === slot;
@@ -502,7 +500,7 @@ export const BookTablePage: React.FC<{ navigate: (route: string, state?: any) =>
                         disabled={isPast}
                         onClick={() => handleSlotSelect(slot)}
                         title={isPast ? 'Time slot has passed for today' : `Book ${formatTime(slot)} (30m holding)`}
-                        className={`py-2 px-1 text-xs rounded-xl border transition-all text-center relative ${
+                        className={`min-h-11 py-2 px-1 text-xs rounded-xl border transition-all text-center relative ${
                           isSelected
                             ? 'bg-amber-700 text-white font-bold border-amber-700 shadow-xs'
                             : isPast

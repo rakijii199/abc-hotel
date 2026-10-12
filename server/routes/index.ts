@@ -11,6 +11,8 @@ import { managerRouter } from './managerRoutes.ts';
 import { paymentRouter } from './paymentRoutes.ts';
 import { billingRouter } from './billingRoutes.ts';
 import inventoryRouter from './inventoryRoutes.ts';
+import { db } from '../database/db.ts';
+import { isQuotaExhausted } from '../database/firestoreSync.ts';
 
 export const apiRouter = Router();
 
@@ -27,40 +29,25 @@ apiRouter.use('/admin', adminRouter);
 apiRouter.use('/kitchen', kitchenRouter);
 apiRouter.use('/manager', managerRouter);
 
-// Health check endpoints
+// Health check endpoints. Liveness is public and minimal; readiness reports
+// whether this instance can actually serve data (used by Cloud Run probes).
 apiRouter.get('/health', (_req, res) => {
-  const mem = process.memoryUsage();
   res.status(200).json({
     status: 'healthy',
-    database: 'connected',
     service: 'ABC Hotel & Restaurant Management API',
-    environment: process.env.NODE_ENV || 'production',
-    uptimeSeconds: Math.floor(process.uptime()),
-    timestamp: new Date().toISOString(),
-    version: '1.0.0',
-    dataRetention: {
-      detailedRetentionDays: 30,
-      dashboardAggregateRetentionMonths: 12
-    },
-    systemMetrics: {
-      heapUsedMb: Number((mem.heapUsed / 1024 / 1024).toFixed(2)),
-      rssMb: Number((mem.rss / 1024 / 1024).toFixed(2))
-    }
+    timestamp: new Date().toISOString()
   });
 });
 
 apiRouter.get('/health/ready', (_req, res) => {
-  res.status(200).json({
-    status: 'ready',
-    database: 'connected',
+  const databaseReady = db.isInitialized;
+  const firestoreThrottled = isQuotaExhausted();
+  const ready = databaseReady && !firestoreThrottled;
+  res.status(ready ? 200 : 503).json({
+    status: ready ? 'ready' : 'not_ready',
     checks: {
-      databaseEngine: 'OK',
-      inMemoryStore: 'OK',
-      persistenceDriver: 'OK',
-      inventoryModule: 'OK',
-      billingModule: 'OK',
-      paymentGateway: 'OK',
-      retentionWorker: 'OK'
+      databaseEngine: databaseReady ? 'OK' : 'INITIALIZING',
+      firestore: firestoreThrottled ? 'THROTTLED' : 'OK'
     },
     timestamp: new Date().toISOString()
   });

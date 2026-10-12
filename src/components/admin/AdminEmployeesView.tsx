@@ -33,6 +33,19 @@ interface AdminEmployeesViewProps {
   onRefreshStats?: () => void;
 }
 
+
+/** Random temporary password meeting the server policy (upper, lower, digit, symbol). */
+function generateTemporaryPassword(): string {
+  const sets = ['ABCDEFGHJKLMNPQRSTUVWXYZ', 'abcdefghijkmnpqrstuvwxyz', '23456789', '@#$%&*!?'];
+  const all = sets.join('');
+  const pick = (chars: string) => chars[crypto.getRandomValues(new Uint32Array(1))[0] % chars.length];
+  const chars = [...sets.map(pick), ...Array.from({ length: 8 }, () => pick(all))];
+  for (let i = chars.length - 1; i > 0; i--) {
+    const j = crypto.getRandomValues(new Uint32Array(1))[0] % (i + 1);
+    [chars[i], chars[j]] = [chars[j], chars[i]];
+  }
+  return chars.join('');
+}
 export const AdminEmployeesView: React.FC<AdminEmployeesViewProps> = ({ onRefreshStats }) => {
   const { user: currentUser } = useAuth();
   const { error, success, info } = useToast();
@@ -59,8 +72,8 @@ export const AdminEmployeesView: React.FC<AdminEmployeesViewProps> = ({ onRefres
   const [newEmail, setNewEmail] = useState('');
   const [newPhone, setNewPhone] = useState('');
   const [newRole, setNewRole] = useState<UserRole>('STAFF');
-  const [newPassword, setNewPassword] = useState('Password@123');
-  const [newConfirmPassword, setNewConfirmPassword] = useState('Password@123');
+  const [newPassword, setNewPassword] = useState('');
+  const [newConfirmPassword, setNewConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [submittingAdd, setSubmittingAdd] = useState(false);
 
@@ -73,8 +86,8 @@ export const AdminEmployeesView: React.FC<AdminEmployeesViewProps> = ({ onRefres
   const [submittingEdit, setSubmittingEdit] = useState(false);
 
   // Reset Password State
-  const [newResetPassword, setNewResetPassword] = useState('Password@123');
-  const [confirmResetPassword, setConfirmResetPassword] = useState('Password@123');
+  const [newResetPassword, setNewResetPassword] = useState('');
+  const [confirmResetPassword, setConfirmResetPassword] = useState('');
   const [submittingReset, setSubmittingReset] = useState(false);
 
   const fetchEmployeesData = async (isBackground = false) => {
@@ -146,8 +159,8 @@ export const AdminEmployeesView: React.FC<AdminEmployeesViewProps> = ({ onRefres
       setNewEmail('');
       setNewPhone('');
       setNewRole('STAFF');
-      setNewPassword('Password@123');
-      setNewConfirmPassword('Password@123');
+      setNewPassword('');
+      setNewConfirmPassword('');
       fetchEmployeesData();
       if (onRefreshStats) onRefreshStats();
     } catch (err: any) {
@@ -234,8 +247,8 @@ export const AdminEmployeesView: React.FC<AdminEmployeesViewProps> = ({ onRefres
 
       success(`Password reset for ${resetPasswordEmployee.firstName} ${resetPasswordEmployee.lastName}.`);
       setResetPasswordEmployee(null);
-      setNewResetPassword('Password@123');
-      setConfirmResetPassword('Password@123');
+      setNewResetPassword('');
+      setConfirmResetPassword('');
     } catch (err: any) {
       error(err.message || 'Failed to reset password.');
     } finally {
@@ -518,8 +531,8 @@ export const AdminEmployeesView: React.FC<AdminEmployeesViewProps> = ({ onRefres
                           <button
                             onClick={() => {
                               setResetPasswordEmployee(emp);
-                              setNewResetPassword('Password@123');
-                              setConfirmResetPassword('Password@123');
+                              setNewResetPassword('');
+                              setConfirmResetPassword('');
                             }}
                             className="p-1.5 rounded-lg text-amber-700 hover:text-amber-900 hover:bg-amber-50 transition-colors cursor-pointer"
                             title="Reset Password"
@@ -706,13 +719,14 @@ export const AdminEmployeesView: React.FC<AdminEmployeesViewProps> = ({ onRefres
                   <button
                     type="button"
                     onClick={() => {
-                      setNewPassword('Password@123');
-                      setNewConfirmPassword('Password@123');
-                      info('Password set to Password@123');
+                      const generated = generateTemporaryPassword();
+                      setNewPassword(generated);
+                      setNewConfirmPassword(generated);
+                      info(`Temporary password: ${generated} — share it securely with the employee.`);
                     }}
                     className="text-[10px] font-bold text-amber-800 hover:underline cursor-pointer"
                   >
-                    Use Default (Password@123)
+                    Generate Strong Password
                   </button>
                 </div>
 
@@ -929,12 +943,14 @@ export const AdminEmployeesView: React.FC<AdminEmployeesViewProps> = ({ onRefres
                 <button
                   type="button"
                   onClick={() => {
-                    setNewResetPassword('Password@123');
-                    setConfirmResetPassword('Password@123');
+                    const generated = generateTemporaryPassword();
+                    setNewResetPassword(generated);
+                    setConfirmResetPassword(generated);
+                    info(`Temporary password: ${generated} — share it securely with the employee.`);
                   }}
                   className="text-[10px] font-bold text-amber-800 hover:underline cursor-pointer"
                 >
-                  Use Default (Password@123)
+                  Generate Strong Password
                 </button>
               </div>
 

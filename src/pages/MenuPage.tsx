@@ -21,6 +21,7 @@ import { MenuItemCard } from '../components/menu/MenuItemCard.tsx';
 import { Spinner, EmptyState } from '../components/common/Footer.tsx';
 import { useCart } from '../context/CartContext.tsx';
 import { formatCurrency } from '../utils/formatters.ts';
+import { PageHero, LUX_IMAGES, luxImage } from '../components/customer/Reveal.tsx';
 
 export const MenuPage: React.FC<{ navigate: (route: string) => void }> = ({ navigate }) => {
   const { itemCount, total } = useCart();
@@ -153,224 +154,255 @@ export const MenuPage: React.FC<{ navigate: (route: string) => void }> = ({ navi
     setSortBy('popular');
   };
 
+  const hasActiveFilters = selectedCategory !== 'all' || searchQuery || vegOnly || spicyOnly || sortBy !== 'popular';
+
   return (
-    <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6 sm:space-y-8 pb-24">
+    <div className="pb-28">
       {/* Header Banner */}
-      <div className="bg-gradient-to-r from-stone-900 via-stone-800 to-amber-950 text-white rounded-2xl sm:rounded-3xl p-6 sm:p-10 relative overflow-hidden shadow-xl">
-        <div className="relative z-10 max-w-2xl space-y-2 sm:space-y-3">
-          <span className="text-[11px] sm:text-xs font-bold uppercase tracking-widest text-amber-400 flex items-center gap-1.5">
-            <Sparkles className="w-3.5 h-3.5" /> ABC Hotel Fine Dining Menu
-          </span>
-          <h1 className="font-serif text-2xl sm:text-4xl font-bold tracking-tight">
-            Gourmet Cuisine & Artisanal Delicacies
-          </h1>
-          <p className="text-stone-300 text-xs sm:text-sm leading-relaxed">
-            Crafted with passion using heirloom recipes, single-origin spices, and organic produce. Prepared fresh to order.
-          </p>
-        </div>
-      </div>
-
-      {/* QR Code Table Session Active Banner */}
-      {qrTableInfo && !qrTableInactive && (
-        <div className="p-4 sm:p-5 bg-stone-900 text-white rounded-2xl shadow-md border border-amber-800/80 flex flex-wrap items-center justify-between gap-3 animate-in fade-in">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-amber-400 text-amber-950 flex items-center justify-center font-bold shrink-0 shadow-xs">
-              <QrCode className="w-5 h-5" />
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="text-[10px] uppercase font-extrabold tracking-widest text-amber-300">
-                  Table QR Session Active
-                </span>
-                <span className="px-2 py-0.2 bg-emerald-500/20 text-emerald-300 font-bold text-[9px] uppercase rounded-md border border-emerald-400/30">
-                  Verified
-                </span>
-              </div>
-              <h3 className="font-serif font-bold text-base sm:text-lg text-white">
-                Ordering for {qrTableInfo.number} {qrTableInfo.location ? `(${qrTableInfo.location})` : ''}
-              </h3>
-            </div>
-          </div>
-          <span className="text-xs font-bold text-amber-300 bg-amber-950 px-3.5 py-1.5 rounded-xl border border-amber-800 shrink-0">
-            Dine-in Locked
-          </span>
-        </div>
-      )}
-
-      {/* Inactive Table Warning Banner */}
-      {qrTableInactive && (
-        <div className="p-4 bg-rose-950 text-white rounded-2xl shadow-md border border-rose-800/80 flex items-center gap-3 animate-in fade-in">
-          <AlertCircle className="w-6 h-6 text-rose-300 shrink-0" />
-          <div>
-            <h3 className="font-bold text-sm text-white">
-              {qrTableInfo?.number} is Currently Unavailable
-            </h3>
-            <p className="text-xs text-rose-200 mt-0.5">
-              This table is deactivated or undergoing maintenance. Please speak to restaurant staff for table reassignment.
-            </p>
-          </div>
-        </div>
-      )}
+      <PageHero
+        eyebrow="ABC Hotel Fine Dining Menu"
+        title={
+          <>
+            Gourmet cuisine <em className="font-normal text-champagne">&amp; artisanal delicacies</em>
+          </>
+        }
+        description="Crafted with passion using heirloom recipes, single-origin spices, and organic produce. Prepared fresh to order."
+        image={luxImage(LUX_IMAGES.plated, 1800)}
+      />
 
       {/* Filter and Search Bar */}
-      <div className="bg-white p-4 sm:p-6 rounded-2xl border border-stone-200/80 shadow-xs space-y-3 sm:space-y-4">
-        {/* Search & Sort Controls */}
-        <div className="flex flex-col md:flex-row gap-3 justify-between items-stretch md:items-center">
-          {/* Search Input */}
-          <div className="relative flex-1 max-w-full md:max-w-md">
-            <Search className="w-4 h-4 text-stone-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-            <input
-              type="text"
-              placeholder="Enter Dish Name"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-9 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-xs sm:text-sm focus:outline-hidden focus:border-amber-600 transition-all text-stone-900"
-            />
-            {searchQuery && (
+      <div className="relative md:sticky md:top-[4.5rem] z-30 bg-ivory/90 backdrop-blur-xl border-b border-stone-200/80 shadow-[0_12px_30px_-24px_rgba(26,23,21,0.4)]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Category Tabs */}
+          <div className="flex items-center gap-6 sm:gap-8 overflow-x-auto scrollbar-none -mx-4 px-4 sm:mx-0 sm:px-0" role="tablist" aria-label="Menu categories">
+            <button
+              role="tab"
+              aria-selected={selectedCategory === 'all'}
+              onClick={() => setSelectedCategory('all')}
+              className={`relative py-4 text-[11px] font-bold uppercase tracking-[0.2em] whitespace-nowrap transition-colors cursor-pointer ${
+                selectedCategory === 'all' ? 'text-stone-900' : 'text-stone-400 hover:text-stone-700'
+              }`}
+            >
+              All Dishes <span className="font-mono text-stone-400">({items.length})</span>
+              <span className={`absolute left-0 right-0 bottom-0 h-[2px] bg-wine transition-transform duration-500 origin-left ${selectedCategory === 'all' ? 'scale-x-100' : 'scale-x-0'}`} />
+            </button>
+
+            {categories.map((cat) => (
               <button
-                onClick={() => setSearchQuery('')}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-600"
+                key={cat.id}
+                role="tab"
+                aria-selected={selectedCategory === cat.id}
+                onClick={() => setSelectedCategory(cat.id)}
+                className={`relative py-4 text-[11px] font-bold uppercase tracking-[0.2em] whitespace-nowrap transition-colors cursor-pointer ${
+                  selectedCategory === cat.id ? 'text-stone-900' : 'text-stone-400 hover:text-stone-700'
+                }`}
               >
-                <X className="w-4 h-4" />
+                {cat.name}
+                <span className={`absolute left-0 right-0 bottom-0 h-[2px] bg-wine transition-transform duration-500 origin-left ${selectedCategory === cat.id ? 'scale-x-100' : 'scale-x-0'}`} />
               </button>
-            )}
+            ))}
           </div>
 
-          {/* Quick Dietary Toggles & Sort Dropdown */}
-          <div className="flex flex-wrap items-center gap-2">
-            {/* Veg Only Toggle */}
-            <button
-              onClick={() => setVegOnly(!vegOnly)}
-              className={`flex-1 sm:flex-initial justify-center px-3 py-2 text-xs font-semibold rounded-xl border transition-all flex items-center gap-1.5 cursor-pointer ${
-                vegOnly
-                  ? 'bg-emerald-600 text-white border-emerald-600 shadow-xs'
-                  : 'bg-stone-50 text-stone-700 border-stone-200 hover:bg-stone-100'
-              }`}
-            >
-              <Leaf className="w-3.5 h-3.5 shrink-0" />
-              <span>Veg Only</span>
-            </button>
+          {/* Search & Sort Controls */}
+          <div className="flex flex-col md:flex-row gap-3 justify-between items-stretch md:items-center py-3 border-t border-stone-200/70">
+            {/* Search Input */}
+            <div className="relative flex-1 max-w-full md:max-w-sm">
+              <Search className="w-4 h-4 text-stone-400 absolute left-4 top-1/2 -translate-y-1/2" />
+              <input
+                type="text"
+                placeholder="Search dishes"
+                aria-label="Search dishes by name"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full h-11 pl-11 pr-10 bg-white border border-stone-200 rounded-full text-sm focus:outline-hidden focus:border-amber-500 focus:ring-4 focus:ring-amber-200/40 transition-all text-stone-900 placeholder:text-stone-400"
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery('')}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 w-7 h-7 flex items-center justify-center rounded-full text-stone-400 hover:text-stone-700 hover:bg-stone-100 cursor-pointer"
+                  aria-label="Clear search"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              )}
+            </div>
 
-            {/* Spicy Toggle */}
-            <button
-              onClick={() => setSpicyOnly(!spicyOnly)}
-              className={`flex-1 sm:flex-initial justify-center px-3 py-2 text-xs font-semibold rounded-xl border transition-all flex items-center gap-1.5 cursor-pointer ${
-                spicyOnly
-                  ? 'bg-orange-600 text-white border-orange-600 shadow-xs'
-                  : 'bg-stone-50 text-stone-700 border-stone-200 hover:bg-stone-100'
-              }`}
-            >
-              <Flame className="w-3.5 h-3.5 shrink-0" />
-              <span>Spicy</span>
-            </button>
+            {/* Quick Dietary Toggles & Sort Dropdown */}
+            <div className="flex items-center gap-2">
+              {/* Veg Only Toggle */}
+              <button
+                onClick={() => setVegOnly(!vegOnly)}
+                aria-pressed={vegOnly}
+                className={`shrink-0 justify-center h-11 px-4 text-xs font-semibold rounded-full border transition-all flex items-center gap-1.5 cursor-pointer ${
+                  vegOnly
+                    ? 'bg-emerald-700 text-white border-emerald-700'
+                    : 'bg-white text-stone-700 border-stone-200 hover:border-stone-400'
+                }`}
+              >
+                <Leaf className="w-3.5 h-3.5 shrink-0" />
+                <span>Veg Only</span>
+              </button>
 
-            {/* Sort Selector */}
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-              className="w-full sm:w-auto px-3 py-2 text-xs font-semibold bg-stone-50 border border-stone-200 rounded-xl text-stone-700 focus:outline-hidden focus:border-amber-600"
-            >
-              <option value="popular">Chef Recommendations</option>
-              <option value="price_asc">Price: Low to High</option>
-              <option value="price_desc">Price: High to Low</option>
-              <option value="name">Alphabetical (A-Z)</option>
-            </select>
+              {/* Spicy Toggle */}
+              <button
+                onClick={() => setSpicyOnly(!spicyOnly)}
+                aria-pressed={spicyOnly}
+                className={`shrink-0 justify-center h-11 px-4 text-xs font-semibold rounded-full border transition-all flex items-center gap-1.5 cursor-pointer ${
+                  spicyOnly
+                    ? 'bg-wine text-white border-wine'
+                    : 'bg-white text-stone-700 border-stone-200 hover:border-stone-400'
+                }`}
+              >
+                <Flame className="w-3.5 h-3.5 shrink-0" />
+                <span>Spicy</span>
+              </button>
+
+              {/* Sort Selector */}
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                aria-label="Sort dishes"
+                className="flex-1 md:flex-initial min-w-0 h-11 px-4 text-xs font-semibold bg-white border border-stone-200 rounded-full text-stone-700 focus:outline-hidden focus:border-amber-500 cursor-pointer"
+              >
+                <option value="popular">Chef Recommendations</option>
+                <option value="price_asc">Price: Low to High</option>
+                <option value="price_desc">Price: High to Low</option>
+                <option value="name">Alphabetical (A-Z)</option>
+              </select>
+            </div>
           </div>
-        </div>
-
-        {/* Category Pills Strip */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none pt-2 border-t border-stone-100 -mx-2 px-2">
-          <button
-            onClick={() => setSelectedCategory('all')}
-            className={`px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
-              selectedCategory === 'all'
-                ? 'bg-amber-700 text-white shadow-xs'
-                : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
-            }`}
-          >
-            All Dishes ({items.length})
-          </button>
-
-          {categories.map((cat) => (
-            <button
-              key={cat.id}
-              onClick={() => setSelectedCategory(cat.id)}
-              className={`px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
-                selectedCategory === cat.id
-                  ? 'bg-amber-700 text-white shadow-xs'
-                  : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
-              }`}
-            >
-              {cat.name}
-            </button>
-          ))}
         </div>
       </div>
 
-      {/* Active Filter Chips Summary */}
-      {(selectedCategory !== 'all' || searchQuery || vegOnly || spicyOnly || sortBy !== 'popular') && (
-        <div className="flex items-center justify-between text-xs text-stone-500 px-1">
-          <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
-            <span className="hidden sm:inline">Active:</span>
-            {selectedCategory !== 'all' && (
-              <span className="px-2 py-0.5 rounded-md bg-amber-50 text-amber-800 border border-amber-200 font-medium text-[11px]">
-                {categories.find((c) => c.id === selectedCategory)?.name || selectedCategory}
-              </span>
-            )}
-            {searchQuery && (
-              <span className="px-2 py-0.5 rounded-md bg-amber-50 text-amber-800 border border-amber-200 font-medium text-[11px]">
-                "{searchQuery}"
-              </span>
-            )}
-            {vegOnly && (
-              <span className="px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-800 border border-emerald-200 font-medium text-[11px]">
-                Veg
-              </span>
-            )}
-            {spicyOnly && (
-              <span className="px-2 py-0.5 rounded-md bg-orange-50 text-orange-800 border border-orange-200 font-medium text-[11px]">
-                Spicy
-              </span>
-            )}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 sm:pt-10 space-y-6 sm:space-y-8">
+        {/* QR Code Table Session Active Banner */}
+        {qrTableInfo && !qrTableInactive && (
+          <div className="p-4 sm:p-5 bg-ink text-ivory rounded-2xl border border-gold/30 flex flex-wrap items-center justify-between gap-3 animate-[lux-rise_0.6s_var(--ease-lux)]">
+            <div className="flex items-center gap-4">
+              <div className="w-11 h-11 rounded-full border border-gold/50 text-gold flex items-center justify-center shrink-0">
+                <QrCode className="w-5 h-5" strokeWidth={1.5} />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] uppercase font-bold tracking-[0.24em] text-gold">
+                    Table QR Session Active
+                  </span>
+                  <span className="px-2 py-0.5 bg-emerald-500/15 text-emerald-300 font-bold text-[9px] uppercase rounded-full border border-emerald-400/30">
+                    Verified
+                  </span>
+                </div>
+                <h3 className="lux-display text-2xl text-ivory mt-1">
+                  Ordering for {qrTableInfo.number} {qrTableInfo.location ? `(${qrTableInfo.location})` : ''}
+                </h3>
+              </div>
+            </div>
+            <span className="text-[10px] uppercase tracking-[0.2em] font-bold text-champagne px-3.5 py-2 rounded-full border border-gold/40 shrink-0">
+              Dine-in Locked
+            </span>
           </div>
-          <button
-            onClick={resetFilters}
-            className="text-amber-800 font-semibold hover:underline text-xs shrink-0 cursor-pointer"
-          >
-            Reset All
-          </button>
-        </div>
-      )}
+        )}
 
-      {/* Menu Dishes Grid */}
-      {loading ? (
-        <Spinner text="Fetching fresh menu items..." />
-      ) : items.length === 0 ? (
-        <EmptyState
-          icon={<UtensilsCrossed className="w-8 h-8" />}
-          title="No dishes found"
-          description="We couldn't find any menu items matching your search or filters."
-          actionText="Clear All Filters"
-          onAction={resetFilters}
-        />
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
-          {items.map((item) => (
-            <MenuItemCard key={item.id} item={item} />
-          ))}
-        </div>
-      )}
+        {/* Inactive Table Warning Banner */}
+        {qrTableInactive && (
+          <div className="p-4 bg-rose-950 text-white rounded-2xl border border-rose-800/80 flex items-center gap-3" role="alert">
+            <AlertCircle className="w-6 h-6 text-rose-300 shrink-0" />
+            <div>
+              <h3 className="font-bold text-sm text-white">
+                {qrTableInfo?.number} is Currently Unavailable
+              </h3>
+              <p className="text-xs text-rose-200 mt-0.5">
+                This table is deactivated or undergoing maintenance. Please speak to restaurant staff for table reassignment.
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* Active Filter Chips Summary */}
+        {hasActiveFilters && (
+          <div className="flex items-center justify-between text-xs text-stone-500">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="hidden sm:inline text-[10px] uppercase tracking-[0.2em] font-semibold text-stone-400">Filtered by</span>
+              {selectedCategory !== 'all' && (
+                <span className="px-3 py-1 rounded-full bg-white text-stone-800 border border-stone-200 font-medium text-[11px]">
+                  {categories.find((c) => c.id === selectedCategory)?.name || selectedCategory}
+                </span>
+              )}
+              {searchQuery && (
+                <span className="px-3 py-1 rounded-full bg-white text-stone-800 border border-stone-200 font-medium text-[11px]">
+                  "{searchQuery}"
+                </span>
+              )}
+              {vegOnly && (
+                <span className="px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 font-medium text-[11px]">
+                  Veg
+                </span>
+              )}
+              {spicyOnly && (
+                <span className="px-3 py-1 rounded-full bg-rose-50 text-rose-800 border border-rose-200 font-medium text-[11px]">
+                  Spicy
+                </span>
+              )}
+            </div>
+            <button
+              onClick={resetFilters}
+              className="lux-link text-stone-900 font-semibold text-xs shrink-0 cursor-pointer"
+            >
+              Reset All
+            </button>
+          </div>
+        )}
+
+        {/* Menu Dishes Grid */}
+        {loading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 sm:gap-6" aria-busy="true" aria-label="Fetching fresh menu items">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <div key={i} className="bg-[#fffdf9] border border-stone-200/70 overflow-hidden animate-pulse">
+                <div className="aspect-[4/3.4] bg-stone-200/60" />
+                <div className="p-5 space-y-3">
+                  <div className="h-2.5 w-1/3 bg-stone-200/80 rounded-full" />
+                  <div className="h-5 w-3/4 bg-stone-200/80 rounded-full" />
+                  <div className="h-3 w-full bg-stone-100 rounded-full" />
+                  <div className="h-3 w-2/3 bg-stone-100 rounded-full" />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : items.length === 0 ? (
+          <EmptyState
+            icon={<UtensilsCrossed className="w-8 h-8" />}
+            title="No dishes found"
+            description="We couldn't find any menu items matching your search or filters."
+            actionText="Clear All Filters"
+            onAction={resetFilters}
+          />
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 sm:gap-6">
+            {items.map((item, i) => (
+              <div
+                key={item.id}
+                className="animate-[lux-rise_0.7s_var(--ease-lux)_both]"
+                style={{ animationDelay: `${Math.min(i, 11) * 45}ms` }}
+              >
+                <MenuItemCard item={item} />
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
 
       {/* Floating Cart Bar if Items Exist in Cart (Mobile-friendly fixed container) */}
       {itemCount > 0 && (
-        <div className="fixed bottom-4 left-3 right-3 sm:left-1/2 sm:-translate-x-1/2 sm:max-w-md sm:w-full z-30 bg-stone-900 text-white p-3.5 sm:p-4 rounded-2xl shadow-2xl border border-amber-500/30 flex items-center justify-between animate-in slide-in-from-bottom-5">
+        <div className="fixed bottom-4 left-3 right-3 sm:left-1/2 sm:-translate-x-1/2 sm:max-w-md sm:w-full z-30 bg-ink/95 backdrop-blur-xl text-ivory p-2.5 pl-4 rounded-full shadow-[0_30px_60px_-20px_rgba(0,0,0,0.6)] border border-gold/25 flex items-center justify-between animate-[lux-rise_0.5s_var(--ease-lux)]">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-amber-600 flex items-center justify-center font-bold text-xs sm:text-sm shadow-xs shrink-0">
+            <div
+              key={itemCount}
+              className="w-9 h-9 rounded-full bg-gold text-ink flex items-center justify-center font-extrabold text-xs shrink-0 animate-[lux-pop_0.4s_var(--ease-lux)]"
+            >
               {itemCount}
             </div>
             <div>
-              <p className="text-[10px] sm:text-xs text-stone-400">Your Dining Cart</p>
-              <p className="font-mono font-bold text-sm sm:text-base text-amber-300">
+              <p className="text-[9.5px] uppercase tracking-[0.2em] text-ivory/50">Your Dining Cart</p>
+              <p className="font-mono font-semibold text-sm sm:text-base text-champagne">
                 {formatCurrency(total)}
               </p>
             </div>
@@ -378,7 +410,7 @@ export const MenuPage: React.FC<{ navigate: (route: string) => void }> = ({ navi
 
           <button
             onClick={() => navigate('cart')}
-            className="px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs uppercase tracking-wider flex items-center gap-1.5 shadow-md transition-all cursor-pointer"
+            className="lux-btn lux-btn-gold !min-h-[2.75rem] !px-5"
           >
             <ShoppingBag className="w-4 h-4" />
             <span>View Cart</span>

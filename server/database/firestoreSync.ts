@@ -45,6 +45,17 @@ export function resetQuotaCircuitBreaker(): void {
  * are not available.
  */
 export function getFirestoreDb(): Firestore | null {
+  // Automated tests never get a Firestore client unless they opt in to the
+  // emulator, so code paths that use the client directly (e.g. order
+  // transactions) cannot reach a live project.
+  if (
+    (process.env.IS_TEST_RUN === 'true' ||
+      process.env.NODE_ENV === 'test') &&
+    !(process.env.USE_REAL_FIRESTORE === 'true' && process.env.FIRESTORE_EMULATOR_HOST)
+  ) {
+    return null;
+  }
+
   if (Date.now() < quotaExhaustedUntil) {
     return null;
   }
@@ -151,12 +162,13 @@ function handleFirestoreError(
   const isQuotaError =
     errCode === 8 ||
     errMsg.includes('RESOURCE_EXHAUSTED') ||
-    errMsg.includes('Quota exceeded') ||
-    errMsg.toLowerCase().includes('quota');
+    errMsg.includes('Quota exceeded');
 
   if (isQuotaError) {
+    // Production re-probes quickly (writes fail closed while tripped);
+    // development keeps the long back-off and falls back to the local file.
     quotaExhaustedUntil =
-      Date.now() + 15 * 60 * 1000;
+      Date.now() + (process.env.NODE_ENV === 'production' ? 60 * 1000 : 15 * 60 * 1000);
 
     if (
       Date.now() - lastQuotaWarningTime >
@@ -183,6 +195,13 @@ function handleFirestoreError(
   );
 }
 
+function firestoreUnavailableError(): Error {
+  const err: any = new Error('The database is temporarily unavailable. Please try again in a minute.');
+  err.status = 503;
+  err.code = 'DATABASE_UNAVAILABLE';
+  return err;
+}
+
 /**
  * Awaited synchronous document write to Firestore.
  *
@@ -202,13 +221,14 @@ export async function saveDocToFirestore(
     return;
   }
 
-  if (Date.now() < quotaExhaustedUntil) {
-    return;
-  }
-
   const db = getFirestoreDb();
 
   if (!db) {
+    // In production Firestore is the only durable store: never report a
+    // write or delete as successful when it was not persisted.
+    if (process.env.NODE_ENV === 'production') {
+      throw firestoreUnavailableError();
+    }
     return;
   }
 
@@ -279,13 +299,14 @@ export async function deleteDocFromFirestore(
     return;
   }
 
-  if (Date.now() < quotaExhaustedUntil) {
-    return;
-  }
-
   const db = getFirestoreDb();
 
   if (!db) {
+    // In production Firestore is the only durable store: never report a
+    // write or delete as successful when it was not persisted.
+    if (process.env.NODE_ENV === 'production') {
+      throw firestoreUnavailableError();
+    }
     return;
   }
 

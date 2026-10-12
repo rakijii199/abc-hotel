@@ -1,3 +1,4 @@
+import crypto from 'crypto';
 import { OrderRepository } from '../repositories/orderRepository.ts';
 import { InvoiceRepository } from '../repositories/invoiceRepository.ts';
 import { NotificationRepository } from '../repositories/notificationRepository.ts';
@@ -115,7 +116,7 @@ export class BillingService {
     const grandTotal = Math.round(taxableAmount + taxAmount + serviceCharge);
 
     const invoiceNumber = InvoiceRepository.getNextInvoiceNumber(settings.invoicePrefix);
-    const publicToken = `inv_pub_${Date.now()}_${Math.random().toString(36).substring(2, 12)}`;
+    const publicToken = `inv_pub_${crypto.randomBytes(24).toString('base64url')}`;
     const invoiceId = `inv_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
 
     // Set invoice ID on items
@@ -222,6 +223,17 @@ export class BillingService {
       throw new Error('Cannot process payment for a voided or cancelled invoice.');
     }
 
+    // Never record a second collection for a bill that is already settled
+    // (for example paid online before the cashier marks it).
+    if (invoice.paymentStatus === 'PAID' || order.paymentStatus === 'PAID') {
+      const err: any = new Error('This bill has already been paid.');
+      err.status = 409;
+      throw err;
+    }
+    if (order.status === 'CANCELLED') {
+      throw new Error('Cannot collect payment for a cancelled order.');
+    }
+
     const ref = paymentDetails?.reference || `${paymentMethod}-${Date.now().toString().slice(-6)}`;
 
     // Mark Invoice Paid
@@ -323,7 +335,15 @@ export class BillingService {
     if (!invoice) {
       throw new Error('Invoice not found or invalid access token.');
     }
-    return invoice;
+    // Anyone holding the link can open it, so expose only what a printed bill
+    // shows: no email, internal ids, or full phone number.
+    const { customerEmail, customerId, orderId, publicToken: _token, ...publicFields } = invoice as any;
+    const phone = String(invoice.customerPhone || '');
+    const phoneDigits = phone.replace(/\D/g, '');
+    return {
+      ...publicFields,
+      customerPhone: phoneDigits.length >= 4 ? `•••••• ${phoneDigits.slice(-4)}` : phone
+    };
   }
 
   /**

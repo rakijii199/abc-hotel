@@ -278,35 +278,38 @@ export const InvoiceViewModal: React.FC<InvoiceViewModalProps> = ({
           </div>
 
           {/* Items Table */}
-          <table className="w-full my-4 border-collapse text-xs">
-            <thead>
-              <tr className="border-b-2 border-stone-200 text-stone-500 uppercase text-[10px]">
-                <th className="py-2 text-left">Item Description</th>
-                <th className="py-2 text-center">Qty</th>
-                <th className="py-2 text-right">Unit Price</th>
-                <th className="py-2 text-right">Amount</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-stone-100">
-              {invoice.items.map((item) => (
-                <tr key={item.id}>
-                  <td className="py-2.5 pr-2 font-medium text-stone-900">
-                    <div>{item.productNameSnapshot}</div>
-                    {item.specialInstructions && (
-                      <div className="text-[10px] text-stone-400 italic font-normal">
-                        Note: {item.specialInstructions}
-                      </div>
-                    )}
-                  </td>
-                  <td className="py-2.5 text-center font-mono font-bold">{item.quantity}</td>
-                  <td className="py-2.5 text-right font-mono">{formatCurrency(item.unitPriceSnapshot)}</td>
-                  <td className="py-2.5 text-right font-mono font-bold text-stone-900">
-                    {formatCurrency(item.lineTotal)}
-                  </td>
+          {/* Scrolls horizontally inside the invoice on narrow phones */}
+          <div className="my-4 overflow-x-auto">
+            <table className="w-full min-w-[420px] border-collapse text-xs">
+              <thead>
+                <tr className="border-b-2 border-stone-200 text-stone-500 uppercase text-[10px]">
+                  <th className="py-2 text-left">Item Description</th>
+                  <th className="py-2 text-center">Qty</th>
+                  <th className="py-2 text-right">Unit Price</th>
+                  <th className="py-2 text-right">Amount</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="divide-y divide-stone-100">
+                {invoice.items.map((item) => (
+                  <tr key={item.id}>
+                    <td className="py-2.5 pr-2 font-medium text-stone-900">
+                      <div>{item.productNameSnapshot}</div>
+                      {item.specialInstructions && (
+                        <div className="text-[10px] text-stone-400 italic font-normal">
+                          Note: {item.specialInstructions}
+                        </div>
+                      )}
+                    </td>
+                    <td className="py-2.5 text-center font-mono font-bold">{item.quantity}</td>
+                    <td className="py-2.5 text-right font-mono">{formatCurrency(item.unitPriceSnapshot)}</td>
+                    <td className="py-2.5 text-right font-mono font-bold text-stone-900">
+                      {formatCurrency(item.lineTotal)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
 
           {/* Financial Totals */}
           <div className="space-y-1.5 text-xs text-right border-t-2 border-stone-200 pt-3 max-w-xs ml-auto">

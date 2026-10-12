@@ -9,6 +9,8 @@ import { NotificationRepository } from '../repositories/notificationRepository.t
 import { AuditRepository } from '../repositories/auditRepository.ts';
 import { Order, OrderStatus } from '../types/index.ts';
 
+const KITCHEN_WORKFLOW_STATUSES: OrderStatus[] = ['CONFIRMED', 'PREPARING', 'READY', 'SERVED'];
+
 export class KitchenController {
   /**
    * Get Active Kitchen Tickets
@@ -90,6 +92,17 @@ export class KitchenController {
     try {
       const { id } = req.params;
       const { status } = req.body as { status: OrderStatus };
+
+      // The kitchen display only drives the cooking workflow. Cancelling or
+      // completing an order goes through the admin endpoints, which enforce the
+      // role matrix and restore stock.
+      if (!KITCHEN_WORKFLOW_STATUSES.includes(status)) {
+        res.status(403).json({
+          success: false,
+          error: { code: 'STATUS_NOT_ALLOWED', message: 'This status cannot be set from the kitchen display.' }
+        });
+        return;
+      }
 
       const order = await OrderRepository.getById(id);
       if (!order) {

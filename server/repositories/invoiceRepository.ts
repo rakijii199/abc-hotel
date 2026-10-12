@@ -115,10 +115,23 @@ export class InvoiceRepository {
   public static getNextInvoiceNumber(prefix?: string): string {
     const pfx = prefix || db.billingSettings.invoicePrefix || 'INV';
     const year = new Date().getFullYear();
-    db.invoiceCounter += 1;
-    const seq = db.invoiceCounter.toString().padStart(6, '0');
+    // The counter is not persisted in production, so continue from the highest
+    // invoice number already issued (loaded from Firestore at startup) and never
+    // hand out a number that already exists.
+    let highestIssued = 0;
+    for (const inv of db.invoices.values()) {
+      const seqMatch = /(\d+)$/.exec(inv.invoiceNumber || '');
+      if (seqMatch) highestIssued = Math.max(highestIssued, parseInt(seqMatch[1], 10));
+    }
+    let next = Math.max(db.invoiceCounter, highestIssued) + 1;
+    let candidate = `${pfx}-${year}-${next.toString().padStart(6, '0')}`;
+    while (db.invoiceNumberIndex.has(candidate.toUpperCase())) {
+      next += 1;
+      candidate = `${pfx}-${year}-${next.toString().padStart(6, '0')}`;
+    }
+    db.invoiceCounter = next;
     db.persist();
-    return `${pfx}-${year}-${seq}`;
+    return candidate;
   }
 
   public static getSettings(): BillingSettings {

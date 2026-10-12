@@ -1,34 +1,88 @@
 /**
  * Landing Page for ABC Hotel & Restaurant
- * Optimized for mobile, tablet, and desktop viewports
+ * Cinematic, editorial presentation. Optimized for mobile, tablet, and desktop viewports.
  */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { m, useScroll, useTransform } from 'motion/react';
 import {
-  UtensilsCrossed,
   Calendar,
-  Award,
-  Sparkles,
-  Star,
+  UtensilsCrossed,
+  ShieldCheck,
+  ArrowRight,
+  ArrowUpRight,
+  Wine,
+  HeartHandshake,
   Clock,
   MapPin,
   Phone,
-  ShieldCheck,
-  ChevronRight,
-  ArrowRight,
-  Wine,
-  HeartHandshake,
-  ShoppingBag
+  Mail
 } from 'lucide-react';
 import { MenuItem } from '../types/index.ts';
 import { MenuApi } from '../api/index.ts';
 import { MenuItemCard } from '../components/menu/MenuItemCard.tsx';
 import { Spinner } from '../components/common/Footer.tsx';
 import { useAuth } from '../context/AuthContext.tsx';
+import { HeroStage } from '../components/customer/HeroStage.tsx';
+import { LUX_EASE, LUX_IMAGES, Reveal, hideOnError, luxImage } from '../components/customer/Reveal.tsx';
+
+const DINING_MODES = [
+  {
+    title: 'Dine-in',
+    caption: 'At your table',
+    text: 'Order at the table, add courses as the evening unfolds, and settle when you leave.',
+    image: luxImage(LUX_IMAGES.diningRoom, 900)
+  },
+  {
+    title: 'Room Service',
+    caption: 'To your suite',
+    text: 'The full menu, prepared to order and brought to your room.',
+    image: luxImage(LUX_IMAGES.hotel, 900)
+  },
+  {
+    title: 'Takeaway',
+    caption: 'Ready to collect',
+    text: 'Order ahead and collect your meal freshly packed from our kitchen.',
+    image: luxImage(LUX_IMAGES.dishB, 900)
+  },
+  {
+    title: 'Delivery',
+    caption: 'To your door',
+    text: 'Restaurant-grade dishes delivered, with live tracking from kitchen to doorstep.',
+    image: luxImage(LUX_IMAGES.dishC, 900)
+  }
+];
+
+const STANDARDS = [
+  {
+    title: 'Your Table, Guaranteed',
+    text: 'The table you choose is held exclusively for you the moment you book, so there are never double bookings.'
+  },
+  {
+    title: 'Authentic Artisanal Ingredients',
+    text: 'Farm-fresh produce, slow-cooked overnight curries, hand-ground spices and cold-pressed oils, with no preservatives.'
+  },
+  {
+    title: 'Real-Time Kitchen Tracking',
+    text: "Follow your order live from the chef's tandoor to your table or suite, with accurate preparation milestones."
+  }
+];
 
 export const HomePage: React.FC<{ navigate: (route: string, state?: any) => void }> = ({ navigate }) => {
   const { isAuthenticated } = useAuth();
   const [featuredDishes, setFeaturedDishes] = useState<MenuItem[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const heroRef = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({ target: heroRef, offset: ['start start', 'end start'] });
+  const bgY = useTransform(scrollYProgress, [0, 1], ['0%', '18%']);
+  const contentY = useTransform(scrollYProgress, [0, 1], ['0%', '-12%']);
+  const stageY = useTransform(scrollYProgress, [0, 1], ['0%', '-22%']);
+  const heroFade = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
+
+  const storyRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress: storyProgress } = useScroll({ target: storyRef, offset: ['start end', 'end start'] });
+  const storyBackY = useTransform(storyProgress, [0, 1], ['6%', '-6%']);
+  const storyFrontY = useTransform(storyProgress, [0, 1], ['18%', '-18%']);
 
   const handleBookTable = () => {
     if (isAuthenticated) {
@@ -67,350 +121,429 @@ export const HomePage: React.FC<{ navigate: (route: string, state?: any) => void
   }, []);
 
   return (
-    <div className="space-y-16 sm:space-y-24 pb-12 overflow-x-hidden">
-      {/* Hero Section */}
-      <section className="relative min-h-[520px] sm:min-h-[580px] lg:min-h-[640px] rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl mx-3 sm:mx-6 lg:mx-8 mt-3 sm:mt-4 bg-stone-900 flex items-center">
-        {/* Background Image with Dark Overlay */}
-        <div className="absolute inset-0 z-0">
+    <div className="lux-home overflow-x-clip">
+      {/* ------------------------------------------------------------------ */}
+      {/* Cinematic Hero                                                      */}
+      {/* ------------------------------------------------------------------ */}
+      <section
+        ref={heroRef}
+        className="relative min-h-[100svh] bg-ink text-ivory overflow-hidden flex items-center lux-grain"
+      >
+        <m.div style={{ y: bgY }} className="absolute inset-0 will-change-transform">
           <img
-            src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1600&auto=format&fit=crop&q=85"
-            alt="ABC Hotel Luxury Restaurant Interior"
-            className="w-full h-full object-cover object-center opacity-40 scale-105"
+            src={luxImage(LUX_IMAGES.interior, 2000)}
+            alt="Candle-lit dining room at ABC Hotel"
+            fetchPriority="high"
+            onError={hideOnError}
+            className="w-full h-full object-cover opacity-55 lux-kenburns"
           />
-          <div className="absolute inset-0 bg-gradient-to-t sm:bg-gradient-to-r from-black/95 via-black/75 to-black/40" />
-        </div>
+        </m.div>
+        <div className="absolute inset-0 bg-gradient-to-r from-ink via-ink/75 to-ink/20" />
+        <div className="absolute inset-0 bg-gradient-to-t from-ink via-transparent to-ink/40" />
+        <div className="absolute -top-40 -left-40 w-[640px] h-[640px] rounded-full bg-wine/30 blur-[140px] pointer-events-none" />
 
-        {/* Hero Content */}
-        <div className="relative z-10 max-w-4xl px-4 sm:px-10 lg:px-16 py-10 sm:py-16 text-white space-y-4 sm:space-y-6">
-          <div className="inline-flex items-center gap-1.5 sm:gap-2 px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-full bg-amber-500/20 border border-amber-400/40 backdrop-blur-md text-amber-300 text-[11px] sm:text-xs font-semibold tracking-wider uppercase">
-            <Sparkles className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-            <span>Michelin Recommended Luxury</span>
-          </div>
-
-          <h1 className="font-serif text-3xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.15] text-balance">
-            Experience Exceptional Dining at <span className="text-amber-400 italic">ABC Hotel</span>
-          </h1>
-
-          <p className="text-sm sm:text-base lg:text-lg text-stone-300 max-w-2xl leading-relaxed font-light">
-            Reserve your table, explore our award-winning menu, and immerse in a seamless symphony of rich royal heritage and modern culinary artistry.
-          </p>
-
-          {/* Hero CTAs */}
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 pt-2 sm:pt-4">
-            <button
-              onClick={handleBookTable}
-              className="w-full sm:w-auto px-6 sm:px-8 py-3.5 sm:py-4 rounded-xl bg-amber-600 hover:bg-amber-500 active:bg-amber-700 text-white font-semibold text-sm sm:text-base shadow-lg hover:shadow-amber-600/30 transition-all flex items-center justify-center gap-2 group cursor-pointer"
+        <m.div
+          style={{ opacity: heroFade }}
+          className="relative w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-24 sm:pt-32 lg:pt-28 grid lg:grid-cols-[1.15fr_0.85fr] gap-12 items-center"
+        >
+          <m.div style={{ y: contentY }}>
+            <m.p
+              initial={{ opacity: 0, y: 14 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1, ease: LUX_EASE, delay: 0.1 }}
+              className="lux-eyebrow text-gold"
             >
-              <Calendar className="w-4 h-4 text-amber-200 group-hover:scale-110 transition-transform" />
-              <span>Book a Table</span>
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-            </button>
+              ABC Hotel · Fine Dining & Suites
+            </m.p>
 
-            <button
-              onClick={handleBookOrder}
-              className="w-full sm:w-auto px-6 sm:px-8 py-3.5 sm:py-4 rounded-xl bg-white/15 hover:bg-white/25 active:bg-white/30 backdrop-blur-md border border-white/20 text-white font-semibold text-sm sm:text-base shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
+            <h1 className="lux-display mt-7 text-[clamp(3.1rem,8.4vw,7.4rem)] text-ivory">
+              <m.span
+                initial={{ opacity: 0, y: 40 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 1.2, ease: LUX_EASE, delay: 0.2 }}
+                className="block"
+              >
+                Exceptional Dining.
+              </m.span>
+              <m.span
+                initial={{ opacity: 0, y: 40 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 1.2, ease: LUX_EASE, delay: 0.35 }}
+                className="block italic font-normal text-champagne"
+              >
+                Unforgettable Evenings.
+              </m.span>
+            </h1>
+
+            <m.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1, ease: LUX_EASE, delay: 0.55 }}
+              className="mt-7 max-w-lg text-[15px] sm:text-base text-ivory/70 leading-relaxed"
             >
-              <ShoppingBag className="w-4 h-4 text-amber-300" />
-              <span>Book an Order</span>
-            </button>
-          </div>
+              Reserve your table, explore our menu, and enjoy heritage recipes reimagined with modern culinary
+              artistry, served at your table, in your suite, or at your door.
+            </m.p>
 
-          {/* Quick Metrics Bar */}
-          <div className="pt-6 sm:pt-8 grid grid-cols-3 gap-2 sm:gap-6 max-w-lg border-t border-white/10 text-center sm:text-left">
-            <div>
-              <span className="font-serif text-lg sm:text-2xl font-bold text-amber-400 block">4.9 / 5</span>
-              <span className="text-stone-400 text-[10px] sm:text-xs">Guest Rating</span>
-            </div>
-            <div>
-              <span className="font-serif text-lg sm:text-2xl font-bold text-amber-400 block">100%</span>
-              <span className="text-stone-400 text-[10px] sm:text-xs">Instant Lock</span>
-            </div>
-            <div>
-              <span className="font-serif text-lg sm:text-2xl font-bold text-amber-400 block">12 AM - 11 PM</span>
-              <span className="text-stone-400 text-[10px] sm:text-xs">Daily Service</span>
-            </div>
-          </div>
+            <m.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1, ease: LUX_EASE, delay: 0.7 }}
+              className="mt-10 flex flex-col sm:flex-row gap-3 sm:gap-4"
+            >
+              <button onClick={handleBookOrder} className="lux-btn lux-btn-gold">
+                <UtensilsCrossed className="w-4 h-4" />
+                <span>Order from the Menu</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
+              <button onClick={handleBookTable} className="lux-btn lux-btn-ghost">
+                <Calendar className="w-4 h-4 text-champagne" />
+                <span>Reserve a Table</span>
+              </button>
+            </m.div>
+
+            <m.dl
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 1.2, delay: 1 }}
+              className="mt-14 grid grid-cols-3 gap-4 max-w-lg border-t border-white/10 pt-6"
+            >
+              <div>
+                <dt className="text-[9.5px] uppercase tracking-[0.24em] text-ivory/45">Open Daily</dt>
+                <dd className="font-display text-lg sm:text-2xl text-ivory mt-1">9 AM – 11 PM</dd>
+              </div>
+              <div>
+                <dt className="text-[9.5px] uppercase tracking-[0.24em] text-ivory/45">Ways to Dine</dt>
+                <dd className="font-display text-lg sm:text-2xl text-ivory mt-1">Four</dd>
+              </div>
+              <div>
+                <dt className="text-[9.5px] uppercase tracking-[0.24em] text-ivory/45">Orders</dt>
+                <dd className="font-display text-lg sm:text-2xl text-ivory mt-1">Live Tracked</dd>
+              </div>
+            </m.dl>
+          </m.div>
+
+          <m.div
+            style={{ y: stageY }}
+            initial={{ opacity: 0, scale: 0.94 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 1.6, ease: LUX_EASE, delay: 0.3 }}
+            className="hidden lg:block"
+          >
+            <HeroStage dishes={featuredDishes} />
+          </m.div>
+        </m.div>
+
+        {/* Scroll cue */}
+        <div className="absolute bottom-7 left-1/2 -translate-x-1/2 hidden sm:flex flex-col items-center gap-3 text-[9px] uppercase tracking-[0.3em] text-ivory/45">
+          <span>Scroll</span>
+          <span className="w-px h-10 bg-ivory/15 overflow-hidden">
+            <span className="block w-full h-full bg-champagne lux-scroll-cue" />
+          </span>
         </div>
       </section>
 
-      {/* Quick Booking Strip */}
-      <section className="max-w-6xl mx-auto px-3 sm:px-6 -mt-6 sm:-mt-12 relative z-20">
-        <div className="bg-white rounded-2xl sm:rounded-3xl shadow-xl border border-stone-200/80 p-4 sm:p-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 items-center">
-          <div className="flex items-center gap-3 p-1 sm:p-2">
-            <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center shrink-0">
-              <Calendar className="w-5 h-5" />
-            </div>
-            <div>
-              <p className="text-[11px] sm:text-xs text-stone-400 font-medium">Step 1</p>
-              <p className="text-xs sm:text-sm font-bold text-stone-800">Select Date & Time</p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3 p-1 sm:p-2">
-            <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center shrink-0">
-              <UtensilsCrossed className="w-5 h-5" />
-            </div>
-            <div>
-              <p className="text-[11px] sm:text-xs text-stone-400 font-medium">Step 2</p>
-              <p className="text-xs sm:text-sm font-bold text-stone-800">Pick Table & Floor</p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3 p-1 sm:p-2">
-            <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center shrink-0">
-              <ShieldCheck className="w-5 h-5" />
-            </div>
-            <div>
-              <p className="text-[11px] sm:text-xs text-stone-400 font-medium">Step 3</p>
-              <p className="text-xs sm:text-sm font-bold text-stone-800">Instant Guarantee</p>
-            </div>
-          </div>
-
-          <div className="pt-2 sm:pt-0">
-            <button
-              onClick={handleBookTable}
-              className="w-full py-3.5 px-4 rounded-xl bg-stone-900 hover:bg-stone-800 text-amber-300 font-semibold text-xs sm:text-sm transition-all text-center flex items-center justify-center gap-2 shadow-md cursor-pointer"
-            >
+      {/* ------------------------------------------------------------------ */}
+      {/* Reservation in three moments                                        */}
+      {/* ------------------------------------------------------------------ */}
+      <section className="relative bg-charcoal text-ivory border-t border-white/5">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12 grid grid-cols-1 md:grid-cols-[1fr_1fr_1fr_auto] gap-6 md:gap-10 items-center">
+          {[
+            { icon: Calendar, step: '01', label: 'Select Date & Time' },
+            { icon: UtensilsCrossed, step: '02', label: 'Pick Table & Floor' },
+            { icon: ShieldCheck, step: '03', label: 'Instant Guarantee' }
+          ].map(({ icon: Icon, step, label }, i) => (
+            <Reveal key={step} delay={i * 0.08} y={16}>
+              <div className="flex items-center gap-4">
+                <span className="w-12 h-12 shrink-0 rounded-full border border-gold/40 flex items-center justify-center text-gold">
+                  <Icon className="w-[18px] h-[18px]" strokeWidth={1.5} />
+                </span>
+                <div>
+                  <p className="text-[9.5px] uppercase tracking-[0.26em] text-ivory/45">Step {step}</p>
+                  <p className="font-display text-xl text-ivory mt-0.5">{label}</p>
+                </div>
+              </div>
+            </Reveal>
+          ))}
+          <Reveal delay={0.24} y={16}>
+            <button onClick={handleBookTable} className="lux-btn lux-btn-wine w-full md:w-auto">
               <span>Reserve Table Now</span>
-              <ChevronRight className="w-4 h-4" />
+              <ArrowRight className="w-4 h-4" />
             </button>
-          </div>
+          </Reveal>
         </div>
       </section>
 
-      {/* About ABC Hotel Section */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 items-center">
-          <div className="space-y-4 sm:space-y-6">
-            <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-amber-800">
-              <Award className="w-4 h-4 text-amber-600" />
-              <span>About ABC Hotel & Fine Dining</span>
-            </div>
-
-            <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-stone-900 leading-tight">
-              A Legacy of Regal Flavors & Sophisticated Comfort
-            </h2>
-
-            <p className="text-stone-600 text-xs sm:text-sm lg:text-base leading-relaxed">
-              Established with an enduring passion for culinary excellence, <strong>ABC Hotel</strong> blends timeless architectural elegance with bespoke hospitality. Our master chefs draw inspiration from century-old royal recipes and fresh organic harvests, presenting authentic delicacies paired with curated vintage selections.
-            </p>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 pt-2">
-              <div className="p-4 rounded-2xl bg-amber-50/70 border border-amber-200/60">
-                <Wine className="w-5 h-5 sm:w-6 sm:h-6 text-amber-700 mb-2" />
-                <h4 className="font-serif font-bold text-stone-900 text-sm">Fine Dining Cellar</h4>
-                <p className="text-xs text-stone-500 mt-1">Artisanal mocktails & global botanical infusions.</p>
-              </div>
-
-              <div className="p-4 rounded-2xl bg-amber-50/70 border border-amber-200/60">
-                <HeartHandshake className="w-5 h-5 sm:w-6 sm:h-6 text-amber-700 mb-2" />
-                <h4 className="font-serif font-bold text-stone-900 text-sm">White-Glove Service</h4>
-                <p className="text-xs text-stone-500 mt-1">Dedicated concierge and customized event styling.</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="relative mt-4 lg:mt-0">
-            <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl aspect-4/3 border-4 border-white">
+      {/* ------------------------------------------------------------------ */}
+      {/* Story                                                               */}
+      {/* ------------------------------------------------------------------ */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 sm:py-32">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-14 lg:gap-10 items-center">
+          <div ref={storyRef} className="lg:col-span-6 relative h-[420px] sm:h-[560px]">
+            <m.div
+              style={{ y: storyBackY }}
+              className="absolute top-0 left-0 w-[78%] h-[82%] overflow-hidden lux-zoom shadow-[0_40px_80px_-40px_rgba(26,23,21,0.6)]"
+            >
               <img
-                src="https://images.unsplash.com/photo-1550966871-3ed3cdb5ed0c?w=1000&auto=format&fit=crop&q=80"
-                alt="ABC Hotel Dining Room"
+                src={luxImage(LUX_IMAGES.diningRoom, 1100)}
+                alt="The ABC Hotel dining room"
+                loading="lazy"
+                onError={hideOnError}
                 className="w-full h-full object-cover"
               />
-            </div>
-            <div className="absolute -bottom-4 -left-4 sm:-bottom-6 sm:-left-6 bg-white p-4 sm:p-5 rounded-2xl shadow-xl border border-stone-200 max-w-[260px] sm:max-w-xs">
-              <div className="flex items-center gap-1 text-amber-500 mb-1">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="w-3.5 h-3.5 fill-amber-400" />
-                ))}
-              </div>
-              <p className="text-[11px] sm:text-xs font-semibold text-stone-800">
-                "An unforgettable evening. The Truffle Malai Tikka and Dal Makhani are masterworks."
+            </m.div>
+            <m.div
+              style={{ y: storyFrontY }}
+              className="absolute bottom-0 right-0 w-[52%] h-[52%] overflow-hidden border-[6px] border-ivory shadow-[0_40px_80px_-30px_rgba(26,23,21,0.7)] lux-zoom"
+            >
+              <img
+                src={luxImage(LUX_IMAGES.plated, 800)}
+                alt="A plated dish from the ABC kitchen"
+                loading="lazy"
+                onError={hideOnError}
+                className="w-full h-full object-cover"
+              />
+            </m.div>
+            <div className="absolute -bottom-6 left-[8%] w-24 h-24 border border-gold/50 -z-10 hidden sm:block" />
+          </div>
+
+          <div className="lg:col-span-5 lg:col-start-8">
+            <Reveal>
+              <p className="lux-eyebrow text-amber-700">About ABC Hotel & Fine Dining</p>
+              <h2 className="lux-display text-[clamp(2.5rem,5vw,4.25rem)] text-stone-900 mt-6 text-balance">
+                A legacy of regal flavours <em className="text-wine font-normal">&amp; sophisticated comfort.</em>
+              </h2>
+            </Reveal>
+            <Reveal delay={0.1}>
+              <p className="mt-7 text-stone-600 text-[15px] leading-[1.8]">
+                Established with an enduring passion for culinary excellence, ABC Hotel blends timeless architectural
+                elegance with bespoke hospitality. Our chefs draw inspiration from time-honoured royal recipes and fresh
+                organic harvests, presenting authentic delicacies with care.
               </p>
-              <p className="text-[10px] text-stone-400 mt-1">— Gastronomy Guide 2026</p>
-            </div>
+            </Reveal>
+            <Reveal delay={0.18}>
+              <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 gap-px bg-stone-200 border border-stone-200">
+                <div className="bg-ivory p-6">
+                  <Wine className="w-6 h-6 text-wine" strokeWidth={1.4} />
+                  <h3 className="font-display text-2xl text-stone-900 mt-4">Fine Dining Cellar</h3>
+                  <p className="text-[13px] text-stone-500 mt-1.5 leading-relaxed">Artisanal mocktails & global botanical infusions.</p>
+                </div>
+                <div className="bg-ivory p-6">
+                  <HeartHandshake className="w-6 h-6 text-wine" strokeWidth={1.4} />
+                  <h3 className="font-display text-2xl text-stone-900 mt-4">White-Glove Service</h3>
+                  <p className="text-[13px] text-stone-500 mt-1.5 leading-relaxed">Dedicated concierge and customized event styling.</p>
+                </div>
+              </div>
+            </Reveal>
           </div>
         </div>
       </section>
 
-      {/* Featured Chef Specials */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6 sm:space-y-8">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 sm:gap-4">
-          <div>
-            <span className="text-xs font-bold uppercase tracking-widest text-amber-800 block mb-1">
-              Culinary Highlights
-            </span>
-            <h2 className="font-serif text-2xl sm:text-3xl font-bold text-stone-900">
-              Chef's Signature Dishes
-            </h2>
+      {/* ------------------------------------------------------------------ */}
+      {/* Chef's signature dishes (live menu data)                            */}
+      {/* ------------------------------------------------------------------ */}
+      <section className="bg-cream/60 border-y border-stone-200/70">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 sm:py-28">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12 sm:mb-14">
+            <Reveal>
+              <p className="lux-eyebrow text-amber-700">Culinary Highlights</p>
+              <h2 className="lux-display text-[clamp(2.5rem,5vw,4.25rem)] text-stone-900 mt-5">
+                Chef&rsquo;s <em className="font-normal text-wine">Signature</em> Dishes
+              </h2>
+            </Reveal>
+            <Reveal delay={0.1}>
+              <button
+                onClick={() => navigate('menu')}
+                className="lux-link text-[11px] font-bold uppercase tracking-[0.22em] text-stone-900 cursor-pointer"
+              >
+                <span>View Complete Menu</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            </Reveal>
           </div>
 
-          <button
-            onClick={() => navigate('menu')}
-            className="text-xs sm:text-sm font-bold text-amber-800 hover:text-amber-900 flex items-center gap-1.5 transition-colors group cursor-pointer"
-          >
-            <span>View Complete Menu</span>
-            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-          </button>
+          {loading ? (
+            <Spinner text="Loading gourmet specials..." />
+          ) : featuredDishes.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6">
+              {featuredDishes.map((item, i) => (
+                <Reveal key={item.id} delay={i * 0.08}>
+                  <MenuItemCard item={item} />
+                </Reveal>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-12 border border-dashed border-stone-300">
+              <p className="font-display text-2xl text-stone-800">Our full menu awaits.</p>
+              <button onClick={() => navigate('menu')} className="lux-btn lux-btn-outline mt-6">
+                Browse the Menu
+              </button>
+            </div>
+          )}
         </div>
+      </section>
 
-        {loading ? (
-          <Spinner text="Loading gourmet specials..." />
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-            {featuredDishes.map((item) => (
-              <MenuItemCard key={item.id} item={item} />
+      {/* ------------------------------------------------------------------ */}
+      {/* Ways to dine                                                        */}
+      {/* ------------------------------------------------------------------ */}
+      <section className="relative bg-ink text-ivory overflow-hidden lux-grain">
+        <div className="absolute -bottom-40 -right-40 w-[600px] h-[600px] rounded-full bg-wine/25 blur-[140px] pointer-events-none" />
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 sm:py-32">
+          <div className="grid lg:grid-cols-2 gap-6 items-end mb-14">
+            <Reveal>
+              <p className="lux-eyebrow text-gold">The Experience</p>
+              <h2 className="lux-display text-[clamp(2.5rem,5vw,4.25rem)] mt-5">
+                One kitchen. <em className="font-normal text-champagne">Four ways to dine.</em>
+              </h2>
+            </Reveal>
+            <Reveal delay={0.1}>
+              <p className="text-ivory/60 text-[15px] leading-relaxed lg:max-w-md lg:ml-auto">
+                Whether you are seated in our dining room, resting in your suite, or ordering from home, every dish is
+                prepared fresh to order.
+              </p>
+            </Reveal>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 [perspective:1200px]">
+            {DINING_MODES.map((mode, i) => (
+              <Reveal key={mode.title} delay={i * 0.08}>
+                <button
+                  onClick={handleBookOrder}
+                  className="group relative block w-full text-left aspect-[3/4] overflow-hidden bg-charcoal cursor-pointer transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] hover:[transform:rotateX(3deg)_translateY(-6px)] focus-visible:[transform:translateY(-6px)]"
+                  aria-label={`${mode.title}: ${mode.text}`}
+                >
+                  <img
+                    src={mode.image}
+                    alt=""
+                    loading="lazy"
+                    onError={hideOnError}
+                    className="absolute inset-0 w-full h-full object-cover opacity-70 transition-all duration-[1200ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.07] group-hover:opacity-85"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/40 to-transparent" />
+                  <div className="absolute inset-3 border border-white/0 group-hover:border-gold/40 transition-colors duration-700" />
+                  <div className="absolute inset-x-0 bottom-0 p-6">
+                    <p className="text-[9.5px] uppercase tracking-[0.28em] text-gold">{mode.caption}</p>
+                    <div className="flex items-end justify-between gap-3 mt-2">
+                      <h3 className="font-display text-3xl text-ivory leading-none">{mode.title}</h3>
+                      <ArrowUpRight className="w-5 h-5 text-champagne shrink-0 transition-transform duration-500 group-hover:-translate-y-1 group-hover:translate-x-1" />
+                    </div>
+                    <p className="text-[13px] text-ivory/60 leading-relaxed mt-3 max-h-0 opacity-0 group-hover:max-h-24 group-hover:opacity-100 group-focus-visible:max-h-24 group-focus-visible:opacity-100 transition-all duration-700 overflow-hidden">
+                      {mode.text}
+                    </p>
+                  </div>
+                </button>
+              </Reveal>
             ))}
           </div>
-        )}
+        </div>
       </section>
 
-      {/* Why Choose Us */}
-      <section className="bg-stone-900 text-white py-12 sm:py-16 -mx-3 sm:-mx-6 lg:-mx-8 px-4 sm:px-8 lg:px-12 rounded-2xl sm:rounded-3xl">
-        <div className="max-w-7xl mx-auto space-y-8 sm:space-y-12">
-          <div className="text-center max-w-2xl mx-auto space-y-2 sm:space-y-3">
-            <span className="text-xs font-bold uppercase tracking-widest text-amber-400">
-              The ABC Standard
-            </span>
-            <h2 className="font-serif text-2xl sm:text-3xl font-bold">Why Dine at ABC Hotel</h2>
-            <p className="text-xs sm:text-sm text-stone-400">
-              Every detail is calibrated to deliver an effortless, luxurious, and flavorful hospitality experience.
-            </p>
+      {/* ------------------------------------------------------------------ */}
+      {/* The ABC Standard                                                    */}
+      {/* ------------------------------------------------------------------ */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 sm:py-32">
+        <Reveal className="text-center max-w-2xl mx-auto">
+          <p className="lux-eyebrow text-amber-700">The ABC Standard</p>
+          <h2 className="lux-display text-[clamp(2.5rem,5vw,4.25rem)] text-stone-900 mt-5">Why dine at ABC Hotel</h2>
+          <p className="text-stone-500 text-[15px] mt-5 leading-relaxed">
+            Every detail is considered to deliver an effortless, gracious and flavourful experience.
+          </p>
+        </Reveal>
+
+        <div className="mt-16 grid grid-cols-1 md:grid-cols-3 border-t border-stone-300/70">
+          {STANDARDS.map((s, i) => (
+            <Reveal key={s.title} delay={i * 0.1}>
+              <div className={`pt-10 pb-4 md:px-8 ${i > 0 ? 'md:border-l border-stone-300/70' : ''} ${i === 0 ? 'md:pl-0' : ''}`}>
+                <span className="font-display text-6xl text-gold/80 italic leading-none">0{i + 1}</span>
+                <h3 className="font-display text-[1.75rem] text-stone-900 mt-6 leading-tight">{s.title}</h3>
+                <p className="text-[14px] text-stone-500 leading-[1.75] mt-3">{s.text}</p>
+              </div>
+            </Reveal>
+          ))}
+        </div>
+      </section>
+
+      {/* ------------------------------------------------------------------ */}
+      {/* Visit                                                               */}
+      {/* ------------------------------------------------------------------ */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-24 sm:pb-32">
+        <div className="grid grid-cols-1 lg:grid-cols-2 lux-card overflow-hidden">
+          <div className="relative min-h-[300px] lux-zoom overflow-hidden">
+            <img
+              src={luxImage(LUX_IMAGES.interior, 1200)}
+              alt="Evening ambience at the ABC Hotel restaurant"
+              loading="lazy"
+              onError={hideOnError}
+              className="absolute inset-0 w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-tr from-ink/50 to-transparent" />
           </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
-            <div className="p-5 sm:p-6 rounded-2xl bg-stone-800/80 border border-stone-700/60 space-y-3">
-              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-amber-600/20 text-amber-400 flex items-center justify-center font-bold text-base sm:text-lg">
-                01
-              </div>
-              <h3 className="font-serif font-bold text-base sm:text-lg text-white">Guaranteed Table Locking</h3>
-              <p className="text-xs text-stone-400 leading-relaxed">
-                Zero double-booking guarantee powered by atomic transactional concurrency locks. Your preferred table is held exclusively for you.
-              </p>
-            </div>
-
-            <div className="p-5 sm:p-6 rounded-2xl bg-stone-800/80 border border-stone-700/60 space-y-3">
-              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-amber-600/20 text-amber-400 flex items-center justify-center font-bold text-base sm:text-lg">
-                02
-              </div>
-              <h3 className="font-serif font-bold text-base sm:text-lg text-white">Authentic Artisanal Ingredients</h3>
-              <p className="text-xs text-stone-400 leading-relaxed">
-                Farm-fresh, zero preservatives, slow-cooked overnight curries, hand-ground spices, and pure unadulterated cold-pressed oils.
-              </p>
-            </div>
-
-            <div className="p-5 sm:p-6 rounded-2xl bg-stone-800/80 border border-stone-700/60 space-y-3">
-              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-amber-600/20 text-amber-400 flex items-center justify-center font-bold text-base sm:text-lg">
-                03
-              </div>
-              <h3 className="font-serif font-bold text-base sm:text-lg text-white">Real-Time Kitchen Tracking</h3>
-              <p className="text-xs text-stone-400 leading-relaxed">
-                Watch your order progress live from the chef's tandoor to your table or suite with accurate preparation milestones.
-              </p>
-            </div>
+          <div className="p-8 sm:p-12 lg:p-14">
+            <Reveal>
+              <p className="lux-eyebrow text-amber-700">Visit Us</p>
+              <h2 className="lux-display text-[clamp(2.25rem,4vw,3.5rem)] text-stone-900 mt-5">Hours & location</h2>
+            </Reveal>
+            <Reveal delay={0.1}>
+              <ul className="mt-10 space-y-6 text-[15px] text-stone-600">
+                <li className="flex gap-4">
+                  <Clock className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" strokeWidth={1.5} />
+                  <div>
+                    <p className="text-stone-900 font-semibold">Daily Dining</p>
+                    <p>09:00 AM – 11:00 PM</p>
+                  </div>
+                </li>
+                <li className="flex gap-4">
+                  <MapPin className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" strokeWidth={1.5} />
+                  <span>742 Heritage Promenade, Royal Gardens, Sector 4</span>
+                </li>
+                <li className="flex gap-4">
+                  <Phone className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" strokeWidth={1.5} />
+                  <a href="tel:+912249876543" className="lux-link hover:text-stone-900">+91 22 4987 6543</a>
+                </li>
+                <li className="flex gap-4">
+                  <Mail className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" strokeWidth={1.5} />
+                  <a href="mailto:concierge@abchotel.com" className="lux-link hover:text-stone-900">concierge@abchotel.com</a>
+                </li>
+              </ul>
+            </Reveal>
           </div>
         </div>
       </section>
 
-      {/* Customer Reviews */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6 sm:space-y-8">
-        <div className="text-center max-w-xl mx-auto space-y-2">
-          <span className="text-xs font-bold uppercase tracking-widest text-amber-800">
-            Guest Testimonials
-          </span>
-          <h2 className="font-serif text-2xl sm:text-3xl font-bold text-stone-900">
-            Praised by Food Connoisseurs
-          </h2>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
-          <div className="bg-white p-5 sm:p-6 rounded-2xl border border-stone-200/80 shadow-xs space-y-3 sm:space-y-4">
-            <div className="flex text-amber-500 gap-1">
-              {[...Array(5)].map((_, i) => (
-                <Star key={i} className="w-3.5 h-3.5 fill-amber-400" />
-              ))}
-            </div>
-            <p className="text-xs sm:text-sm text-stone-600 italic leading-relaxed">
-              "The table reservation process was instantaneous, and the terrace ambiance at sunset is simply magnificent. The Butter Chicken is second to none!"
-            </p>
-            <div className="pt-2 border-t border-stone-100 flex items-center gap-3">
-              <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-amber-100 text-amber-800 flex items-center justify-center text-xs font-bold">
-                AK
-              </div>
-              <div>
-                <p className="text-xs font-bold text-stone-900">Ananya Kapoor</p>
-                <p className="text-[10px] text-stone-400">Verified Diner</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white p-5 sm:p-6 rounded-2xl border border-stone-200/80 shadow-xs space-y-3 sm:space-y-4">
-            <div className="flex text-amber-500 gap-1">
-              {[...Array(5)].map((_, i) => (
-                <Star key={i} className="w-3.5 h-3.5 fill-amber-400" />
-              ))}
-            </div>
-            <p className="text-xs sm:text-sm text-stone-600 italic leading-relaxed">
-              "We hosted a 12-person family anniversary. The booking reference worked seamlessly, the staff attended to our special seating request, and the desserts were divine."
-            </p>
-            <div className="pt-2 border-t border-stone-100 flex items-center gap-3">
-              <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-amber-100 text-amber-800 flex items-center justify-center text-xs font-bold">
-                RS
-              </div>
-              <div>
-                <p className="text-xs font-bold text-stone-900">Rahul Sharma</p>
-                <p className="text-[10px] text-stone-400">Family Banquet Host</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white p-5 sm:p-6 rounded-2xl border border-stone-200/80 shadow-xs space-y-3 sm:space-y-4">
-            <div className="flex text-amber-500 gap-1">
-              {[...Array(5)].map((_, i) => (
-                <Star key={i} className="w-3.5 h-3.5 fill-amber-400" />
-              ))}
-            </div>
-            <p className="text-xs sm:text-sm text-stone-600 italic leading-relaxed">
-              "I frequently order room service while staying at ABC Hotel. The live status tracker is accurate and the food arrives piping hot with restaurant-grade presentation."
-            </p>
-            <div className="pt-2 border-t border-stone-100 flex items-center gap-3">
-              <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-amber-100 text-amber-800 flex items-center justify-center text-xs font-bold">
-                DM
-              </div>
-              <div>
-                <p className="text-xs font-bold text-stone-900">David Miller</p>
-                <p className="text-[10px] text-stone-400">Hotel Resident Guest</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Final Call to Action */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-gradient-to-br from-amber-700 via-amber-800 to-stone-900 text-white rounded-2xl sm:rounded-3xl p-6 sm:p-12 text-center space-y-4 sm:space-y-6 shadow-2xl relative overflow-hidden">
-          <div className="relative z-10 max-w-2xl mx-auto space-y-3 sm:space-y-4">
-            <h2 className="font-serif text-2xl sm:text-4xl font-bold">
-              Ready to Savor an Unrivaled Dining Experience?
+      {/* ------------------------------------------------------------------ */}
+      {/* Closing call to action                                              */}
+      {/* ------------------------------------------------------------------ */}
+      <section className="relative overflow-hidden bg-wine text-ivory lux-grain">
+        <img
+          src={luxImage(LUX_IMAGES.plated, 1800)}
+          alt=""
+          aria-hidden="true"
+          loading="lazy"
+          onError={hideOnError}
+          className="absolute inset-0 w-full h-full object-cover opacity-25 mix-blend-luminosity"
+        />
+        <div className="absolute inset-0 bg-gradient-to-br from-wine/90 via-wine/70 to-ink/90" />
+        <div className="relative max-w-4xl mx-auto px-4 sm:px-6 py-24 sm:py-32 text-center">
+          <Reveal>
+            <p className="lux-eyebrow text-champagne justify-center">An Evening at ABC</p>
+            <h2 className="lux-display text-[clamp(2.75rem,7vw,5.75rem)] mt-6">
+              Your table <em className="font-normal text-champagne">awaits.</em>
             </h2>
-            <p className="text-amber-100 text-xs sm:text-base leading-relaxed">
-              Reserve your table today or order from our gourmet menu directly to your suite or doorstep.
+            <p className="text-ivory/70 text-[15px] sm:text-base leading-relaxed mt-6 max-w-xl mx-auto">
+              Reserve your table today or order from our menu directly to your suite or doorstep.
             </p>
-            <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 pt-2">
-              <button
-                onClick={handleBookTable}
-                className="w-full sm:w-auto px-6 sm:px-8 py-3.5 bg-white text-stone-900 hover:bg-amber-50 font-bold text-xs sm:text-sm rounded-xl shadow-lg transition-all cursor-pointer"
-              >
-                Reserve Your Table
+          </Reveal>
+          <Reveal delay={0.12}>
+            <div className="mt-10 flex flex-col sm:flex-row justify-center gap-3 sm:gap-4">
+              <button onClick={handleBookTable} className="lux-btn lux-btn-gold">
+                <span>Reserve Your Table</span>
+                <ArrowRight className="w-4 h-4" />
               </button>
-              <button
-                onClick={handleBookOrder}
-                className="w-full sm:w-auto px-6 sm:px-8 py-3.5 bg-amber-900/60 hover:bg-amber-900/80 border border-amber-300/30 text-white font-semibold text-xs sm:text-sm rounded-xl transition-all cursor-pointer"
-              >
+              <button onClick={handleBookOrder} className="lux-btn lux-btn-ghost">
                 Browse Menu
               </button>
             </div>
-          </div>
+          </Reveal>
         </div>
       </section>
     </div>

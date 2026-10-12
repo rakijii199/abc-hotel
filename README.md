@@ -72,11 +72,9 @@ npm start
 
 ---
 
-## 🔑 Default Demo Accounts
+## 🔑 Demo Accounts (local development only)
 
-| Role | Email | Password |
-| :--- | :--- | :--- |
-| **Customer** | `john.doe@example.com` | `Customer@ABC2026!` |
-| **Admin** | `admin@abchotel.com` | `Admin@ABC2026!` |
-
-*(One-click quick login buttons are also provided in the UI)*
+Local development seeds demo staff and customer accounts so the app can be
+explored without setup; the staff login page shows them in development builds
+only. Seed accounts are **never** loaded in production, and production staff
+accounts must use their own passwords. See `docs/DEPLOYMENT.md`.

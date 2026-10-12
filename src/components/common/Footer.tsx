@@ -14,7 +14,8 @@ import {
   AlertCircle,
   Leaf,
   Flame,
-  Star
+  Star,
+  ArrowRight
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext.tsx';
 
@@ -32,85 +33,63 @@ export const Footer: React.FC<{ navigate: (route: string, state?: any) => void }
     }
   };
 
+  const linkClass = 'lux-link min-h-10 lg:min-h-0 text-ivory/65 hover:text-ivory transition-colors cursor-pointer text-left';
+
   return (
-    <footer className="bg-stone-900 text-stone-300 pt-16 pb-12 border-t border-amber-900/30 mt-20">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
+    <footer className="relative bg-ink text-ivory/70 mt-20 overflow-hidden lux-grain">
+      <div className="absolute inset-x-0 top-0 lux-hairline" />
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Signature line */}
+        <div className="py-16 sm:py-20 flex flex-col lg:flex-row lg:items-end justify-between gap-8 border-b border-white/[0.08]">
+          <h2 className="lux-display text-[clamp(2.5rem,6vw,5rem)] text-ivory max-w-3xl">
+            Dine with us, <em className="font-normal text-champagne">stay a while.</em>
+          </h2>
+          <button onClick={handleBookTable} className="lux-btn lux-btn-gold self-start lg:self-auto">
+            <span>Reserve a Table</span>
+            <ArrowRight className="w-4 h-4" />
+          </button>
+        </div>
+
+        <div className="py-14 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-12">
           {/* Brand & Story */}
-          <div className="space-y-4">
+          <div className="lg:col-span-4 space-y-5">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-amber-600 flex items-center justify-center text-white font-serif font-bold text-lg shadow-md">
-                ABC
-              </div>
-              <div>
-                <span className="font-serif font-bold text-xl tracking-tight text-white block">
-                  ABC HOTEL
-                </span>
-                <span className="text-[10px] tracking-[0.2em] uppercase font-semibold text-amber-400">
+              <span className="relative w-11 h-11 flex items-center justify-center border border-gold/60 text-champagne">
+                <span className="absolute inset-[3px] border border-gold/25" />
+                <span className="font-display text-[15px] font-semibold tracking-[0.06em]">ABC</span>
+              </span>
+              <div className="leading-none">
+                <span className="font-display text-xl font-semibold tracking-[0.18em] text-ivory block">ABC HOTEL</span>
+                <span className="text-[9px] tracking-[0.32em] uppercase font-semibold text-gold block mt-1">
                   Luxury Dining & Suites
                 </span>
               </div>
             </div>
-            <p className="text-sm text-stone-400 leading-relaxed">
-              An iconic gastronomic sanctuary where heritage recipes meet contemporary culinary mastery. Dedicated to memorable dining moments and flawless hospitality.
+            <p className="text-sm text-ivory/55 leading-relaxed max-w-sm">
+              A gastronomic sanctuary where heritage recipes meet contemporary culinary mastery, dedicated to memorable
+              dining moments and gracious hospitality.
             </p>
-            <div className="flex items-center gap-2 text-xs text-amber-400 font-medium">
-              <Award className="w-4 h-4" />
-              <span>Michelin Recommended 2026</span>
-            </div>
           </div>
 
           {/* Quick Links */}
-          <div>
-            <h4 className="font-serif text-white font-semibold text-base mb-4 tracking-wide uppercase text-xs text-amber-400">
-              Quick Navigation
-            </h4>
-            <ul className="space-y-2.5 text-sm">
+          <div className="lg:col-span-2">
+            <h4 className="text-[10px] font-bold uppercase tracking-[0.28em] text-gold mb-5">Explore</h4>
+            <ul className="space-y-0 lg:space-y-3 text-sm">
+              <li><button onClick={() => navigate('home')} className={linkClass}>Home</button></li>
+              <li><button onClick={() => navigate('menu')} className={linkClass}>The Menu</button></li>
+              <li><button onClick={handleBookTable} className={linkClass}>Reserve a Table</button></li>
+              <li><button onClick={() => navigate('cart')} className={linkClass}>Delivery & Takeaway</button></li>
+            </ul>
+          </div>
+
+          {/* Account */}
+          <div className="lg:col-span-2">
+            <h4 className="text-[10px] font-bold uppercase tracking-[0.28em] text-gold mb-5">Account</h4>
+            <ul className="space-y-0 lg:space-y-3 text-sm">
+              <li><button onClick={() => navigate('customer-auth')} className={linkClass}>Customer Login</button></li>
+              <li><button onClick={() => navigate('customer-register')} className={linkClass}>Register</button></li>
               <li>
-                <button
-                  onClick={() => navigate('home')}
-                  className="hover:text-amber-400 transition-colors"
-                >
-                  Home & Overview
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => navigate('menu')}
-                  className="hover:text-amber-400 transition-colors"
-                >
-                  Gourmet Menu
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={handleBookTable}
-                  className="hover:text-amber-400 transition-colors"
-                >
-                  Reserve a Table
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => navigate('cart')}
-                  className="hover:text-amber-400 transition-colors"
-                >
-                  Food Delivery & Takeaway
-                </button>
-              </li>
-              <li className="pt-1 border-t border-stone-800">
-                <button
-                  onClick={() => navigate('customer-auth')}
-                  className="hover:text-amber-400 transition-colors font-medium text-xs text-amber-200/90"
-                >
-                  Customer Login / Register
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => navigate('staff-login')}
-                  className="hover:text-purple-300 transition-colors font-medium text-xs text-stone-400"
-                >
+                <button onClick={() => navigate('staff-login')} className="min-h-10 lg:min-h-0 text-ivory/40 hover:text-purple-200 transition-colors cursor-pointer text-xs">
                   Staff Operations Portal
                 </button>
               </li>
@@ -118,60 +97,41 @@ export const Footer: React.FC<{ navigate: (route: string, state?: any) => void }
           </div>
 
           {/* Contact & Hours */}
-          <div>
-            <h4 className="font-serif text-white font-semibold text-base mb-4 tracking-wide uppercase text-xs text-amber-400">
-              Operating Hours & Location
-            </h4>
-            <ul className="space-y-3 text-sm text-stone-400">
-              <li className="flex items-start gap-2.5">
-                <Clock className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
+          <div className="lg:col-span-4">
+            <h4 className="text-[10px] font-bold uppercase tracking-[0.28em] text-gold mb-5">Hours & Location</h4>
+            <ul className="space-y-4 text-sm text-ivory/60">
+              <li className="flex items-start gap-3">
+                <Clock className="w-4 h-4 text-gold shrink-0 mt-0.5" strokeWidth={1.5} />
                 <div>
-                  <p className="text-white font-medium">Daily Dining</p>
-                  <p className="text-xs">09:00 AM – 11:00 PM</p>
+                  <p className="text-ivory font-medium">Daily Dining</p>
+                  <p className="text-xs mt-0.5">09:00 AM – 11:00 PM</p>
                 </div>
               </li>
-              <li className="flex items-start gap-2.5">
-                <MapPin className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
+              <li className="flex items-start gap-3">
+                <MapPin className="w-4 h-4 text-gold shrink-0 mt-0.5" strokeWidth={1.5} />
                 <span>742 Heritage Promenade, Royal Gardens, Sector 4</span>
               </li>
-              <li className="flex items-center gap-2.5">
-                <Phone className="w-4 h-4 text-amber-500 shrink-0" />
-                <span>+91 22 4987 6543</span>
+              <li className="flex items-center gap-3">
+                <Phone className="w-4 h-4 text-gold shrink-0" strokeWidth={1.5} />
+                <a href="tel:+912249876543" className={linkClass}>+91 22 4987 6543</a>
               </li>
-              <li className="flex items-center gap-2.5">
-                <Mail className="w-4 h-4 text-amber-500 shrink-0" />
-                <span>concierge@abchotel.com</span>
+              <li className="flex items-center gap-3">
+                <Mail className="w-4 h-4 text-gold shrink-0" strokeWidth={1.5} />
+                <a href="mailto:concierge@abchotel.com" className={linkClass}>concierge@abchotel.com</a>
               </li>
             </ul>
-          </div>
-
-          {/* Newsletter / Security Guarantee */}
-          <div className="space-y-4">
-            <h4 className="font-serif text-white font-semibold text-base mb-2 tracking-wide uppercase text-xs text-amber-400">
-              Private Events & Inquiries
-            </h4>
-            <p className="text-xs text-stone-400 leading-relaxed">
-              Looking to host private banquets, corporate meetings, or royal celebrations? Contact our event curators.
+            <p className="text-xs text-ivory/45 leading-relaxed mt-6 max-w-xs">
+              Hosting a private banquet, corporate meeting or celebration? Contact our event team.
             </p>
-            <div className="p-3.5 rounded-xl bg-stone-800/80 border border-stone-700/60 space-y-2">
-              <div className="flex items-center gap-2 text-xs font-semibold text-amber-300">
-                <ShieldCheck className="w-4 h-4 text-amber-400" />
-                100% Guaranteed Reservations
-              </div>
-              <p className="text-[11px] text-stone-400">
-                Real-time conflict prevention algorithm with atomic mutex verification.
-              </p>
-            </div>
           </div>
         </div>
 
-        <div className="mt-12 pt-8 border-t border-stone-800 text-center text-xs text-stone-500 flex flex-col sm:flex-row justify-between items-center gap-4">
+        <div className="py-8 border-t border-white/[0.08] text-xs text-ivory/40 flex flex-col sm:flex-row justify-between items-center gap-3">
           <p>© {new Date().getFullYear()} ABC Hotel & Luxury Suites. All rights reserved.</p>
-          <div className="flex items-center gap-4">
-            <span>ISO 9001:2015 Certified Hospitality</span>
-            <span>•</span>
-            <span>Zero-Tolerance Food Safety</span>
-          </div>
+          <p className="flex items-center gap-2">
+            <ShieldCheck className="w-3.5 h-3.5 text-gold/70" />
+            Instantly confirmed table reservations
+          </p>
         </div>
       </div>
     </footer>
@@ -221,20 +181,21 @@ export const Modal: React.FC<{
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/60 backdrop-blur-xs animate-in fade-in">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-stone-900/60 backdrop-blur-xs animate-in fade-in">
       <div
         className={`bg-white rounded-2xl shadow-2xl border border-stone-200 w-full ${maxWidth} overflow-hidden max-h-[90vh] flex flex-col animate-in zoom-in-95`}
       >
-        <div className="flex items-center justify-between px-6 py-4 border-b border-stone-100 bg-[#faf8f5]">
+        <div className="flex items-center justify-between gap-3 px-4 sm:px-6 py-3 sm:py-4 border-b border-stone-100 bg-[#faf8f5]">
           <h3 className="font-serif font-bold text-lg text-stone-900">{title}</h3>
           <button
             onClick={onClose}
-            className="p-1 rounded-lg text-stone-400 hover:text-stone-700 hover:bg-stone-200/50 transition-colors"
+            aria-label="Close dialog"
+            className="-mr-2 w-10 h-10 flex items-center justify-center rounded-lg text-stone-400 hover:text-stone-700 hover:bg-stone-200/50 transition-colors cursor-pointer shrink-0"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
-        <div className="p-6 overflow-y-auto">{children}</div>
+        <div className="p-4 sm:p-6 overflow-y-auto">{children}</div>
       </div>
     </div>
   );

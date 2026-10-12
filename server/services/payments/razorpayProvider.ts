@@ -32,7 +32,7 @@ export class RazorpayPaymentProvider implements PaymentProvider {
     this.environment = (process.env.PAYMENT_ENVIRONMENT as 'test' | 'production') || (isProd ? 'production' : 'test');
 
     if (isProd && (!this.keySecret || !this.webhookSecret)) {
-      console.warn('[RAZORPAY CONFIG WARNING] Live Razorpay secrets (RAZORPAY_KEY_SECRET, RAZORPAY_WEBHOOK_SECRET) are not configured for production environment. Failing closed for live transactions.');
+      console.error('[RAZORPAY CONFIG ERROR] Live Razorpay secrets (RAZORPAY_KEY_SECRET, RAZORPAY_WEBHOOK_SECRET) are not configured for production environment. Failing closed for live transactions.');
     }
 
     // Initialize Razorpay SDK if real keys are supplied
@@ -83,9 +83,14 @@ export class RazorpayPaymentProvider implements PaymentProvider {
         throw new Error(`Razorpay Order Creation Failed: ${err.message || 'Gateway error'}`);
       }
     } else {
-      // Test / Sandbox Fallback mode
-      const randomPart = Math.random().toString(36).substring(2, 8);
-      providerOrderId = `order_rzp_test_${Date.now()}_${randomPart}`;
+      // No gateway configured (sandbox, or the hotel's direct UPI QR flow, which
+      // is confirmed by cashier verification rather than a gateway signature).
+      // Issue a local reference; signature verification stays fail-closed when
+      // the gateway secret is not configured, so it can never be "verified".
+      const randomPart = crypto.randomBytes(6).toString('hex');
+      providerOrderId = process.env.NODE_ENV === 'production'
+        ? `order_upi_${Date.now()}_${randomPart}`
+        : `order_rzp_test_${Date.now()}_${randomPart}`;
     }
 
     return {
@@ -111,6 +116,18 @@ export class RazorpayPaymentProvider implements PaymentProvider {
         status: 'FAILED',
         failureCode: 'INVALID_PARAMETERS',
         failureMessage: 'Missing payment signature or identifiers.'
+      };
+    }
+
+    // An empty key would make the HMAC computable by anyone: fail closed.
+    if (!this.keySecret) {
+      return {
+        success: false,
+        providerPaymentId,
+        providerOrderId,
+        status: 'FAILED',
+        failureCode: 'GATEWAY_NOT_CONFIGURED',
+        failureMessage: 'Online payment verification is not configured.'
       };
     }
 
@@ -245,7 +262,7 @@ export class RazorpayPaymentProvider implements PaymentProvider {
    * Verify Webhook Signature (HMAC-SHA256 of raw body against webhook secret)
    */
   public verifyWebhookSignature(bodyRaw: string, signatureHeader: string): boolean {
-    if (!signatureHeader || !bodyRaw) return false;
+    if (!signatureHeader || !bodyRaw || !this.webhookSecret) return false;
 
     const expectedSignature = crypto
       .createHmac('sha256', this.webhookSecret)

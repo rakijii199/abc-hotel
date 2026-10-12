@@ -227,7 +227,7 @@ export class PaymentService {
   /**
    * Check Status of a specific Payment Attempt (for Polling)
    */
-  public static async getPaymentAttemptStatus(attemptId: string, _userId?: string) {
+  public static async getPaymentAttemptStatus(attemptId: string, userId?: string, isStaff = false) {
     const attempt = await PaymentRepository.getAttemptById(attemptId);
     if (!attempt) {
       throw new Error('Payment attempt not found.');
@@ -236,6 +236,9 @@ export class PaymentService {
     const order = await OrderRepository.getById(attempt.orderId);
     if (!order) {
       throw new Error('Associated order not found.');
+    }
+    if (!isStaff && order.userId !== userId) {
+      throw new Error('Payment attempt not found.');
     }
 
     // Auto-sync if order was already marked PAID
@@ -392,7 +395,8 @@ export class PaymentService {
   public static async confirmUpiPayment(
     attemptId: string,
     userId?: string,
-    utrNumber?: string
+    utrNumber?: string,
+    isStaff = false
   ) {
     const attempt = await PaymentRepository.getAttemptById(attemptId);
     if (!attempt) {
@@ -402,6 +406,9 @@ export class PaymentService {
     const order = await OrderRepository.getById(attempt.orderId);
     if (!order) {
       throw new Error('Associated order not found.');
+    }
+    if (!isStaff && order.userId !== userId) {
+      throw new Error('Payment attempt not found.');
     }
 
     const paymentConfig = PaymentRepository.getConfig();
@@ -547,6 +554,26 @@ export class PaymentService {
         payment: existingPayment,
         message: 'Payment has already been verified and processed.'
       };
+    }
+
+    // Bind the gateway payment to THIS order: the Razorpay order id must be the
+    // one created for this order, and a gateway payment id may settle only one
+    // order. Otherwise a valid signature from one (cheap) payment could be
+    // replayed to mark other orders as paid.
+    const initiatedPayment = await PaymentRepository.getByOrderId(order.id);
+    if (!initiatedPayment || !initiatedPayment.providerOrderId) {
+      throw new Error('No payment was initiated for this order. Please start the payment again.');
+    }
+    if (initiatedPayment.providerOrderId !== params.providerOrderId) {
+      console.warn(`[SECURITY EVENT] Payment verification provider order mismatch for order ${order.id}`);
+      throw new Error('Payment details do not match this order.');
+    }
+    const paymentWithSameGatewayId = params.providerPaymentId
+      ? await PaymentRepository.getByProviderPaymentId(params.providerPaymentId)
+      : null;
+    if (paymentWithSameGatewayId && paymentWithSameGatewayId.orderId !== order.id) {
+      console.warn(`[SECURITY EVENT] Gateway payment id reuse attempted for order ${order.id}`);
+      throw new Error('Payment details do not match this order.');
     }
 
     // Signature Verification via PaymentProvider
@@ -796,7 +823,7 @@ export class PaymentService {
       throw new Error('Order not found.');
     }
 
-    if (!isAdmin && userId && order.userId !== userId) {
+    if (!isAdmin && order.userId !== userId) {
       throw new Error('Unauthorized access.');
     }
 

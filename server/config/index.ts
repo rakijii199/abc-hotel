@@ -61,6 +61,7 @@ export const config = {
     address: '742 Heritage Promenade, Royal Gardens, Sector 4, New Delhi / Mumbai',
     phone: '+91 22 4987 6543',
     email: 'concierge@abchotel.com',
+    timeZone: process.env.HOTEL_TIMEZONE || 'Asia/Kolkata', // reservation slots are local hotel time
     openingHour: 9, // 09:00 AM
     closingHour: 23, // 11:00 PM
     slotDurationMinutes: 30, // 30-minute reservation holding slot

@@ -1,13 +1,20 @@
 /**
  * Automated Production Security Attack Simulation & Audit Suite
  */
-import { AuthService } from '../server/services/authService.ts';
-import { db } from '../server/database/db.ts';
+import { pathToFileURL } from 'url';
 
-const PORT = process.env.PORT || 8080;
-const BASE_URL = `http://localhost:${PORT}`;
-
-async function runSecurityAudit() {
+/**
+ * Creates users/requests over HTTP, so it must only ever run against a server
+ * backed by the isolated test database. Run it with `npm run test:security`,
+ * which boots the server inside the cleanup harness and removes the data after.
+ */
+export async function runSecurityAudit(): Promise<{ passed: number; failed: number }> {
+  if (!process.env.ABC_DB_FILE || process.env.IS_TEST_RUN !== 'true') {
+    throw new Error('[TEST SAFETY] Run the security audit with `npm run test:security` (isolated test database + cleanup).');
+  }
+  const { db } = await import('../server/database/db.ts');
+  const PORT = process.env.PORT || 8080;
+  const BASE_URL = `http://localhost:${PORT}`;
   console.log('--- STARTING PRODUCTION SECURITY ATTACK SIMULATION ---');
   let passed = 0;
   let failed = 0;
@@ -232,10 +239,19 @@ async function runSecurityAudit() {
     failed++;
   }
 
+  // Regression checks for the production-hardening fixes
+  console.log('\n--- SECURITY REGRESSION CHECKS ---');
+  const { runSecurityRegressions } = await import('./securityRegression.ts');
+  const regression = await runSecurityRegressions(BASE_URL);
+  passed += regression.passed;
+  failed += regression.failed;
+
   console.log(`\n--- AUDIT COMPLETE: ${passed} PASSED, ${failed} FAILED ---`);
-  if (failed > 0) {
-    process.exit(1);
-  }
+  return { passed, failed };
 }
 
-runSecurityAudit();
+// Direct execution is refused: it would write audit users into whatever server is running.
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  console.error('[TEST SAFETY] Use `npm run test:security` instead of running this file directly.');
+  process.exit(1);
+}

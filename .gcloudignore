@@ -1,0 +1,23 @@
+# Files excluded from `gcloud run deploy --source` uploads (Cloud Build / buildpacks).
+# Secrets, local databases, backups and test artifacts must never reach the image.
+.gcloudignore
+.git
+.gitignore
+#!include:.gitignore
+
+# Never upload local data, credentials or tooling state
+.env
+.env.*
+!.env.example
+data/
+.firebase/
+node_modules/
+dist/
+coverage/
+
+# Not needed at runtime
+tests/
+docs/
+*.md
+firebase-blueprint.json
+metadata.json

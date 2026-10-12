@@ -50,8 +50,13 @@ import { runFirestoreMigration } from './migrate.ts';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const DATA_DIR = path.resolve(__dirname, '../../data');
-const DB_FILE = path.join(DATA_DIR, 'hotel_database.json');
+const DEFAULT_DATA_DIR = path.resolve(__dirname, '../../data');
+// ABC_DB_FILE lets the automated test harness point the engine at an isolated
+// test database (see tests/support/testEnvironment.ts). Unset = the normal dev file.
+const DB_FILE = process.env.ABC_DB_FILE
+  ? path.resolve(process.env.ABC_DB_FILE)
+  : path.join(DEFAULT_DATA_DIR, 'hotel_database.json');
+const DATA_DIR = path.dirname(DB_FILE);
 
 interface SerializedDatabase {
   users: User[];
@@ -198,7 +203,7 @@ class DatabaseEngine {
   public auditLogs: Map<string, AuditLog> = new Map();
   public notifications: Map<string, AdminNotification> = new Map();
 
-  private isInitialized = false;
+  public isInitialized = false;
   private mutexLocks: Map<string, boolean> = new Map(); // Key locks for concurrency safety
   private saveTimeout: NodeJS.Timeout | null = null;
   public dirtySyncQueue: Map<string, { collection: string; id: string; data: any }> = new Map();
@@ -228,7 +233,24 @@ class DatabaseEngine {
     }
   }
 
-  public async initialize(): Promise<void> {
+  private initPromise: Promise<void> | null = null;
+
+  /**
+   * Load the database once. Concurrent callers (module auto-init and
+   * server startup) share the same load instead of running it twice.
+   */
+  public initialize(): Promise<void> {
+    if (this.isInitialized) return Promise.resolve();
+    if (!this.initPromise) {
+      this.initPromise = this.loadDatabase().catch((err) => {
+        this.initPromise = null;
+        throw err;
+      });
+    }
+    return this.initPromise;
+  }
+
+  private async loadDatabase(): Promise<void> {
     if (this.isInitialized) return;
 
     const isProduction = process.env.NODE_ENV === 'production';
@@ -236,7 +258,19 @@ class DatabaseEngine {
     // 1. In production, Cloud Run requires Firestore as the authoritative persistent source of truth
     try {
       let fsUsers = await loadCollectionFromFirestore<User>('users');
-      if (!fsUsers || fsUsers.length === 0) {
+      // Automated tests have no Firestore client (reads return empty), so they
+      // never attempt the bootstrap migration.
+      const isIsolatedTestRun = process.env.IS_TEST_RUN === 'true' && process.env.USE_REAL_FIRESTORE !== 'true';
+      if ((!fsUsers || fsUsers.length === 0) && !isIsolatedTestRun) {
+        // An empty users collection in production almost always means the wrong
+        // project/database ID is configured. Refuse to auto-populate it from the
+        // bundled backup unless a first-time bootstrap is explicitly requested.
+        if (isProduction && process.env.ABC_ALLOW_FIRESTORE_BOOTSTRAP !== 'true') {
+          throw new Error(
+            'Firestore users collection is empty. Check FIREBASE_PROJECT_ID / FIRESTORE_DATABASE_ID; ' +
+            'set ABC_ALLOW_FIRESTORE_BOOTSTRAP=true only for an intentional first-time bootstrap.'
+          );
+        }
         console.log('[DATABASE] Firestore collections empty. Bootstrapping authoritative Firestore database...');
         await runFirestoreMigration();
         fsUsers = await loadCollectionFromFirestore<User>('users');
@@ -729,34 +763,39 @@ class DatabaseEngine {
       }
     }
 
-    // Otherwise seed initial database
+    // Otherwise seed initial database. Seed records only fill gaps: anything
+    // already loaded from Firestore (edited menu prices, changed passwords,
+    // table layout) is never replaced by the built-in defaults.
     const seed = await getSeedData();
 
-    // Load Users
-    for (const u of seed.users) {
-      if (!u.status) u.status = 'ACTIVE';
-      this.users.set(u.id, u);
-      if (u.email) this.userEmailIndex.set(u.email.toLowerCase(), u.id);
-      if (u.username) this.userUsernameIndex.set(u.username.toLowerCase(), u.id);
+    // Seed users carry well-known demo passwords, so they are never loaded in production.
+    if (!isProduction) {
+      for (const u of seed.users) {
+        if (this.users.has(u.id)) continue;
+        if (!u.status) u.status = 'ACTIVE';
+        this.users.set(u.id, u);
+        if (u.email) this.userEmailIndex.set(u.email.toLowerCase(), u.id);
+        if (u.username) this.userUsernameIndex.set(u.username.toLowerCase(), u.id);
+      }
     }
 
     // Load Hotel & Restaurant
-    this.hotels.set(seed.hotel.id, seed.hotel);
-    this.restaurants.set(seed.restaurant.id, seed.restaurant);
+    if (!this.hotels.has(seed.hotel.id)) this.hotels.set(seed.hotel.id, seed.hotel);
+    if (!this.restaurants.has(seed.restaurant.id)) this.restaurants.set(seed.restaurant.id, seed.restaurant);
 
     // Load Tables
     for (const t of seed.tables) {
-      this.tables.set(t.id, t);
+      if (!this.tables.has(t.id)) this.tables.set(t.id, t);
     }
 
     // Load Menu Categories
     for (const c of seed.menuCategories) {
-      this.menuCategories.set(c.id, c);
+      if (!this.menuCategories.has(c.id)) this.menuCategories.set(c.id, c);
     }
 
     // Load Menu Items
     for (const item of seed.menuItems) {
-      this.menuItems.set(item.id, item);
+      if (!this.menuItems.has(item.id)) this.menuItems.set(item.id, item);
     }
 
     // Initial Seed Audit Logs
@@ -2046,5 +2085,7 @@ class DatabaseEngine {
 }
 
 export const db = new DatabaseEngine();
-// Auto-initialize
-db.initialize();
+// Auto-initialize (server startup awaits the same promise and reports failures)
+db.initialize().catch((err) => {
+  console.error('[DATABASE] Initialization failed:', err?.message || err);
+});

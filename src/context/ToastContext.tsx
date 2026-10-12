@@ -43,7 +43,11 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     <ToastContext.Provider value={{ toast: showToast, success, error, info }}>
       {children}
       {/* Toast container */}
-      <div className="fixed bottom-5 right-5 z-50 flex flex-col gap-2 max-w-md w-full pointer-events-none px-4">
+      <div
+        role="status"
+        aria-live="polite"
+        className="fixed inset-x-0 bottom-3 px-3 sm:inset-x-auto sm:right-5 sm:bottom-5 sm:px-4 z-50 flex flex-col gap-2 sm:max-w-md sm:w-full pointer-events-none"
+      >
         {toasts.map((t) => (
           <div
             key={t.id}
@@ -61,7 +65,8 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             <div className="flex-1 text-sm font-medium leading-relaxed">{t.message}</div>
             <button
               onClick={() => removeToast(t.id)}
-              className="text-stone-400 hover:text-white transition-colors p-0.5"
+              className="-m-2 w-9 h-9 shrink-0 flex items-center justify-center rounded-lg text-stone-400 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+              aria-label="Dismiss notification"
             >
               <X className="w-4 h-4" />
             </button>

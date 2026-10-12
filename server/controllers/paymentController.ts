@@ -6,6 +6,9 @@ import { Response } from 'express';
 import { AuthenticatedRequest } from '../middleware/authMiddleware.ts';
 import { PaymentService } from '../services/paymentService.ts';
 
+/** Payment staff who may view/confirm any order's payment (not kitchen). */
+const isStaffRole = (role?: string) => ['ADMIN', 'MANAGER', 'STAFF', 'DELIVERY'].includes(role || '');
+
 export class PaymentController {
   /**
    * GET /api/payments/config (Public config for checkout)
@@ -269,7 +272,7 @@ export class PaymentController {
    */
   public static async getPaymentAttemptStatus(req: AuthenticatedRequest, res: Response): Promise<void> {
     try {
-      const result = PaymentService.getPaymentAttemptStatus(req.params.attemptId, req.user?.id);
+      const result = await PaymentService.getPaymentAttemptStatus(req.params.attemptId, req.user?.id, isStaffRole(req.user?.role));
       res.status(200).json({
         success: true,
         data: result
@@ -326,7 +329,8 @@ export class PaymentController {
       const result = await PaymentService.confirmUpiPayment(
         req.params.attemptId,
         req.user?.id,
-        utrNumber
+        utrNumber,
+        isStaffRole(req.user?.role)
       );
       res.status(200).json({
         success: true,
@@ -354,7 +358,7 @@ export class PaymentController {
         return;
       }
 
-      const result = PaymentService.cancelPaymentAttempt(req.params.attemptId, req.user.id);
+      const result = await PaymentService.cancelPaymentAttempt(req.params.attemptId, req.user.id);
       res.status(200).json({
         success: true,
         data: result
@@ -406,7 +410,7 @@ export class PaymentController {
         return;
       }
 
-      const updated = PaymentService.updateAdminPaymentSettings(req.body, req.user);
+      const updated = await PaymentService.updateAdminPaymentSettings(req.body, req.user);
       res.status(200).json({
         success: true,
         data: updated,
@@ -452,7 +456,7 @@ export class PaymentController {
         return;
       }
 
-      const updated = PaymentService.updateAdminPaymentSettings(
+      const updated = await PaymentService.updateAdminPaymentSettings(
         { hotelQrCodeUrl: targetUrl },
         req.user
       );
