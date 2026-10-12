@@ -1,0 +1,17 @@
+{
+  "runId": "run-20261010150526-18712-ecjlw",
+  "generatedAt": "2026-10-10T15:05:50.905Z",
+  "collections": {
+    "users": {
+      "created": [
+        "usr-1791644749131-yc61u"
+      ],
+      "modified": [
+        "usr-staff-alias-001",
+        "usr-demo-cust-001"
+      ],
+      "deleted": []
+    }
+  },
+  "scalarsChanged": []
+}

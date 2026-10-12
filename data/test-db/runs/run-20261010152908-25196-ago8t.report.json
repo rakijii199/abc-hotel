@@ -1,0 +1,41 @@
+{
+  "runId": "run-20261010152908-25196-ago8t",
+  "status": "CLEAN",
+  "verified": true,
+  "removed": {
+    "users": 2,
+    "bookings": 6,
+    "menuItems": 1,
+    "orders": 21,
+    "payments": 22,
+    "paymentAttempts": 12,
+    "stockMovements": 121,
+    "auditLogs": 18,
+    "notifications": 31,
+    "dailySalesSummaries": 1,
+    "retentionJobLogs": 2
+  },
+  "restored": {
+    "menuItems": 3,
+    "inventoryItems": 12,
+    "monthlySummaries": 1
+  },
+  "reinserted": {},
+  "alreadyAbsent": {},
+  "scalarsRestored": [
+    "paymentConfig"
+  ],
+  "failures": [],
+  "transientFailures": [],
+  "residual": {},
+  "totals": {
+    "removed": 237,
+    "restored": 16,
+    "reinserted": 0,
+    "alreadyAbsent": 0,
+    "failures": 0
+  },
+  "attempts": 1,
+  "durationMs": 48,
+  "notes": []
+}

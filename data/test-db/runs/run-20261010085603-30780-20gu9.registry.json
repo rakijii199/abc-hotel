@@ -1,0 +1,94 @@
+{
+  "runId": "run-20261010085603-30780-20gu9:recovery",
+  "generatedAt": "2026-10-10T08:56:27.721Z",
+  "collections": {
+    "users": {
+      "created": [
+        "usr-1791622578254-0psmy",
+        "usr-1791622578582-liyne"
+      ],
+      "modified": [],
+      "deleted": []
+    },
+    "bookings": {
+      "created": [
+        "bk-1791622578783-iwqc",
+        "bk-1791622578783-hzy6",
+        "bk-1791622578784-a7rm"
+      ],
+      "modified": [],
+      "deleted": []
+    },
+    "orders": {
+      "created": [
+        "ord_030bac69-e8e1-4cfa-bb70-f0ed005e0298",
+        "ord_2f9116a3-bfef-40ea-83e3-3314225333b2"
+      ],
+      "modified": [],
+      "deleted": []
+    },
+    "payments": {
+      "created": [
+        "pay-1791622578951-jyqy",
+        "pay-1791622579073-irxg"
+      ],
+      "modified": [],
+      "deleted": []
+    },
+    "inventoryItems": {
+      "created": [],
+      "modified": [
+        "inv-001",
+        "inv-006",
+        "inv-007",
+        "inv-011",
+        "inv-013",
+        "inv-014",
+        "inv-015",
+        "inv-016",
+        "inv-017",
+        "inv-020"
+      ],
+      "deleted": []
+    },
+    "stockMovements": {
+      "created": [
+        "mov-1791622579073-5fgf",
+        "mov-1791622579073-v3pl",
+        "mov-1791622579073-lobx",
+        "mov-1791622579073-82t7",
+        "mov-1791622578951-m8a0",
+        "mov-1791622578951-zcf0",
+        "mov-1791622578951-pk2f",
+        "mov-1791622578950-h6y2",
+        "mov-1791622578950-611g",
+        "mov-1791622578950-b1t7",
+        "mov-1791622578950-my05",
+        "mov-1791622578950-hnjd",
+        "mov-1791622578950-2wfe"
+      ],
+      "modified": [],
+      "deleted": []
+    },
+    "auditLogs": {
+      "created": [
+        "audit-1791622578784-njxi",
+        "audit-1791622578784-6tcr"
+      ],
+      "modified": [],
+      "deleted": []
+    },
+    "notifications": {
+      "created": [
+        "notif-1791622578783-56zv",
+        "notif-1791622578783-a9fg",
+        "notif-1791622578784-chu5",
+        "notif-1791622578951-ppxw",
+        "notif-1791622579073-gn0k"
+      ],
+      "modified": [],
+      "deleted": []
+    }
+  },
+  "scalarsChanged": []
+}

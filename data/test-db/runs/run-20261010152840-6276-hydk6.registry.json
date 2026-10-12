@@ -1,0 +1,117 @@
+{
+  "runId": "run-20261010152840-6276-hydk6",
+  "generatedAt": "2026-10-10T15:28:52.307Z",
+  "collections": {
+    "users": {
+      "created": [
+        "usr-1791646129178-6p80i",
+        "usr-1791646130583-ptv6k",
+        "usr-1791646130728-ywr4s"
+      ],
+      "modified": [
+        "usr-admin-001",
+        "usr-staff-alias-001",
+        "usr-kitchen-001",
+        "usr-manager-001",
+        "usr-demo-cust-001"
+      ],
+      "deleted": []
+    },
+    "orders": {
+      "created": [
+        "ord-1791646130738-h3wd",
+        "ord-1791646131191-b00f",
+        "ord-1791646131405-ar4x"
+      ],
+      "modified": [],
+      "deleted": []
+    },
+    "payments": {
+      "created": [
+        "pay-1791646130740-x7xb",
+        "pay-1791646131192-mmxk",
+        "pay-1791646131405-kcnp"
+      ],
+      "modified": [],
+      "deleted": []
+    },
+    "paymentAttempts": {
+      "created": [
+        "att-1791646131197-ugx0",
+        "att-1791646131202-xxph"
+      ],
+      "modified": [],
+      "deleted": []
+    },
+    "invoices": {
+      "created": [
+        "inv_1791646131410_99ycx8"
+      ],
+      "modified": [],
+      "deleted": []
+    },
+    "billingAuditLogs": {
+      "created": [
+        "audit_bill_1791646131411_ksi2",
+        "audit_bill_1791646131415_3lor"
+      ],
+      "modified": [],
+      "deleted": []
+    },
+    "inventoryItems": {
+      "created": [],
+      "modified": [
+        "inv-001",
+        "inv-007",
+        "inv-013",
+        "inv-014",
+        "inv-016",
+        "inv-020"
+      ],
+      "deleted": []
+    },
+    "stockMovements": {
+      "created": [
+        "mov-1791646131405-7mi2",
+        "mov-1791646131405-ejj9",
+        "mov-1791646131405-rtq3",
+        "mov-1791646131405-yqib",
+        "mov-1791646131405-g0ot",
+        "mov-1791646131405-kbo3",
+        "mov-1791646131192-05f7",
+        "mov-1791646131192-u5vg",
+        "mov-1791646131192-9exj",
+        "mov-1791646131192-yhlo",
+        "mov-1791646131192-wae2",
+        "mov-1791646131192-ofve",
+        "mov-1791646130739-zcxq",
+        "mov-1791646130739-9qnq",
+        "mov-1791646130739-tr3d",
+        "mov-1791646130739-ix9i",
+        "mov-1791646130739-8f6z",
+        "mov-1791646130739-41jn"
+      ],
+      "modified": [],
+      "deleted": []
+    },
+    "auditLogs": {
+      "created": [
+        "audit-1791646131415-3psh"
+      ],
+      "modified": [],
+      "deleted": []
+    },
+    "notifications": {
+      "created": [
+        "notif-1791646130740-sec2",
+        "notif-1791646131192-b59q",
+        "notif-1791646131405-z180"
+      ],
+      "modified": [],
+      "deleted": []
+    }
+  },
+  "scalarsChanged": [
+    "invoiceCounter"
+  ]
+}

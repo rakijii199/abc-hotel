@@ -1,0 +1,84 @@
+{
+  "runId": "run-20261010151100-27464-zy46o",
+  "generatedAt": "2026-10-10T15:11:14.532Z",
+  "collections": {
+    "users": {
+      "created": [
+        "usr-1791645070064-buz1p",
+        "usr-1791645072303-vsng7",
+        "usr-1791645072515-2o213"
+      ],
+      "modified": [
+        "usr-admin-001",
+        "usr-staff-alias-001",
+        "usr-kitchen-001",
+        "usr-manager-001",
+        "usr-demo-cust-001"
+      ],
+      "deleted": []
+    },
+    "orders": {
+      "created": [
+        "ord-1791645072532-d4yv",
+        "ord-1791645073201-gnv8"
+      ],
+      "modified": [],
+      "deleted": []
+    },
+    "payments": {
+      "created": [
+        "pay-1791645072533-ygdn",
+        "pay-1791645073202-yhom"
+      ],
+      "modified": [],
+      "deleted": []
+    },
+    "paymentAttempts": {
+      "created": [
+        "att-1791645073217-oza2",
+        "att-1791645073230-faft"
+      ],
+      "modified": [],
+      "deleted": []
+    },
+    "inventoryItems": {
+      "created": [],
+      "modified": [
+        "inv-001",
+        "inv-007",
+        "inv-013",
+        "inv-014",
+        "inv-016",
+        "inv-020"
+      ],
+      "deleted": []
+    },
+    "stockMovements": {
+      "created": [
+        "mov-1791645073202-eu2y",
+        "mov-1791645073202-mee6",
+        "mov-1791645073202-glx2",
+        "mov-1791645073202-1hmk",
+        "mov-1791645073202-wb87",
+        "mov-1791645073202-xn6g",
+        "mov-1791645072533-lu71",
+        "mov-1791645072533-415q",
+        "mov-1791645072533-c58o",
+        "mov-1791645072533-iv0l",
+        "mov-1791645072533-zv0a",
+        "mov-1791645072533-3xq0"
+      ],
+      "modified": [],
+      "deleted": []
+    },
+    "notifications": {
+      "created": [
+        "notif-1791645072533-9soj",
+        "notif-1791645073203-21vj"
+      ],
+      "modified": [],
+      "deleted": []
+    }
+  },
+  "scalarsChanged": []
+}

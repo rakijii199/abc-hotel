@@ -1,0 +1,23 @@
+{
+  "runId": "run-20261010151734-25860-eg7b4",
+  "status": "NOTHING_TO_CLEAN",
+  "verified": true,
+  "removed": {},
+  "restored": {},
+  "reinserted": {},
+  "alreadyAbsent": {},
+  "scalarsRestored": [],
+  "failures": [],
+  "transientFailures": [],
+  "residual": {},
+  "totals": {
+    "removed": 0,
+    "restored": 0,
+    "reinserted": 0,
+    "alreadyAbsent": 0,
+    "failures": 0
+  },
+  "attempts": 1,
+  "durationMs": 20,
+  "notes": []
+}

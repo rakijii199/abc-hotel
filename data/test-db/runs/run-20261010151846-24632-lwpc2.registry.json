@@ -1,0 +1,15 @@
+{
+  "runId": "run-20261010151846-24632-lwpc2",
+  "generatedAt": "2026-10-10T15:18:56.025Z",
+  "collections": {
+    "users": {
+      "created": [],
+      "modified": [
+        "usr-manager-001",
+        "usr-rakesh-001"
+      ],
+      "deleted": []
+    }
+  },
+  "scalarsChanged": []
+}

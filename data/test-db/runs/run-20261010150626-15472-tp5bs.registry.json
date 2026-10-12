@@ -1,0 +1,20 @@
+{
+  "runId": "run-20261010150626-15472-tp5bs",
+  "generatedAt": "2026-10-10T15:06:37.512Z",
+  "collections": {
+    "users": {
+      "created": [
+        "usr-1791644794139-hjgy0"
+      ],
+      "modified": [
+        "usr-admin-001",
+        "usr-staff-alias-001",
+        "usr-kitchen-001",
+        "usr-manager-001",
+        "usr-demo-cust-001"
+      ],
+      "deleted": []
+    }
+  },
+  "scalarsChanged": []
+}

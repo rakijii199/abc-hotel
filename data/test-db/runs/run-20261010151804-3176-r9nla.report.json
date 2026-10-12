@@ -1,0 +1,25 @@
+{
+  "runId": "run-20261010151804-3176-r9nla",
+  "status": "CLEAN",
+  "verified": true,
+  "removed": {},
+  "restored": {
+    "users": 2
+  },
+  "reinserted": {},
+  "alreadyAbsent": {},
+  "scalarsRestored": [],
+  "failures": [],
+  "transientFailures": [],
+  "residual": {},
+  "totals": {
+    "removed": 0,
+    "restored": 2,
+    "reinserted": 0,
+    "alreadyAbsent": 0,
+    "failures": 0
+  },
+  "attempts": 1,
+  "durationMs": 38,
+  "notes": []
+}

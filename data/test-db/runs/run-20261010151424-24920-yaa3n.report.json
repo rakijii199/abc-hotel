@@ -1,0 +1,33 @@
+{
+  "runId": "run-20261010151424-24920-yaa3n",
+  "status": "CLEAN",
+  "verified": true,
+  "removed": {
+    "users": 3,
+    "orders": 2,
+    "payments": 2,
+    "paymentAttempts": 2,
+    "stockMovements": 12,
+    "notifications": 2
+  },
+  "restored": {
+    "users": 5,
+    "inventoryItems": 6
+  },
+  "reinserted": {},
+  "alreadyAbsent": {},
+  "scalarsRestored": [],
+  "failures": [],
+  "transientFailures": [],
+  "residual": {},
+  "totals": {
+    "removed": 23,
+    "restored": 11,
+    "reinserted": 0,
+    "alreadyAbsent": 0,
+    "failures": 0
+  },
+  "attempts": 1,
+  "durationMs": 141,
+  "notes": []
+}

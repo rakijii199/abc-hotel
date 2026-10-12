@@ -1,0 +1,16 @@
+{
+  "runId": "run-20261010085937-5404-m7v48",
+  "generatedAt": "2026-10-10T08:59:56.995Z",
+  "collections": {
+    "users": {
+      "created": [
+        "usr-cust-1791622795949-cp44"
+      ],
+      "modified": [
+        "usr-manager-001"
+      ],
+      "deleted": []
+    }
+  },
+  "scalarsChanged": []
+}

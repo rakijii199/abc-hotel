@@ -1,0 +1,40 @@
+{
+  "runId": "run-20261010085652-24252-dfxh3",
+  "status": "CLEAN",
+  "verified": true,
+  "removed": {
+    "users": 2,
+    "bookings": 6,
+    "menuItems": 1,
+    "orders": 19,
+    "payments": 20,
+    "stockMovements": 111,
+    "auditLogs": 14,
+    "notifications": 27,
+    "dailySalesSummaries": 1,
+    "retentionJobLogs": 2
+  },
+  "restored": {
+    "menuItems": 3,
+    "inventoryItems": 12,
+    "monthlySummaries": 1
+  },
+  "reinserted": {},
+  "alreadyAbsent": {},
+  "scalarsRestored": [
+    "paymentConfig"
+  ],
+  "failures": [],
+  "transientFailures": [],
+  "residual": {},
+  "totals": {
+    "removed": 203,
+    "restored": 16,
+    "reinserted": 0,
+    "alreadyAbsent": 0,
+    "failures": 0
+  },
+  "attempts": 1,
+  "durationMs": 38,
+  "notes": []
+}
