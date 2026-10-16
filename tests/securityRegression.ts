@@ -98,6 +98,21 @@ export async function runSecurityRegressions(baseUrl: string): Promise<{ passed:
       }
     },
     {
+      name: "A customer whose phone matches a staff profile gets a separate CUSTOMER account via OTP",
+      run: async () => {
+        // +91 9876543211 is the seeded STAFF account's phone.
+        const token = 'mock_valid_token_919876543211_fb-secreg-sharedphone.header.sig';
+        const login1 = await api('POST', '/auth/customer/login', { body: { idToken: token } });
+        if (login1.json?.data?.token) return `login before sign-up returned a session (${login1.json?.data?.user?.role})`;
+        const reg = await api('POST', '/auth/customer/register', { body: { idToken: token, fullName: 'Shared Phone Guest' } });
+        if (reg.json?.data?.user?.role !== 'CUSTOMER') return `register: status ${reg.status}, role ${reg.json?.data?.user?.role}, ${reg.json?.error?.message}`;
+        const login2 = await api('POST', '/auth/customer/login', { body: { idToken: token } });
+        const staffStillStaff = (await staffLogin('staff', 'Password@123')).json?.data?.user?.role === 'STAFF';
+        return (login2.json?.data?.user?.role === 'CUSTOMER' && login2.json?.data?.user?.id === reg.json.data.user.id && staffStillStaff)
+          || `login: status ${login2.status}, role ${login2.json?.data?.user?.role}, staff account intact: ${staffStillStaff}`;
+      }
+    },
+    {
       name: 'Adding items to an order requires authentication',
       run: async () => {
         const res = await api('POST', `/orders/${orderA?.id || 'x'}/items`, { body: { items: [{ menuItemId: 'itm-001', quantity: 1 }] } });

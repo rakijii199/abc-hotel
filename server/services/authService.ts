@@ -94,8 +94,10 @@ export class AuthService {
     const normalizedPhone = cleanPhone.startsWith('+') ? cleanPhone.replace(/[^\d+]/g, '') : `${cleanCC}${cleanDigits}`;
 
     // Find existing account by verified Firebase UID first, then verified phone digits
-    let existingUser = (await UserRepository.findByFirebaseUid(verifiedUid)) || 
-      (cleanDigits ? await UserRepository.findByPhone(cleanDigits) : null);
+    // Customer OTP only ever matches CUSTOMER accounts: an employee who uses the
+    // same phone number gets a separate customer account, never a staff session.
+    let existingUser = (await UserRepository.findByFirebaseUid(verifiedUid, 'CUSTOMER')) ||
+      (cleanDigits ? await UserRepository.findByPhone(cleanDigits, 'CUSTOMER') : null);
 
     if (existingUser) {
       // Prevent account takeover: if user already has a different verified Firebase UID, reject
@@ -183,8 +185,9 @@ export class AuthService {
     const cleanDigits = verifiedPhone.trim().replace(/[^\d]/g, '').slice(-10);
 
     // Look up by verified UID first, then verified phone
-    let user = (await UserRepository.findByFirebaseUid(verifiedUid)) || 
-      (cleanDigits ? await UserRepository.findByPhone(cleanDigits) : null);
+    // Only CUSTOMER accounts can sign in with phone OTP (see registerCustomerPhone).
+    let user = (await UserRepository.findByFirebaseUid(verifiedUid, 'CUSTOMER')) ||
+      (cleanDigits ? await UserRepository.findByPhone(cleanDigits, 'CUSTOMER') : null);
 
     if (!user) {
       throw new Error('No registered customer account found with this phone number. Please sign up first.');

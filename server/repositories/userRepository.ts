@@ -3,7 +3,7 @@
  * Authoritative Firestore database with local memory cache fallback.
  */
 import { db } from '../database/db.ts';
-import { User, SafeUser, EmployeeStats } from '../types/index.ts';
+import { User, SafeUser, EmployeeStats, UserRole } from '../types/index.ts';
 import {
   getDocFromFirestore,
   loadCollectionFromFirestore,
@@ -81,7 +81,8 @@ export class UserRepository {
     return null;
   }
 
-  public static async findByPhone(phone: string): Promise<User | null> {
+  /** `role` restricts the match (e.g. customer phone login only considers CUSTOMER accounts). */
+  public static async findByPhone(phone: string, role?: UserRole): Promise<User | null> {
     if (!phone) return null;
     const digits = phone.replace(/[^\d]/g, '');
     if (!digits) return null;
@@ -90,6 +91,7 @@ export class UserRepository {
     const fsUsers = await loadCollectionFromFirestore<User>('users');
     const source = fsUsers && fsUsers.length > 0 ? fsUsers : Array.from(db.users.values());
     for (const u of source) {
+      if (role && u.role !== role) continue;
       if (u.phone) {
         const uDigits = u.phone.replace(/[^\d]/g, '');
         if (uDigits.length >= 10 && digits.length >= 10 && uDigits.slice(-10) === digits.slice(-10)) {
@@ -108,16 +110,16 @@ export class UserRepository {
     return null;
   }
 
-  public static async findByFirebaseUid(uid: string): Promise<User | null> {
+  public static async findByFirebaseUid(uid: string, role?: UserRole): Promise<User | null> {
     if (!uid) return null;
-    const fsUsers = await queryFirestore<User>('users', 'firebaseUid', '==', uid);
-    if (fsUsers && fsUsers.length > 0) {
+    const fsUsers = (await queryFirestore<User>('users', 'firebaseUid', '==', uid)).filter((u) => !role || u.role === role);
+    if (fsUsers.length > 0) {
       const u = fsUsers[0];
       db.users.set(u.id, u);
       return u;
     }
     for (const u of db.users.values()) {
-      if (u.firebaseUid === uid) return u;
+      if (u.firebaseUid === uid && (!role || u.role === role)) return u;
     }
     return null;
   }
