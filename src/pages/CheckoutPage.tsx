@@ -46,12 +46,15 @@ export const CheckoutPage: React.FC<{
   navigate: (route: string, state?: any) => void;
 }> = ({ navigate }) => {
   const { user, isAuthenticated, isLoading } = useAuth();
-  const { items, subtotal, tax, discount, discountCode, serviceCharge, total, clearCart } =
+  const { items, subtotal, tax, discount, discountCode, serviceCharge: cartServiceCharge, total: cartTotal, clearCart } =
     useCart();
   const { error, success } = useToast();
 
   // 1. Dining Service Details (Section 1)
   const [orderType, setOrderType] = useState<OrderType>('Dine-in');
+  // The server charges no service fee on takeaway; show the amount it will actually charge.
+  const serviceCharge = orderType === 'Takeaway' ? 0 : cartServiceCharge;
+  const total = cartTotal - cartServiceCharge + serviceCharge;
   const [tableNumber, setTableNumber] = useState<string>('');
   const [bookingReference, setBookingReference] = useState<string>('');
   const [roomNumber, setRoomNumber] = useState<string>('');

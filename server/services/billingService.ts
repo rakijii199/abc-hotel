@@ -45,7 +45,7 @@ export class BillingService {
     });
 
     // Record Billing Audit
-    InvoiceRepository.recordAudit({
+    await InvoiceRepository.recordAudit({
       orderId: order.id,
       action: 'BILL_REQUESTED',
       userId: userId || 'GUEST_CUSTOMER',
@@ -107,13 +107,17 @@ export class BillingService {
     const discountAmount = order.discount || 0;
     const taxableAmount = Math.max(0, subtotal - discountAmount);
 
+    // The invoice must state exactly what the order charged (and what online
+    // payments collected): use the order's own server-computed figures and
+    // only fall back to the billing settings for legacy orders without them.
     const gstPercent = settings.gstPercent || 5;
-    const taxAmount = Math.round(taxableAmount * (gstPercent / 100));
+    const taxAmount = typeof order.tax === 'number' ? order.tax : Math.round(taxableAmount * (gstPercent / 100));
 
-    const serviceFeePercent = settings.serviceFeePercent || 5;
-    const serviceCharge = Math.round(taxableAmount * (serviceFeePercent / 100));
+    const hasOrderServiceCharge = typeof order.serviceCharge === 'number';
+    const serviceFeePercent = hasOrderServiceCharge ? 0 : settings.serviceFeePercent || 5;
+    const serviceCharge = hasOrderServiceCharge ? order.serviceCharge : Math.round(taxableAmount * (serviceFeePercent / 100));
 
-    const grandTotal = Math.round(taxableAmount + taxAmount + serviceCharge);
+    const grandTotal = typeof order.total === 'number' ? order.total : Math.round(taxableAmount + taxAmount + serviceCharge);
 
     const invoiceNumber = InvoiceRepository.getNextInvoiceNumber(settings.invoicePrefix);
     const publicToken = `inv_pub_${crypto.randomBytes(24).toString('base64url')}`;
@@ -182,7 +186,7 @@ export class BillingService {
     }
 
     // Record Audit Trail
-    InvoiceRepository.recordAudit({
+    await InvoiceRepository.recordAudit({
       invoiceId: invoice.id,
       orderId: order.id,
       action: 'BILL_GENERATED',
@@ -260,7 +264,7 @@ export class BillingService {
     }
 
     // Record Billing Audit Log
-    InvoiceRepository.recordAudit({
+    await InvoiceRepository.recordAudit({
       invoiceId: invoice.id,
       orderId: order.id,
       action: 'PAYMENT_RECEIVED',
@@ -310,7 +314,7 @@ export class BillingService {
 
     await InvoiceRepository.save(invoice);
 
-    InvoiceRepository.recordAudit({
+    await InvoiceRepository.recordAudit({
       invoiceId: invoice.id,
       orderId: invoice.orderId,
       action: 'BILL_CANCELLED',

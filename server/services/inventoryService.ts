@@ -19,6 +19,15 @@ import {
   MonthlyReconciliation
 } from '../types/index.ts';
 
+
+const EDITABLE_INVENTORY_FIELDS: Array<keyof InventoryItem> = [
+  'name', 'category', 'subcategory', 'sku', 'unit', 'minThreshold', 'minimumStock', 'reorderLevel',
+  'maximumStock', 'unitCost', 'purchasePrice', 'supplier', 'preferredSupplierId', 'preferredSupplierName',
+  'storageLocation', 'shelfLife', 'expiryTrackingEnabled', 'batchTrackingEnabled', 'status'
+];
+const NUMERIC_INVENTORY_FIELDS = new Set<keyof InventoryItem>([
+  'minThreshold', 'minimumStock', 'reorderLevel', 'maximumStock', 'unitCost', 'purchasePrice'
+]);
 export class InventoryService {
   /**
    * Get all inventory items with optional search & category filter
@@ -43,11 +52,11 @@ export class InventoryService {
     if (!params.name || !params.name.trim()) {
       throw new Error('Item name is required.');
     }
-    if (params.openingStock < 0) {
-      throw new Error('Opening stock cannot be negative.');
+    if (!Number.isFinite(Number(params.openingStock)) || Number(params.openingStock) < 0) {
+      throw new Error('Opening stock must be a number of zero or more.');
     }
-    if (params.minThreshold < 0) {
-      throw new Error('Reorder threshold cannot be negative.');
+    if (!Number.isFinite(Number(params.minThreshold)) || Number(params.minThreshold) < 0) {
+      throw new Error('Reorder threshold must be a number of zero or more.');
     }
 
     const itemId = `inv-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
@@ -71,7 +80,7 @@ export class InventoryService {
 
     // Record initial movement if opening stock > 0
     if (newItem.currentStock > 0) {
-      InventoryRepository.recordMovement({
+      await InventoryRepository.recordMovement({
         id: `mov-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
         inventoryItemId: created.id,
         inventoryItemName: created.name,
@@ -111,7 +120,27 @@ export class InventoryService {
       throw new Error('Inventory item not found.');
     }
 
-    const updated = await InventoryRepository.updateItem(id, updates);
+    // Only settings can be edited here. Stock levels change exclusively through
+    // replenish / add-on / wastage / consumption so every change is recorded
+    // as a stock movement; ids, totals and timestamps are server-managed.
+    const safeUpdates: Partial<InventoryItem> = {};
+    for (const key of EDITABLE_INVENTORY_FIELDS) {
+      if (updates[key] === undefined) continue;
+      if (NUMERIC_INVENTORY_FIELDS.has(key)) {
+        const value = Number(updates[key]);
+        if (!Number.isFinite(value) || value < 0) {
+          throw new Error(`"${key}" must be a number of zero or more.`);
+        }
+        (safeUpdates as any)[key] = value;
+      } else {
+        (safeUpdates as any)[key] = updates[key];
+      }
+    }
+    if (safeUpdates.name !== undefined && !String(safeUpdates.name).trim()) {
+      throw new Error('Item name is required.');
+    }
+
+    const updated = await InventoryRepository.updateItem(id, safeUpdates);
 
     AuditRepository.record({
       adminId: userId || 'usr-admin-001',
@@ -146,7 +175,7 @@ export class InventoryService {
       throw new Error('Inventory item not found.');
     }
 
-    if (params.quantityAdded <= 0) {
+    if (!Number.isFinite(params.quantityAdded) || params.quantityAdded <= 0) {
       throw new Error('Replenish quantity must be greater than zero.');
     }
 
@@ -164,7 +193,7 @@ export class InventoryService {
     const movementType = params.type || 'PURCHASE';
 
     // Log Stock Movement
-    InventoryRepository.recordMovement({
+    await InventoryRepository.recordMovement({
       id: `mov-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
       inventoryItemId: item.id,
       inventoryItemName: item.name,
@@ -214,7 +243,7 @@ export class InventoryService {
       throw new Error('Inventory item not found.');
     }
 
-    if (!params.quantityAdded || params.quantityAdded <= 0) {
+    if (!Number.isFinite(params.quantityAdded) || params.quantityAdded <= 0) {
       throw new Error('Add-on stock quantity must be greater than zero.');
     }
 
@@ -283,7 +312,7 @@ export class InventoryService {
       throw new Error('Inventory item not found.');
     }
 
-    if (!params.quantity || params.quantity <= 0) {
+    if (!Number.isFinite(params.quantity) || params.quantity <= 0) {
       throw new Error('Wastage quantity must be greater than zero.');
     }
 
@@ -524,11 +553,11 @@ export class InventoryService {
     for (const [_, entry] of requiredIngredients) {
       const newStock = Number((entry.invItem.currentStock - entry.totalRequired).toFixed(2));
 
-      InventoryRepository.updateItem(entry.invItem.id, {
+      await InventoryRepository.updateItem(entry.invItem.id, {
         currentStock: newStock
       });
 
-      InventoryRepository.recordMovement({
+      await InventoryRepository.recordMovement({
         id: `mov-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
         inventoryItemId: entry.invItem.id,
         inventoryItemName: entry.invItem.name,
@@ -629,11 +658,11 @@ export class InventoryService {
       const restoredQty = Math.abs(m.quantity);
       const newStock = Number((invItem.currentStock + restoredQty).toFixed(2));
 
-      InventoryRepository.updateItem(invItem.id, {
+      await InventoryRepository.updateItem(invItem.id, {
         currentStock: newStock
       });
 
-      InventoryRepository.recordMovement({
+      await InventoryRepository.recordMovement({
         id: `mov-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
         inventoryItemId: invItem.id,
         inventoryItemName: invItem.name,

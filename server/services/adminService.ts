@@ -516,7 +516,7 @@ export class AdminService {
 
     // Deduct stock for newly added add-on dishes
     try {
-      InventoryService.deductStockForOrderItems(newlyAddedItems, order.id, order.orderNumber);
+      await InventoryService.deductStockForOrderItems(newlyAddedItems, order.id, order.orderNumber);
     } catch (invErr) {
       console.error('[INVENTORY] Error deducting stock for add-ons:', invErr);
     }

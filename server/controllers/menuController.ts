@@ -66,7 +66,7 @@ export class MenuController {
 export class TableController {
   public static async getAllTables(_req: Request, res: Response): Promise<void> {
     try {
-      const tables = TableRepository.getAll();
+      const tables = await TableRepository.getAll();
       const hotel = RestaurantRepository.getHotel();
       const restaurant = RestaurantRepository.getRestaurant();
 
@@ -101,7 +101,7 @@ export class TableController {
         return;
       }
 
-      const result = BookingService.getTableAvailability({
+      const result = await BookingService.getTableAvailability({
         bookingDate: String(bookingDate),
         startTime: String(startTime),
         guestCount: Number(guestCount)

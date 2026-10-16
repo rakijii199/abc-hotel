@@ -214,7 +214,7 @@ export const PublicInvoicePage: React.FC<{
             </div>
 
             <div className="flex justify-between text-stone-600">
-              <span>Service Fee ({invoice.serviceFeePercent}%):</span>
+              <span>Service Charge{invoice.serviceFeePercent ? ` (${invoice.serviceFeePercent}%)` : ''}:</span>
               <span className="font-mono">{formatCurrency(invoice.serviceCharge)}</span>
             </div>
 

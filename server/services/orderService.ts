@@ -644,7 +644,7 @@ export class OrderService {
 
     // Auto-deduct inventory stock only for the newly added items
     try {
-      InventoryService.deductStockForOrderItems(validatedNewItems, order.id, order.orderNumber);
+      await InventoryService.deductStockForOrderItems(validatedNewItems, order.id, order.orderNumber);
     } catch (invErr) {
       console.error('[INVENTORY] Add-on stock deduction error:', invErr);
     }

@@ -197,7 +197,7 @@ export class PaymentService {
       expiresAt: new Date(Date.now() + 15 * 60 * 1000).toISOString(), // 15 min expiration
       createdAt: new Date().toISOString()
     };
-    PaymentRepository.saveAttempt(attempt);
+    await PaymentRepository.saveAttempt(attempt);
 
     return {
       orderId: order.id,
@@ -245,7 +245,7 @@ export class PaymentService {
     if (order.paymentStatus === 'PAID' && attempt.status !== 'SUCCESS') {
       attempt.status = 'SUCCESS';
       attempt.updatedAt = new Date().toISOString();
-      PaymentRepository.saveAttempt(attempt);
+      await PaymentRepository.saveAttempt(attempt);
     }
 
     // Auto-expire attempt if expired
@@ -253,7 +253,7 @@ export class PaymentService {
       if (new Date(attempt.expiresAt).getTime() < Date.now()) {
         attempt.status = 'EXPIRED';
         attempt.updatedAt = new Date().toISOString();
-        PaymentRepository.saveAttempt(attempt);
+        await PaymentRepository.saveAttempt(attempt);
       }
     }
 
@@ -310,7 +310,7 @@ export class PaymentService {
     attempt.status = 'SUCCESS';
     attempt.providerPaymentId = mockProviderPaymentId;
     attempt.updatedAt = new Date().toISOString();
-    PaymentRepository.saveAttempt(attempt);
+    await PaymentRepository.saveAttempt(attempt);
 
     // Update Payment
     let payment = await PaymentRepository.getByOrderId(order.id);
@@ -612,7 +612,7 @@ export class PaymentService {
       await PaymentRepository.save(payment);
 
       // Save Successful Payment Attempt
-      PaymentRepository.saveAttempt({
+      await PaymentRepository.saveAttempt({
         id: `att-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
         orderId: order.id,
         paymentId: payment.id,
@@ -683,7 +683,7 @@ export class PaymentService {
       payment.failureMessage = verifyResult.failureMessage || 'Signature verification failed.';
       await PaymentRepository.save(payment);
 
-      PaymentRepository.saveAttempt({
+      await PaymentRepository.saveAttempt({
         id: `att-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
         orderId: order.id,
         paymentId: payment.id,

@@ -9,9 +9,25 @@
  *   npm test                   run tests, then clean up this run's data
  *   npm run test:otp           phone OTP auth verification (isolated + cleaned)
  *   npm run test:security      HTTP security audit against an in-process test server
+ *   npm run test:api           HTTP functional workflows (every role) against an in-process test server
  *   npm run test:cleanup       only recover/clean unfinished earlier runs
  */
 import { cleanupPendingRuns, runWithIsolatedDatabase } from './support/testHarness.ts';
+
+/** Boot the API server in this process, on its own port, backed by the test DB. */
+async function startTestServer(): Promise<string> {
+  process.env.PORT = process.env.TEST_SERVER_PORT || '8091';
+  await import('../server.ts');
+  const base = `http://localhost:${process.env.PORT}`;
+  const t0 = Date.now();
+  for (;;) {
+    try {
+      if ((await fetch(`${base}/api/health`)).ok) return base;
+    } catch {}
+    if (Date.now() - t0 > 60000) throw new Error(`Test server did not start on ${base}`);
+    await new Promise((r) => setTimeout(r, 300));
+  }
+}
 
 async function main() {
   if (process.argv.includes('--cleanup-only')) {
@@ -29,23 +45,16 @@ async function main() {
         const res = await verifyPhoneOtpAuth();
         return { passed: res.success ? 1 : 0, failed: res.success ? 0 : 1, details: res };
       }
-      if (script === 'security') {
-        // Boot the API server in this process, on its own port, backed by the test DB.
-        process.env.PORT = process.env.TEST_SERVER_PORT || '8091';
-        await import('../server.ts');
-        const base = `http://localhost:${process.env.PORT}`;
-        const t0 = Date.now();
-        for (;;) {
-          try {
-            if ((await fetch(`${base}/api/health`)).ok) break;
-          } catch {}
-          if (Date.now() - t0 > 60000) throw new Error(`Test server did not start on ${base}`);
-          await new Promise((r) => setTimeout(r, 300));
+      if (script === 'security' || script === 'api') {
+        const base = await startTestServer();
+        if (script === 'api') {
+          const { runApiWorkflows } = await import('./apiWorkflow.ts');
+          return runApiWorkflows(base);
         }
         const { runSecurityAudit } = await import('./securityAuditVerification.ts');
         return runSecurityAudit();
       }
-      throw new Error(`Unknown --script ${script} (expected otp | security)`);
+      throw new Error(`Unknown --script ${script} (expected otp | security | api)`);
     });
     console.log(JSON.stringify({ script, result: outcome.result, error: outcome.error ? String((outcome.error as any)?.message || outcome.error) : undefined, cleanup: { status: outcome.cleanup.status, verified: outcome.cleanup.verified, totals: outcome.cleanup.totals, removed: outcome.cleanup.removed } }, null, 2));
     const r: any = outcome.result;

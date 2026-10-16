@@ -10,7 +10,8 @@ export class BillingController {
    */
   public static async requestBill(req: AuthenticatedRequest, res: Response): Promise<void> {
     try {
-      const { orderId } = req.params;
+      // Mounted as /billing/request/:orderId and /orders/:id/request-bill (used by the customer UI).
+      const orderId = req.params.orderId || req.params.id;
       const user = req.user;
       if (!user) {
         res.status(401).json({

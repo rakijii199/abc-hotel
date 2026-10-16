@@ -14,7 +14,8 @@
     "test:cleanup": "tsx tests/run.ts --cleanup-only",
     "test:cleanup:verify": "tsx tests/cleanupSelfTest.ts",
     "test:otp": "tsx tests/run.ts --script otp",
-    "test:security": "tsx tests/run.ts --script security"
+    "test:security": "tsx tests/run.ts --script security",
+    "test:api": "tsx tests/run.ts --script api"
   },
   "dependencies": {
     "@google-cloud/firestore": "^9.3.0",

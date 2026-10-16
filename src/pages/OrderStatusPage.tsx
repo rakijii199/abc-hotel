@@ -193,6 +193,7 @@ export const OrderStatusPage: React.FC<{
   const isPayAtExit = order.paymentMethod === 'Pay at Exit' || order.paymentMethod === 'PAY_AT_EXIT';
   const isPaymentPending = order.paymentStatus !== 'PAID';
   const canAddMoreItems = order.status !== 'CANCELLED' && order.status !== 'COMPLETED';
+  const billAlreadyRequested = order.status === 'BILLING_PENDING' || order.status === 'BILL_GENERATED';
 
   // Group items by Original vs Add-ons
   const originalItems = order.items.filter((i) => !i.isAddon);
@@ -585,6 +586,26 @@ export const OrderStatusPage: React.FC<{
                 </span>
                 <p className="text-[11px] text-emerald-700">Thank you for dining with ABC Hotel.</p>
               </div>
+            )}
+
+            {/* Dine-in guests ask staff for the bill when they are done */}
+            {order.orderType === 'Dine-in' && isPaymentPending && order.status !== 'CANCELLED' && order.status !== 'COMPLETED' && (
+              billAlreadyRequested ? (
+                <div className="w-full py-2.5 px-3 bg-amber-50 text-amber-900 font-bold text-xs rounded-2xl border border-amber-200 flex items-center justify-center gap-1.5">
+                  <Receipt className="w-3.5 h-3.5" />
+                  <span>Bill requested — staff notified</span>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={handleRequestBill}
+                  disabled={requestingBill}
+                  className="w-full py-2.5 px-3 bg-stone-900 hover:bg-stone-800 text-white font-bold text-xs uppercase tracking-wider rounded-2xl transition-all flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
+                >
+                  <Receipt className="w-3.5 h-3.5" />
+                  <span>{requestingBill ? 'Requesting Bill…' : 'Request Bill'}</span>
+                </button>
+              )
             )}
 
             <button

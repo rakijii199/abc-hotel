@@ -12,6 +12,7 @@ or interruption.
 | `npm test` | Full suite (`tests/testRunner.ts`) against the isolated test DB, then cleanup + verification. Exit code is non-zero if a test fails **or** cleanup cannot be verified. |
 | `npm run test:otp` | Phone-OTP / staff login verification, isolated and cleaned. |
 | `npm run test:security` | HTTP security audit plus the security regression checks (`tests/securityRegression.ts`: login backdoor, phone-OTP privilege escalation, order/payment ownership, payment replay, status rules, manager→admin takeover, health exposure). Boots the API server **inside the harness** on port `8091` (`TEST_SERVER_PORT`) backed by the test DB, so audit users are cleaned too. |
+| `npm run test:api` | HTTP functional suite (`tests/apiWorkflow.ts`): every read endpoint for every role (flags 5xx and `{}` responses from un-awaited Promises) plus end-to-end workflows — table booking, dine-in order → kitchen → bill request → invoice → payment, UPI QR, POS, menu/category/table admin, employee lifecycle, inventory, profile. In-process server on `8091`, cleaned up afterwards. |
 | `npm run test:cleanup` | Recover leftovers from a run that was hard-killed before it could clean up. Safe to run any time. |
 | `npm run test:cleanup:verify` | Self-tests for the cleanup mechanism (uses its own throwaway DB in the OS temp dir). |
 
@@ -85,6 +86,8 @@ verifies they are gone. A live project is always refused.
 npm ci
 npm run lint
 npm test                      # fails the job on test failures or unverified cleanup
+npm run test:api              # HTTP workflows for every role
+npm run test:security         # security audit + regression checks
 npm run test:cleanup:verify   # proves the cleanup mechanism itself
 npm run build
 ```
