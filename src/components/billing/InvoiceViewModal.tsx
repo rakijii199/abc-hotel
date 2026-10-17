@@ -19,6 +19,7 @@ import { Invoice, InvoicePrintFormat, PaymentMethod } from '../../types/index.ts
 import { formatCurrency, formatDate } from '../../utils/formatters.ts';
 import { useToast } from '../../context/ToastContext.tsx';
 import { BillingApi } from '../../api/billingApi.ts';
+import { OrderLineChoices } from '../orders/OrderLineChoices.tsx';
 
 interface InvoiceViewModalProps {
   invoice: Invoice;
@@ -293,7 +294,7 @@ export const InvoiceViewModal: React.FC<InvoiceViewModalProps> = ({
                 {invoice.items.map((item) => (
                   <tr key={item.id}>
                     <td className="py-2.5 pr-2 font-medium text-stone-900">
-                      <div>{item.productNameSnapshot}</div>
+                      <div>{item.productNameSnapshot}<OrderLineChoices item={item} /></div>
                       {item.specialInstructions && (
                         <div className="text-[10px] text-stone-400 italic font-normal">
                           Note: {item.specialInstructions}

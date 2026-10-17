@@ -5,7 +5,6 @@
  */
 import { config } from '../config/index.ts';
 import { db } from '../database/db.ts';
-import { MenuRepository } from '../repositories/menuRepository.ts';
 import { OrderRepository } from '../repositories/orderRepository.ts';
 import { PaymentRepository } from '../repositories/paymentRepository.ts';
 import { UserRepository } from '../repositories/userRepository.ts';
@@ -103,14 +102,12 @@ export class PaymentService {
       throw new Error('This order has already been paid and confirmed.');
     }
 
-    // CRITICAL: Calculate TRUSTED Server-Side Amount strictly from DB items
+    // CRITICAL: the amount comes from the server-priced order line snapshots
+    // (portion + add-ons at order time), never from the client or from today's
+    // menu prices, so later menu changes cannot alter what this order costs.
     let trustedSubtotal = 0;
     for (const item of order.items) {
-      const dbItem = await MenuRepository.getItemById(item.menuItemId);
-      if (!dbItem) {
-        throw new Error(`Menu item ${item.name} is no longer available.`);
-      }
-      trustedSubtotal += dbItem.price * item.quantity;
+      trustedSubtotal += Math.round(item.unitPrice * item.quantity * 100) / 100;
     }
 
     let discount = 0;

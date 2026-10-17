@@ -2,6 +2,9 @@
  * Domain Models and Types for ABC Hotel Application
  * Single Source of Truth for Customer & Admin operations
  */
+import type { MenuItemAddonGroup, MenuItemPortion, SelectedAddonSnapshot } from '../../shared/menuConfig.ts';
+export type { MenuItemAddon, MenuItemAddonGroup, MenuItemPortion, SelectedAddonSnapshot } from '../../shared/menuConfig.ts';
+
 
 export type UserRole = 'CUSTOMER' | 'ADMIN' | 'STAFF' | 'KITCHEN' | 'MANAGER' | 'DELIVERY';
 export type UserStatus = 'ACTIVE' | 'INACTIVE' | 'REMOVED' | 'SUSPENDED';
@@ -128,6 +131,10 @@ export interface MenuItem {
   isActive?: boolean;
   isChefSpecial?: boolean;
   allergens?: string[];
+  /** Optional Half/Full (etc.) portions with their own prices. */
+  portions?: MenuItemPortion[];
+  /** Optional add-on groups (toppings, sides, extras…) with per-add-on prices. */
+  addonGroups?: MenuItemAddonGroup[];
   createdAt: string;
   updatedAt: string;
 }
@@ -177,6 +184,12 @@ export interface OrderItem {
   specialInstructions?: string;
   isAddon?: boolean;
   addedAt?: string;
+  /** Configuration snapshot at order time (absent on simple items / older orders). */
+  portionId?: string;
+  portionLabel?: string;
+  /** Portion price (or base price) at order time; unitPrice = basePrice + add-on prices. */
+  basePrice?: number;
+  addons?: SelectedAddonSnapshot[];
 }
 
 export interface OrderIdempotencyRecord {
@@ -239,6 +252,8 @@ export interface InvoiceItem {
   taxSnapshot: number;
   lineTotal: number;
   specialInstructions?: string;
+  portionLabelSnapshot?: string;
+  addonsSnapshot?: SelectedAddonSnapshot[];
 }
 
 export interface Invoice {

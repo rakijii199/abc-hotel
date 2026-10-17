@@ -345,6 +345,181 @@ export async function runApiWorkflows(baseUrl: string): Promise<{ passed: number
     return (me.data?.id === customerId && upd.status === 200 && again.data?.firstName === 'Renamed') || `me ${me.data?.id}, update ${upd.status}, name ${again.data?.firstName}`;
   });
 
+  // ---- Workflow 9: configurable menu items (portions + add-ons) ----
+  const cats = await api('GET', '/menu/categories');
+  const cfgCategoryId = (cats.data || [])[0]?.id;
+  const biryaniBody = {
+    categoryId: cfgCategoryId,
+    name: `Config Biryani ${stamp}`,
+    description: 'Configurable dish created by the workflow test',
+    price: 200,
+    imageUrl: 'https://images.unsplash.com/photo-1',
+    vegetarian: false,
+    spicy: true,
+    spiceLevel: 'Medium',
+    prepTimeMinutes: 20,
+    portions: [
+      { id: 'HALF', label: 'Half', price: 150, active: true },
+      { id: 'FULL', label: 'Full', price: 270, active: true }
+    ],
+    addonGroups: [
+      {
+        id: 'grp-extras', name: 'Extras', required: false, minSelect: 0, maxSelect: 2, active: true,
+        addons: [
+          { id: 'add-egg', name: 'Extra Egg', price: 20, active: true },
+          { id: 'add-chicken', name: 'Extra Chicken', price: 60, active: true },
+          { id: 'add-gravy', name: 'Extra Gravy', price: 25, active: true }
+        ]
+      },
+      {
+        id: 'grp-spice', name: 'Spice Level', required: true, minSelect: 1, maxSelect: 1, active: true,
+        addons: [
+          { id: 'add-mild', name: 'Mild', price: 0, active: true },
+          { id: 'add-hot', name: 'Hot', price: 0, active: true }
+        ]
+      }
+    ]
+  };
+  let biryaniId = '';
+  let cfgOrderId = '';
+  const cfgOrderBody = (items: Json[], key: string) => ({
+    token: tokens.customer,
+    headers: { 'Idempotency-Key': key },
+    body: { orderType: 'Takeaway', customerName: 'Config Guest', customerPhone: '+91 9700000001', customerEmail: `config.guest.${stamp}@example.com`, paymentMethod: 'Pay at Exit', items }
+  });
+
+  await step('Menu config: kitchen and customers cannot configure menu items', async () => {
+    const k = await api('POST', '/admin/menu', { token: tokens.kitchen, body: biryaniBody });
+    const c = await api('POST', '/admin/menu', { token: tokens.customer, body: biryaniBody });
+    return (k.status === 403 && c.status === 403) || `kitchen ${k.status}, customer ${c.status}`;
+  });
+  await step('Menu config: invalid configurations are rejected (required group without add-ons, min > max, duplicate ids)', async () => {
+    const bad1 = await api('POST', '/admin/menu', { token: tokens.manager, body: { ...biryaniBody, addonGroups: [{ id: 'g1', name: 'Sauce', required: true, minSelect: 1, maxSelect: 1, active: true, addons: [] }] } });
+    const bad2 = await api('POST', '/admin/menu', { token: tokens.manager, body: { ...biryaniBody, addonGroups: [{ id: 'g1', name: 'Sauce', required: false, minSelect: 3, maxSelect: 1, active: true, addons: [{ id: 'a1', name: 'A', price: 1, active: true }] }] } });
+    const bad3 = await api('POST', '/admin/menu', { token: tokens.manager, body: { ...biryaniBody, addonGroups: [{ id: 'g1', name: 'S', required: false, minSelect: 0, maxSelect: 0, active: true, addons: [{ id: 'dup', name: 'A', price: 1, active: true }, { id: 'dup', name: 'B', price: 2, active: true }] }] } });
+    const bad4 = await api('POST', '/admin/menu', { token: tokens.manager, body: { ...biryaniBody, portions: [{ id: 'HALF', label: 'Half', price: -5, active: true }] } });
+    return [bad1, bad2, bad3, bad4].every((r) => r.status === 400) || `statuses ${[bad1, bad2, bad3, bad4].map((r) => r.status).join('/')}`;
+  });
+  await step('Menu config: manager creates a dish with Half/Full portions and two add-on groups', async () => {
+    const res = await api('POST', '/admin/menu', { token: tokens.manager, body: biryaniBody });
+    biryaniId = res.data?.id;
+    if (!biryaniId) return `HTTP ${res.status}: ${JSON.stringify(res.json?.error)}`;
+    const pub = await api('GET', `/menu/${biryaniId}`);
+    return (pub.data?.portions?.length === 2 && pub.data?.addonGroups?.length === 2) || `public view: ${JSON.stringify(pub.data?.portions)}`;
+  });
+  await step('Menu config: order without a required portion or required add-on is rejected', async () => {
+    const noPortion = await api('POST', '/orders', cfgOrderBody([{ menuItemId: biryaniId, quantity: 1, addonIds: ['add-mild'] }], `cfg-${stamp}-a`));
+    const noSpice = await api('POST', '/orders', cfgOrderBody([{ menuItemId: biryaniId, quantity: 1, portionId: 'HALF' }], `cfg-${stamp}-b`));
+    return (noPortion.status === 400 && noSpice.status === 400) || `no portion ${noPortion.status}, no spice ${noSpice.status}`;
+  });
+  await step('Menu config: duplicate, unknown, over-limit and two-from-single-choice add-ons are rejected', async () => {
+    const dup = await api('POST', '/orders', cfgOrderBody([{ menuItemId: biryaniId, quantity: 1, portionId: 'HALF', addonIds: ['add-mild', 'add-egg', 'add-egg'] }], `cfg-${stamp}-c`));
+    const unknown = await api('POST', '/orders', cfgOrderBody([{ menuItemId: biryaniId, quantity: 1, portionId: 'HALF', addonIds: ['add-mild', 'add-caviar'] }], `cfg-${stamp}-d`));
+    const tooMany = await api('POST', '/orders', cfgOrderBody([{ menuItemId: biryaniId, quantity: 1, portionId: 'HALF', addonIds: ['add-mild', 'add-egg', 'add-chicken', 'add-gravy'] }], `cfg-${stamp}-e`));
+    const twoSpice = await api('POST', '/orders', cfgOrderBody([{ menuItemId: biryaniId, quantity: 1, portionId: 'HALF', addonIds: ['add-mild', 'add-hot'] }], `cfg-${stamp}-f`));
+    const badPortion = await api('POST', '/orders', cfgOrderBody([{ menuItemId: biryaniId, quantity: 1, portionId: 'JUMBO', addonIds: ['add-mild'] }], `cfg-${stamp}-g`));
+    const all = [dup, unknown, tooMany, twoSpice, badPortion];
+    return all.every((r) => r.status === 400) || `statuses ${all.map((r) => r.status).join('/')}`;
+  });
+  await step('Menu config: Half + Extra Egg + Extra Gravy priced 150+20+25 = 195 each, 390 for two (client prices ignored)', async () => {
+    const res = await api('POST', '/orders', cfgOrderBody([
+      { menuItemId: biryaniId, quantity: 2, portionId: 'HALF', addonIds: ['add-egg', 'add-gravy', 'add-mild'], unitPrice: 1, totalPrice: 2, price: 1 }
+    ], `cfg-${stamp}-ok`));
+    cfgOrderId = res.data?.id;
+    const line = res.data?.items?.[0];
+    if (!line) return `HTTP ${res.status}: ${JSON.stringify(res.json?.error)}`;
+    const ok = line.unitPrice === 195 && line.totalPrice === 390 && res.data.subtotal === 390 && line.basePrice === 150 &&
+      line.portionId === 'HALF' && line.portionLabel === 'Half' && line.addons?.length === 3 &&
+      line.addons.find((a: Json) => a.addonId === 'add-egg')?.price === 20;
+    // Takeaway: no service charge; 5% GST on (390 - 10% WELCOME10 when applied) per existing rules.
+    return ok || JSON.stringify({ unit: line.unitPrice, total: line.totalPrice, subtotal: res.data.subtotal, base: line.basePrice, addons: line.addons });
+  });
+  await step('Menu config: Full portion with no extras is 270', async () => {
+    const res = await api('POST', '/orders', cfgOrderBody([{ menuItemId: biryaniId, quantity: 1, portionId: 'FULL', addonIds: ['add-hot'] }], `cfg-${stamp}-full`));
+    return res.data?.items?.[0]?.unitPrice === 270 || `HTTP ${res.status}, unit ${res.data?.items?.[0]?.unitPrice}, ${JSON.stringify(res.json?.error)}`;
+  });
+  await step('Menu config: simple items still order without any options', async () => {
+    const res = await api('POST', '/orders', cfgOrderBody([{ menuItemId: 'itm-001', quantity: 1 }], `cfg-${stamp}-simple`));
+    const portionOnSimple = await api('POST', '/orders', cfgOrderBody([{ menuItemId: 'itm-001', quantity: 1, portionId: 'HALF' }], `cfg-${stamp}-simple2`));
+    return (res.status === 201 && !res.data.items[0].portionId && portionOnSimple.status === 400) || `simple ${res.status}, portion on simple ${portionOnSimple.status}`;
+  });
+  await step('Menu config: kitchen ticket and customer order show the chosen portion and add-ons', async () => {
+    const kitchen = await api('GET', '/kitchen/orders', { token: tokens.kitchen });
+    const ticket = (kitchen.data || []).find((o: Json) => o.id === cfgOrderId);
+    const mine = await api('GET', `/orders/${cfgOrderId}`, { token: tokens.customer });
+    const kLine = ticket?.items?.[0];
+    return (kLine?.portionLabel === 'Half' && kLine?.addons?.length === 3 && mine.data?.items?.[0]?.addons?.length === 3) || `kitchen line ${JSON.stringify(kLine)?.slice(0, 160)}`;
+  });
+  await step('Menu config: changing prices or disabling an add-on never changes an existing order', async () => {
+    const cfg = JSON.parse(JSON.stringify(biryaniBody));
+    cfg.portions[0].price = 999;
+    cfg.addonGroups[0].addons[0].active = false; // Extra Egg disabled
+    const upd = await api('PUT', `/admin/menu/${biryaniId}`, { token: tokens.manager, body: { portions: cfg.portions, addonGroups: cfg.addonGroups } });
+    if (upd.status !== 200) return `update ${upd.status}: ${JSON.stringify(upd.json?.error)}`;
+    const order = await api('GET', `/orders/${cfgOrderId}`, { token: tokens.customer });
+    const line = order.data?.items?.[0];
+    const disabledNow = await api('POST', '/orders', cfgOrderBody([{ menuItemId: biryaniId, quantity: 1, portionId: 'HALF', addonIds: ['add-egg', 'add-mild'] }], `cfg-${stamp}-after`));
+    const newHalf = await api('POST', '/orders', cfgOrderBody([{ menuItemId: biryaniId, quantity: 1, portionId: 'HALF', addonIds: ['add-mild'] }], `cfg-${stamp}-after2`));
+    return (line?.unitPrice === 195 && order.data?.subtotal === 390 && disabledNow.status === 400 && newHalf.data?.items?.[0]?.unitPrice === 999) ||
+      `old unit ${line?.unitPrice}, disabled egg ${disabledNow.status}, new half ${newHalf.data?.items?.[0]?.unitPrice}`;
+  });
+  await step('Menu config: payment amount uses the order snapshot, not the new menu price', async () => {
+    const pay = await api('POST', '/payments/create', { token: tokens.customer, body: { orderId: cfgOrderId, paymentMethod: 'UPI' } });
+    const order = await api('GET', `/orders/${cfgOrderId}`, { token: tokens.customer });
+    return (pay.status === 200 && pay.data?.amountInRupees === order.data?.total && order.data?.subtotal === 390) || `pay ${pay.status}, amount ${pay.data?.amountInRupees}, order total ${order.data?.total}, subtotal ${order.data?.subtotal}`;
+  });
+  await step('Menu config: invoice lines carry the portion and add-on snapshot and match the order', async () => {
+    const gen = await api('POST', `/billing/generate/${cfgOrderId}`, { token: tokens.staff });
+    const inv = gen.data?.invoice;
+    const order = (await api('GET', `/orders/${cfgOrderId}`, { token: tokens.customer })).data;
+    const line = inv?.items?.[0];
+    return (line?.portionLabelSnapshot === 'Half' && line?.addonsSnapshot?.length === 3 && line?.unitPriceSnapshot === 195 && inv.grandTotal === order.total) ||
+      `invoice line ${JSON.stringify(line)?.slice(0, 200)}, grand ${inv?.grandTotal} vs ${order?.total}`;
+  });
+  await step('Menu config: adding a configured dish to an open order validates and prices it', async () => {
+    const dineIn = await api('POST', '/orders', {
+      token: tokens.customer,
+      headers: { 'Idempotency-Key': `cfg-${stamp}-dine` },
+      body: { orderType: 'Dine-in', tableNumber: 'Table 03', customerName: 'Config Guest', customerPhone: '+91 9700000001', customerEmail: `config.guest.${stamp}@example.com`, paymentMethod: 'Pay at Exit', items: [{ menuItemId: 'itm-001', quantity: 1 }] }
+    });
+    const id = dineIn.data?.id;
+    const bad = await api('POST', `/orders/${id}/items`, { token: tokens.customer, body: { items: [{ menuItemId: biryaniId, quantity: 1 }] } });
+    const good = await api('POST', `/orders/${id}/items`, { token: tokens.customer, body: { items: [{ menuItemId: biryaniId, quantity: 1, portionId: 'FULL', addonIds: ['add-chicken', 'add-hot'] }] } });
+    const added = good.data?.items?.find((i: Json) => i.menuItemId === biryaniId);
+    return (bad.status === 400 && added?.unitPrice === 330 && added?.isAddon === true) || `bad ${bad.status}, good ${good.status}, unit ${added?.unitPrice}, ${JSON.stringify(good.json?.error)}`;
+  });
+  await step('Menu config: staff POS order and staff add-items support configured dishes', async () => {
+    const pos = await api('POST', '/admin/orders', { token: tokens.manager, body: { orderType: 'Takeaway', customerName: 'POS Config', paymentMethod: 'Cash', items: [{ menuItemId: biryaniId, quantity: 2, portionId: 'FULL', addonIds: ['add-gravy', 'add-mild'] }] } });
+    const line = pos.data?.items?.[0];
+    if (line?.unitPrice !== 295) return `POS ${pos.status}, unit ${line?.unitPrice}, ${JSON.stringify(pos.json?.error)}`;
+    const add = await api('POST', `/admin/orders/${pos.data.id}/items`, { token: tokens.manager, body: { itemsToAdd: [{ menuItemId: biryaniId, quantity: 1, portionId: 'HALF', addonIds: ['add-hot'] }] } });
+    const addBad = await api('POST', `/admin/orders/${pos.data.id}/items`, { token: tokens.manager, body: { itemsToAdd: [{ menuItemId: biryaniId, quantity: 1, portionId: 'HALF' }] } });
+    const added = add.data?.items?.find((i: Json) => i.isAddon);
+    return (added?.unitPrice === 999 && addBad.status === 400) || `staff add ${add.status} unit ${added?.unitPrice}, invalid ${addBad.status}`;
+  });
+  await step('Menu config: Full-only and Half-only dishes accept only their portion', async () => {
+    const fullOnly = await api('POST', '/admin/menu', { token: tokens.admin, body: { ...biryaniBody, name: `Full Only ${stamp}`, portions: [{ id: 'FULL', label: 'Full', price: 300, active: true }], addonGroups: [] } });
+    const halfOnly = await api('POST', '/admin/menu', { token: tokens.admin, body: { ...biryaniBody, name: `Half Only ${stamp}`, portions: [{ id: 'HALF', label: 'Half', price: 110, active: true }], addonGroups: [] } });
+    const f1 = await api('POST', '/orders', cfgOrderBody([{ menuItemId: fullOnly.data?.id, quantity: 1, portionId: 'FULL' }], `cfg-${stamp}-fo1`));
+    const f2 = await api('POST', '/orders', cfgOrderBody([{ menuItemId: fullOnly.data?.id, quantity: 1, portionId: 'HALF' }], `cfg-${stamp}-fo2`));
+    const h1 = await api('POST', '/orders', cfgOrderBody([{ menuItemId: halfOnly.data?.id, quantity: 1, portionId: 'HALF' }], `cfg-${stamp}-ho1`));
+    const h2 = await api('POST', '/orders', cfgOrderBody([{ menuItemId: halfOnly.data?.id, quantity: 1, portionId: 'FULL' }], `cfg-${stamp}-ho2`));
+    return (f1.data?.items?.[0]?.unitPrice === 300 && f2.status === 400 && h1.data?.items?.[0]?.unitPrice === 110 && h2.status === 400) ||
+      `full-only ${f1.status}/${f2.status}, half-only ${h1.status}/${h2.status}`;
+  });
+  await step('Menu config: removing all portions and add-ons turns the dish back into a simple item', async () => {
+    const upd = await api('PUT', `/admin/menu/${biryaniId}`, { token: tokens.admin, body: { portions: [], addonGroups: [] } });
+    const res = await api('POST', '/orders', cfgOrderBody([{ menuItemId: biryaniId, quantity: 1 }], `cfg-${stamp}-cleared`));
+    return (upd.status === 200 && res.data?.items?.[0]?.unitPrice === 200) || `update ${upd.status}, order ${res.status} unit ${res.data?.items?.[0]?.unitPrice}`;
+  });
+  await step('Menu config: same order with different add-ons gets a different idempotency fingerprint', async () => {
+    const key = `cfg-${stamp}-fp`;
+    await api('PUT', `/admin/menu/${biryaniId}`, { token: tokens.admin, body: { portions: biryaniBody.portions, addonGroups: biryaniBody.addonGroups } });
+    const first = await api('POST', '/orders', cfgOrderBody([{ menuItemId: biryaniId, quantity: 1, portionId: 'HALF', addonIds: ['add-mild'] }], key));
+    const changed = await api('POST', '/orders', cfgOrderBody([{ menuItemId: biryaniId, quantity: 1, portionId: 'HALF', addonIds: ['add-hot'] }], key));
+    return (first.status === 201 && changed.status === 409) || `first ${first.status}, changed choices with same key ${changed.status}`;
+  });
+
   const failed = results.filter((r) => !r.passed).length;
   console.log(`\n--- API WORKFLOWS: ${results.length - failed} PASSED, ${failed} FAILED ---`);
   return { passed: results.length - failed, failed, results };

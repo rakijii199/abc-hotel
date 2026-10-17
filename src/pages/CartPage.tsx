@@ -2,7 +2,7 @@
  * Shopping Cart Page with Quantities, Promo Code, and Cost Breakdown
  * High-End Luxury Dining UI with clean typography, refined cards, and seamless responsive layout.
  */
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   ShoppingBag,
   Plus,
@@ -21,7 +21,11 @@ import {
   Percent,
   Info
 } from 'lucide-react';
-import { useCart } from '../context/CartContext.tsx';
+import { priceCartLine, useCart } from '../context/CartContext.tsx';
+import { MenuApi } from '../api/index.ts';
+import { ItemCustomizerModal } from '../components/menu/ItemCustomizer.tsx';
+import { describeSelection, hasCustomization } from '../../shared/menuConfig.ts';
+import type { CartItem } from '../types/index.ts';
 import { useToast } from '../context/ToastContext.tsx';
 import { formatCurrency } from '../utils/formatters.ts';
 import { EmptyState, Modal } from '../components/common/Footer.tsx';
@@ -38,6 +42,9 @@ export const CartPage: React.FC<{ navigate: (route: string) => void }> = ({ navi
     total,
     updateQuantity,
     updateInstructions,
+    updateSelection,
+    invalidLineIds,
+    syncMenuItems,
     removeItem,
     applyDiscount,
     removeDiscount,
@@ -45,6 +52,13 @@ export const CartPage: React.FC<{ navigate: (route: string) => void }> = ({ navi
   } = useCart();
 
   const { success, error } = useToast();
+  const [editingLine, setEditingLine] = useState<CartItem | null>(null);
+
+  // Prices/options may have changed since items were added: refresh from the live menu.
+  useEffect(() => {
+    MenuApi.getItems().then(syncMenuItems).catch(() => {});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const [promoInput, setPromoInput] = useState(discountCode || 'WELCOME10');
   const [clearCartModalOpen, setClearCartModalOpen] = useState(false);
   const [focusedNoteId, setFocusedNoteId] = useState<string | null>(null);
@@ -128,9 +142,13 @@ export const CartPage: React.FC<{ navigate: (route: string) => void }> = ({ navi
         {/* Left Column (2 Cols): Cart Items List */}
         <div className="lg:col-span-2 space-y-4">
           <div className="space-y-3.5">
-            {items.map(({ menuItem, quantity, specialInstructions }) => (
+            {items.map((line) => {
+              const { lineId, menuItem, quantity, specialInstructions } = line;
+              const pricing = priceCartLine(line);
+              const choices = pricing.resolved ? describeSelection(pricing.resolved) : '';
+              return (
               <div
-                key={menuItem.id}
+                key={lineId}
                 className="bg-white rounded-3xl border border-stone-200/90 p-4 sm:p-5 shadow-xs hover:shadow-md transition-all flex flex-col sm:flex-row gap-4 sm:gap-5 justify-between items-start sm:items-center"
               >
                 {/* Item Thumbnail + Info */}
@@ -164,17 +182,39 @@ export const CartPage: React.FC<{ navigate: (route: string) => void }> = ({ navi
                       </h3>
                     </div>
 
+                    {choices && (
+                      <p className="text-xs text-stone-600" data-testid="cart-line-choices">{choices}</p>
+                    )}
+                    {pricing.resolved && (pricing.resolved.portionId || pricing.resolved.addons.length > 0) && (
+                      <p className="text-[11px] text-stone-400 font-mono">
+                        {formatCurrency(pricing.resolved.basePrice)}
+                        {pricing.resolved.addons.map((a) => ` + ${formatCurrency(a.price)}`).join('')}
+                      </p>
+                    )}
+                    {pricing.error && (
+                      <p className="text-xs font-semibold text-rose-700" role="alert">{pricing.error}</p>
+                    )}
+
                     <div className="flex items-center gap-2 text-xs text-stone-500">
                       <span className="font-mono font-bold text-stone-900 text-sm">
-                        {formatCurrency(menuItem.price)}
+                        {formatCurrency(pricing.unitPrice)}
                       </span>
                       <span className="text-stone-400">each</span>
+                      {hasCustomization(menuItem) && (
+                        <button
+                          type="button"
+                          onClick={() => setEditingLine(line)}
+                          className="ml-1 text-[11px] font-bold text-amber-800 hover:underline cursor-pointer min-h-8 px-1"
+                        >
+                          {pricing.error ? 'Update choices' : 'Edit choices'}
+                        </button>
+                      )}
                     </div>
 
                     {/* Special instruction input */}
                     <div className="pt-1 w-full max-w-md">
                       <div className={`flex items-center gap-2 px-3 rounded-xl border transition-all ${
-                        focusedNoteId === menuItem.id
+                        focusedNoteId === lineId
                           ? 'bg-white border-amber-600 ring-2 ring-amber-600/20'
                           : 'bg-stone-50/80 border-stone-200/90 hover:border-stone-300'
                       }`}>
@@ -183,9 +223,9 @@ export const CartPage: React.FC<{ navigate: (route: string) => void }> = ({ navi
                           type="text"
                           placeholder="Add kitchen note (e.g., less spicy, extra lemon)..."
                           value={specialInstructions || ''}
-                          onFocus={() => setFocusedNoteId(menuItem.id)}
+                          onFocus={() => setFocusedNoteId(lineId)}
                           onBlur={() => setFocusedNoteId(null)}
-                          onChange={(e) => updateInstructions(menuItem.id, e.target.value)}
+                          onChange={(e) => updateInstructions(lineId, e.target.value)}
                           className="text-xs bg-transparent text-stone-800 w-full min-h-10 focus:outline-hidden placeholder:text-stone-400 placeholder:text-[11px]"
                         />
                       </div>
@@ -198,7 +238,7 @@ export const CartPage: React.FC<{ navigate: (route: string) => void }> = ({ navi
                   {/* Stepper */}
                   <div className="flex items-center bg-amber-50/90 border border-amber-200/90 rounded-2xl overflow-hidden shadow-2xs">
                     <button
-                      onClick={() => updateQuantity(menuItem.id, quantity - 1)}
+                      onClick={() => updateQuantity(lineId, quantity - 1)}
                       className="w-10 h-10 flex items-center justify-center text-amber-900 hover:bg-amber-100/80 transition-colors cursor-pointer"
                       aria-label="Decrease quantity"
                     >
@@ -208,7 +248,7 @@ export const CartPage: React.FC<{ navigate: (route: string) => void }> = ({ navi
                       {quantity}
                     </span>
                     <button
-                      onClick={() => updateQuantity(menuItem.id, quantity + 1)}
+                      onClick={() => updateQuantity(lineId, quantity + 1)}
                       className="w-10 h-10 flex items-center justify-center text-amber-900 hover:bg-amber-100/80 transition-colors cursor-pointer"
                       aria-label="Increase quantity"
                     >
@@ -219,10 +259,10 @@ export const CartPage: React.FC<{ navigate: (route: string) => void }> = ({ navi
                   {/* Line Total & Remove */}
                   <div className="text-right min-w-[90px]">
                     <span className="font-serif font-bold text-lg text-stone-900 block leading-tight">
-                      {formatCurrency(menuItem.price * quantity)}
+                      {formatCurrency(pricing.lineTotal)}
                     </span>
                     <button
-                      onClick={() => removeItem(menuItem.id)}
+                      onClick={() => removeItem(lineId)}
                       className="text-[11px] font-semibold text-stone-400 hover:text-rose-600 transition-colors cursor-pointer mt-0.5 inline-flex items-center min-h-8 px-1 -mr-1"
                     >
                       Remove
@@ -230,8 +270,25 @@ export const CartPage: React.FC<{ navigate: (route: string) => void }> = ({ navi
                   </div>
                 </div>
               </div>
-            ))}
+              );
+            })}
           </div>
+
+          {editingLine && (
+            <ItemCustomizerModal
+              isOpen={!!editingLine}
+              onClose={() => setEditingLine(null)}
+              item={editingLine.menuItem}
+              initialSelection={{ portionId: editingLine.portionId, addonIds: editingLine.addonIds }}
+              initialQuantity={editingLine.quantity}
+              confirmLabel="Update Item"
+              onConfirm={(selection, qty) => {
+                updateSelection(editingLine.lineId, selection, qty);
+                setEditingLine(null);
+                success(`Updated ${editingLine.menuItem.name}`);
+              }}
+            />
+          )}
 
           {/* Add more dishes banner */}
           <div className="pt-2">
@@ -374,7 +431,13 @@ export const CartPage: React.FC<{ navigate: (route: string) => void }> = ({ navi
 
             {/* Proceed to Checkout CTA */}
             <button
-              onClick={() => navigate('checkout')}
+              onClick={() => {
+                if (invalidLineIds.length > 0) {
+                  error('Some items need their choices updated before checkout.');
+                  return;
+                }
+                navigate('checkout');
+              }}
               className="lux-btn lux-btn-wine w-full !min-h-[3.25rem] group"
             >
               <span>Proceed to Checkout</span>

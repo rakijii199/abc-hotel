@@ -250,7 +250,7 @@ export class AdminController {
 
   public static async addItemsToOrder(req: AuthenticatedRequest, res: Response): Promise<void> {
     try {
-      const { itemsToAdd } = req.body;
+      const itemsToAdd = req.body.itemsToAdd || req.body.items;
       const updated = await AdminService.addItemsToOrder(req.params.id, itemsToAdd, req.user);
       res.status(200).json({
         success: true,

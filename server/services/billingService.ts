@@ -100,7 +100,9 @@ export class BillingService {
         discountSnapshot: 0,
         taxSnapshot: 0,
         lineTotal,
-        specialInstructions: item.specialInstructions
+        specialInstructions: item.specialInstructions,
+        ...(item.portionLabel ? { portionLabelSnapshot: item.portionLabel } : {}),
+        ...(item.addons && item.addons.length ? { addonsSnapshot: item.addons } : {})
       };
     });
 

@@ -40,6 +40,7 @@ import { HotelUpiQrPaymentModal, PaymentModalMode } from '../components/payment/
 import { InvoiceViewModal } from '../components/billing/InvoiceViewModal.tsx';
 import { AddonItemsModal } from '../components/orders/AddonItemsModal.tsx';
 import { Invoice } from '../types/index.ts';
+import { OrderLineChoices } from '../components/orders/OrderLineChoices.tsx';
 
 export const OrderStatusPage: React.FC<{
   orderId?: string;
@@ -446,7 +447,7 @@ export const OrderStatusPage: React.FC<{
                     {item.quantity}×
                   </div>
                   <div>
-                    <p className="font-bold text-stone-900 text-sm">{item.name}</p>
+                    <p className="font-bold text-stone-900 text-sm">{item.name}<OrderLineChoices item={item} /></p>
                     {item.specialInstructions && (
                       <p className="text-[11px] text-amber-800">
                         Note: {item.specialInstructions}
@@ -491,7 +492,7 @@ export const OrderStatusPage: React.FC<{
                     </div>
                     <div>
                       <div className="flex items-center gap-1.5">
-                        <p className="font-bold text-stone-900 text-sm">{item.name}</p>
+                        <p className="font-bold text-stone-900 text-sm">{item.name}<OrderLineChoices item={item} /></p>
                         <span className="text-[9px] font-bold bg-amber-200 text-amber-900 px-1.5 py-0.2 rounded-sm">
                           + Add-on
                         </span>

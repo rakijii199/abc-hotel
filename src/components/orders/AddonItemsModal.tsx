@@ -18,6 +18,8 @@ import {
 } from 'lucide-react';
 import { MenuItem, MenuCategory, Order } from '../../types/index.ts';
 import { MenuApi, OrderApi } from '../../api/index.ts';
+import { ItemCustomizerModal } from '../menu/ItemCustomizer.tsx';
+import { ItemSelection, describeSelection, hasCustomization, resolveItemConfiguration, selectionKey, startingPrice } from '../../../shared/menuConfig.ts';
 import { useToast } from '../../context/ToastContext.tsx';
 import { formatCurrency } from '../../utils/formatters.ts';
 
@@ -40,7 +42,9 @@ export const AddonItemsModal: React.FC<AddonItemsModalProps> = ({
   const [loading, setLoading] = useState<boolean>(true);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [addonCart, setAddonCart] = useState<Record<string, { item: MenuItem; quantity: number; notes: string }>>({});
+  // Keyed by item + chosen portion/add-ons, so one dish can appear with different choices.
+  const [addonCart, setAddonCart] = useState<Record<string, { item: MenuItem; quantity: number; notes: string; selection: ItemSelection }>>({});
+  const [customizing, setCustomizing] = useState<MenuItem | null>(null);
   const [submitting, setSubmitting] = useState<boolean>(false);
 
   useEffect(() => {
@@ -76,23 +80,48 @@ export const AddonItemsModal: React.FC<AddonItemsModalProps> = ({
 
   if (!isOpen) return null;
 
-  const handleUpdateQuantity = (item: MenuItem, delta: number) => {
+  const addEntry = (item: MenuItem, selection: ItemSelection, delta: number) => {
+    const key = selectionKey(item.id, selection);
     setAddonCart((prev) => {
-      const current = prev[item.id]?.quantity || 0;
+      const current = prev[key]?.quantity || 0;
       const next = current + delta;
       const updated = { ...prev };
 
       if (next <= 0) {
-        delete updated[item.id];
+        delete updated[key];
       } else {
-        updated[item.id] = {
+        updated[key] = {
           item,
+          selection,
           quantity: Math.min(20, next),
-          notes: prev[item.id]?.notes || ''
+          notes: prev[key]?.notes || ''
         };
       }
       return updated;
     });
+  };
+
+  const handleUpdateQuantity = (item: MenuItem, delta: number) => {
+    if (hasCustomization(item)) {
+      if (delta > 0) {
+        setCustomizing(item);
+        return;
+      }
+      // Reduce the most recently added configuration of this dish.
+      const keys = Object.keys(addonCart).filter((k) => addonCart[k].item.id === item.id);
+      const last = keys[keys.length - 1];
+      if (last) addEntry(item, addonCart[last].selection, -1);
+      return;
+    }
+    addEntry(item, {}, delta);
+  };
+
+  const entryUnitPrice = (entry: { item: MenuItem; selection: ItemSelection }) => {
+    try {
+      return resolveItemConfiguration(entry.item, entry.selection).unitPrice;
+    } catch {
+      return entry.item.price;
+    }
   };
 
   const handleUpdateNotes = (itemId: string, notes: string) => {
@@ -111,7 +140,7 @@ export const AddonItemsModal: React.FC<AddonItemsModalProps> = ({
   const selectedItemsList = Object.values(addonCart);
   const totalAddonItemsCount = selectedItemsList.reduce((acc, curr) => acc + curr.quantity, 0);
   const totalAddonAmount = selectedItemsList.reduce(
-    (acc, curr) => acc + curr.item.price * curr.quantity,
+    (acc, curr) => acc + entryUnitPrice(curr) * curr.quantity,
     0
   );
 
@@ -135,7 +164,9 @@ export const AddonItemsModal: React.FC<AddonItemsModalProps> = ({
       const payloadItems = selectedItemsList.map((entry) => ({
         menuItemId: entry.item.id,
         quantity: entry.quantity,
-        specialInstructions: entry.notes.trim() || undefined
+        specialInstructions: entry.notes.trim() || undefined,
+        ...(entry.selection.portionId ? { portionId: entry.selection.portionId } : {}),
+        ...(entry.selection.addonIds && entry.selection.addonIds.length ? { addonIds: entry.selection.addonIds } : {})
       }));
 
       const updatedOrder = await OrderApi.addOrderItems(order.id, payloadItems);
@@ -236,7 +267,10 @@ export const AddonItemsModal: React.FC<AddonItemsModalProps> = ({
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {filteredItems.map((dish) => {
-                const qty = addonCart[dish.id]?.quantity || 0;
+                const dishEntries = Object.entries(addonCart).filter(([, e]) => e.item.id === dish.id);
+                const qty = dishEntries.reduce((sum, [, e]) => sum + e.quantity, 0);
+                const configurable = hasCustomization(dish);
+                const noteKey = dishEntries.length === 1 ? dishEntries[0][0] : '';
                 return (
                   <div
                     key={dish.id}
@@ -266,19 +300,24 @@ export const AddonItemsModal: React.FC<AddonItemsModalProps> = ({
                         </div>
                         <p className="text-[11px] text-stone-500 line-clamp-1 mt-0.5">{dish.description}</p>
                         <p className="font-mono font-bold text-xs text-amber-950 mt-1">
-                          {formatCurrency(dish.price)}
+                          {configurable ? `From ${formatCurrency(startingPrice(dish))}` : formatCurrency(dish.price)}
                         </p>
+                        {dishEntries.filter(([, e]) => e.selection.portionId || e.selection.addonIds?.length).map(([k, e]) => (
+                          <p key={k} className="text-[10.5px] text-stone-600 mt-0.5">
+                            {e.quantity}× {describeSelection(resolveItemConfiguration(dish, e.selection))}
+                          </p>
+                        ))}
                       </div>
                     </div>
 
                     {/* Stepper / Add Button */}
                     <div className="flex items-center justify-between pt-1 border-t border-stone-100">
-                      {qty > 0 ? (
+                      {qty > 0 && noteKey ? (
                         <input
                           type="text"
                           placeholder="Kitchen note (e.g. Extra spicy)..."
-                          value={addonCart[dish.id]?.notes || ''}
-                          onChange={(e) => handleUpdateNotes(dish.id, e.target.value)}
+                          value={addonCart[noteKey]?.notes || ''}
+                          onChange={(e) => handleUpdateNotes(noteKey, e.target.value)}
                           className="flex-1 mr-2 px-2 py-1 text-[11px] bg-white border border-amber-300 rounded-lg focus:outline-hidden"
                         />
                       ) : (
@@ -367,6 +406,19 @@ export const AddonItemsModal: React.FC<AddonItemsModalProps> = ({
           </div>
         </div>
       </div>
+
+      {customizing && (
+        <ItemCustomizerModal
+          isOpen={!!customizing}
+          onClose={() => setCustomizing(null)}
+          item={customizing}
+          confirmLabel="Add to Order"
+          onConfirm={(selection, qty) => {
+            addEntry(customizing, selection, qty);
+            setCustomizing(null);
+          }}
+        />
+      )}
     </div>
   );
 };

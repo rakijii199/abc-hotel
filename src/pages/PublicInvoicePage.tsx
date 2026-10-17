@@ -5,6 +5,7 @@ import { BillingApi } from '../api/billingApi.ts';
 import { formatCurrency, formatDate } from '../utils/formatters.ts';
 import { Spinner, EmptyState } from '../components/common/Footer.tsx';
 import { useToast } from '../context/ToastContext.tsx';
+import { OrderLineChoices } from '../components/orders/OrderLineChoices.tsx';
 
 export const PublicInvoicePage: React.FC<{
   token?: string;
@@ -176,7 +177,7 @@ export const PublicInvoicePage: React.FC<{
                 {invoice.items.map((item) => (
                   <tr key={item.id}>
                     <td className="py-2.5 pr-2 font-medium text-stone-900">
-                      <div>{item.productNameSnapshot}</div>
+                      <div>{item.productNameSnapshot}<OrderLineChoices item={item} /></div>
                       {item.specialInstructions && (
                         <div className="text-[10px] text-stone-400 italic font-normal">
                           Note: {item.specialInstructions}

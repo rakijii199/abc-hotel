@@ -3,6 +3,8 @@
  * Modern Luxury Card-Based Grid UI with Local Image Upload & Quick Controls
  */
 import React, { useState, useRef } from 'react';
+import { MenuItemConfig, MenuItemConfigEditor, configValidationProblems } from './MenuItemConfigEditor.tsx';
+import { hasCustomization, startingPrice } from '../../../shared/menuConfig.ts';
 import {
   Plus,
   Search,
@@ -122,6 +124,7 @@ export const AdminMenuView: React.FC<AdminMenuViewProps> = ({
   const [prepTimeMinutes, setPrepTimeMinutes] = useState<number>(20);
   const [available, setAvailable] = useState(true);
   const [isChefSpecial, setIsChefSpecial] = useState(false);
+  const [itemConfig, setItemConfig] = useState<MenuItemConfig>({ portions: [], addonGroups: [] });
   const [uploadingImage, setUploadingImage] = useState(false);
 
   // Hidden file input refs
@@ -143,6 +146,7 @@ export const AdminMenuView: React.FC<AdminMenuViewProps> = ({
     setPrepTimeMinutes(20);
     setAvailable(true);
     setIsChefSpecial(false);
+    setItemConfig({ portions: [], addonGroups: [] });
     setModalOpen(true);
   };
 
@@ -160,6 +164,10 @@ export const AdminMenuView: React.FC<AdminMenuViewProps> = ({
     setPrepTimeMinutes(item.prepTimeMinutes);
     setAvailable(item.available);
     setIsChefSpecial(!!item.isChefSpecial);
+    setItemConfig({
+      portions: (item.portions || []).map((p) => ({ ...p })),
+      addonGroups: (item.addonGroups || []).map((g) => ({ ...g, addons: g.addons.map((a) => ({ ...a })) }))
+    });
     setModalOpen(true);
   };
 
@@ -241,6 +249,11 @@ export const AdminMenuView: React.FC<AdminMenuViewProps> = ({
       error('Please provide or upload a dish photo');
       return;
     }
+    const configProblems = configValidationProblems(itemConfig);
+    if (configProblems.length > 0) {
+      error(configProblems[0]);
+      return;
+    }
 
     setSubmitting(true);
     try {
@@ -255,7 +268,16 @@ export const AdminMenuView: React.FC<AdminMenuViewProps> = ({
         spiceLevel,
         prepTimeMinutes: Number(prepTimeMinutes),
         available,
-        isChefSpecial
+        isChefSpecial,
+        // Always sent so removing every portion/add-on clears the configuration.
+        portions: itemConfig.portions.map((p) => ({ ...p, label: p.label.trim(), price: Number(p.price) })),
+        addonGroups: itemConfig.addonGroups.map((g) => ({
+          ...g,
+          name: g.name.trim(),
+          minSelect: Number(g.minSelect) || 0,
+          maxSelect: Number(g.maxSelect) || 0,
+          addons: g.addons.map((a) => ({ ...a, name: a.name.trim(), price: Number(a.price) }))
+        }))
       };
 
       if (editingItem) {
@@ -519,8 +541,13 @@ export const AdminMenuView: React.FC<AdminMenuViewProps> = ({
                         {/* Price with edit button */}
                         <div className="flex items-center gap-1.5">
                           <span className="font-mono font-bold text-base text-amber-950">
-                            {formatCurrency(item.price)}
+                            {hasCustomization(item) ? `From ${formatCurrency(startingPrice(item))}` : formatCurrency(item.price)}
                           </span>
+                          {hasCustomization(item) && (
+                            <span className="px-1.5 py-0.5 rounded-md bg-amber-50 border border-amber-200 text-[10px] font-bold text-amber-900" title="Has portions or add-ons">
+                              {[(item.portions || []).filter((p) => p.active).map((p) => p.label).join('/'), (item.addonGroups || []).filter((g) => g.active).reduce((n, g) => n + g.addons.filter((x) => x.active).length, 0) ? `${(item.addonGroups || []).filter((g) => g.active).reduce((n, g) => n + g.addons.filter((x) => x.active).length, 0)} add-ons` : ''].filter(Boolean).join(' · ')}
+                            </span>
+                          )}
                           <button
                             type="button"
                             onClick={() => openPriceModal(item)}
@@ -803,7 +830,9 @@ export const AdminMenuView: React.FC<AdminMenuViewProps> = ({
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div className="space-y-1">
-                <label className="text-xs font-bold text-stone-700">Price (₹ INR)</label>
+                <label className="text-xs font-bold text-stone-700">
+                  {itemConfig.portions.some((p) => p.active) ? 'Base Price (₹, used if portions are disabled)' : 'Price (₹ INR)'}
+                </label>
                 <input
                   type="number"
                   value={price}
@@ -981,6 +1010,12 @@ export const AdminMenuView: React.FC<AdminMenuViewProps> = ({
                 <span>Chef's Special</span>
               </label>
             </div>
+
+            <MenuItemConfigEditor
+              value={itemConfig}
+              onChange={setItemConfig}
+              previewItem={{ id: editingItem?.id || 'preview', name: name || 'This dish', price: Number(price) || 0, available: true }}
+            />
 
             <div className="pt-3 border-t border-stone-200 flex justify-end gap-2">
               <button

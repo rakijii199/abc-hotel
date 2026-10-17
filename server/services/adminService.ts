@@ -5,6 +5,7 @@
  */
 import { BookingRepository } from '../repositories/bookingRepository.ts';
 import { db } from '../database/db.ts';
+import { buildOrderLine } from './orderLinePricing.ts';
 import { MenuRepository } from '../repositories/menuRepository.ts';
 import { OrderRepository } from '../repositories/orderRepository.ts';
 import { RestaurantRepository, TableRepository } from '../repositories/tableRepository.ts';
@@ -463,7 +464,7 @@ export class AdminService {
 
   public static async addItemsToOrder(
     orderId: string,
-    itemsToAdd: Array<{ menuItemId: string; quantity: number; specialInstructions?: string }>,
+    itemsToAdd: Array<{ menuItemId: string; quantity: number; specialInstructions?: string; portionId?: string; addonIds?: string[] }>,
     adminUser?: SafeUser
   ): Promise<Order> {
     const order = await OrderRepository.getById(orderId);
@@ -490,24 +491,7 @@ export class AdminService {
       if (!dbItem.available) {
         throw new Error(`"${dbItem.name}" is currently marked unavailable.`);
       }
-      if (rawItem.quantity <= 0) {
-        throw new Error(`Quantity for "${dbItem.name}" must be greater than 0.`);
-      }
-
-      const itemTotal = dbItem.price * rawItem.quantity;
-      const newItem: OrderItem = {
-        id: `ord-item-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
-        orderId: order.id,
-        menuItemId: dbItem.id,
-        name: dbItem.name,
-        imageUrl: dbItem.imageUrl,
-        quantity: rawItem.quantity,
-        unitPrice: dbItem.price,
-        totalPrice: itemTotal,
-        specialInstructions: rawItem.specialInstructions?.trim(),
-        isAddon: true,
-        addedAt: new Date().toISOString()
-      };
+      const newItem = buildOrderLine(dbItem, rawItem, order.id, { isAddon: true, addedAt: new Date().toISOString() });
 
       order.items.push(newItem);
       newlyAddedItems.push(newItem);
@@ -652,6 +636,8 @@ export class AdminService {
         menuItemId: string;
         quantity: number;
         specialInstructions?: string;
+        portionId?: string;
+        addonIds?: string[];
       }>;
     },
     adminUser?: SafeUser
@@ -675,20 +661,9 @@ export class AdminService {
         throw new Error(`"${dbItem.name}" is currently marked unavailable.`);
       }
 
-      const itemTotal = dbItem.price * rawItem.quantity;
-      subtotal += itemTotal;
-
-      validatedOrderItems.push({
-        id: `ord-item-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
-        orderId,
-        menuItemId: dbItem.id,
-        name: dbItem.name,
-        imageUrl: dbItem.imageUrl,
-        quantity: rawItem.quantity,
-        unitPrice: dbItem.price,
-        totalPrice: itemTotal,
-        specialInstructions: rawItem.specialInstructions?.trim()
-      });
+      const line = buildOrderLine(dbItem, rawItem, orderId);
+      subtotal += line.totalPrice;
+      validatedOrderItems.push(line);
     }
 
     let discount = 0;

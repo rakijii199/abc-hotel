@@ -2,6 +2,7 @@
  * Request Validation Schemas using Zod
  */
 import { z } from 'zod';
+import { validateMenuConfiguration } from '../../shared/menuConfig.ts';
 
 export const registerSchema = z.object({
   firstName: z.string().min(2, 'First name must be at least 2 characters').max(50),
@@ -135,7 +136,9 @@ export const createBookingSchema = z.object({
 const addOrderItemSchema = z.object({
   menuItemId: z.string().min(1, 'Menu item ID is required'),
   quantity: z.number().int().min(1, 'Quantity must be at least 1').max(20),
-  specialInstructions: z.string().max(100).optional()
+  specialInstructions: z.string().max(100).optional(),
+  portionId: z.string().max(40).optional(),
+  addonIds: z.array(z.string().min(1).max(60)).max(30).optional()
 });
 
 // Clients send the list as `items` (customer) or `itemsToAdd` (staff POS).
@@ -145,6 +148,18 @@ export const addOrderItemsSchema = z.object({
 }).refine((data) => !!(data.items || data.itemsToAdd), {
   message: 'No items provided to add.',
   path: ['items']
+});
+
+/** Staff adding dishes to an open order (POS limits: up to 50 per line). */
+const staffAddOrderItemSchema = addOrderItemSchema.extend({
+  quantity: z.number().int().min(1, 'Quantity must be at least 1').max(50)
+});
+export const staffAddOrderItemsSchema = z.object({
+  items: z.array(staffAddOrderItemSchema).min(1).max(50).optional(),
+  itemsToAdd: z.array(staffAddOrderItemSchema).min(1).max(50).optional()
+}).refine((data) => !!(data.items || data.itemsToAdd), {
+  message: 'No items provided to add.',
+  path: ['itemsToAdd']
 });
 
 export const createOrderSchema = z.object({
@@ -163,7 +178,9 @@ export const createOrderSchema = z.object({
     z.object({
       menuItemId: z.string().min(1, 'Menu item ID is required'),
       quantity: z.number().int().min(1, 'Quantity must be at least 1').max(20),
-      specialInstructions: z.string().max(100).optional()
+      specialInstructions: z.string().max(100).optional(),
+      portionId: z.string().max(40).optional(),
+      addonIds: z.array(z.string().min(1).max(60)).max(30).optional(),
     })
   ).min(1, 'Order must contain at least one item')
 }).refine((data) => {
@@ -200,7 +217,9 @@ export const createStaffOrderSchema = z.object({
     z.object({
       menuItemId: z.string().min(1, 'Menu item ID is required'),
       quantity: z.number().int().min(1, 'Quantity must be at least 1').max(50),
-      specialInstructions: z.string().max(150).optional()
+      specialInstructions: z.string().max(150).optional(),
+      portionId: z.string().max(40).optional(),
+      addonIds: z.array(z.string().min(1).max(60)).max(30).optional(),
     })
   ).min(1, 'Order must contain at least one item')
 });
@@ -216,7 +235,46 @@ export const updateBookingStatusSchema = z.object({
   status: z.enum(['PENDING', 'CONFIRMED', 'SEATED', 'COMPLETED', 'CANCELLED', 'REJECTED'])
 });
 
-export const createMenuItemSchema = z.object({
+const configIdSchema = z.string().trim().min(1).max(60).regex(/^[A-Za-z0-9_-]+$/, 'Ids may only contain letters, numbers, - and _');
+const moneySchema = z.number().finite().min(0).max(100000);
+
+export const menuPortionSchema = z.object({
+  id: configIdSchema,
+  label: z.string().trim().min(1, 'Portion label is required').max(30),
+  price: moneySchema.positive('Portion price must be greater than 0'),
+  active: z.boolean().default(true)
+});
+
+export const menuAddonSchema = z.object({
+  id: configIdSchema,
+  name: z.string().trim().min(1, 'Add-on name is required').max(60),
+  price: moneySchema,
+  active: z.boolean().default(true)
+});
+
+export const menuAddonGroupSchema = z.object({
+  id: configIdSchema,
+  name: z.string().trim().min(1, 'Add-on group name is required').max(60),
+  required: z.boolean().default(false),
+  minSelect: z.number().int().min(0).max(30).default(0),
+  maxSelect: z.number().int().min(0).max(30).default(0),
+  active: z.boolean().default(true),
+  addons: z.array(menuAddonSchema).max(30).default([])
+});
+
+const menuConfigurationFields = {
+  portions: z.array(menuPortionSchema).max(6).optional(),
+  addonGroups: z.array(menuAddonGroupSchema).max(12).optional()
+};
+
+/** Cross-field rules shared with the UI (unique ids, min ≤ max, required groups have add-ons). */
+const refineMenuConfiguration = (data: { portions?: any[]; addonGroups?: any[] }, ctx: z.RefinementCtx) => {
+  for (const problem of validateMenuConfiguration(data)) {
+    ctx.addIssue({ code: 'custom', message: problem, path: ['addonGroups'] });
+  }
+};
+
+const menuItemBaseSchema = z.object({
   categoryId: z.string().min(1, 'Category is required'),
   name: z.string().min(2, 'Name must be at least 2 characters').max(100),
   description: z.string().min(5, 'Description is required').max(500),
@@ -232,10 +290,13 @@ export const createMenuItemSchema = z.object({
   calories: z.number().int().positive().optional(),
   available: z.boolean().default(true),
   isChefSpecial: z.boolean().default(false),
-  allergens: z.array(z.string()).optional()
+  allergens: z.array(z.string()).optional(),
+  ...menuConfigurationFields
 });
 
-export const updateMenuItemSchema = createMenuItemSchema.partial();
+export const createMenuItemSchema = menuItemBaseSchema.superRefine(refineMenuConfiguration);
+
+export const updateMenuItemSchema = menuItemBaseSchema.partial().superRefine(refineMenuConfiguration);
 
 export const createCategorySchema = z.object({
   name: z.string().min(2, 'Category name must be at least 2 characters').max(50),

@@ -196,7 +196,7 @@ export const CustomerDashboardPage: React.FC<{
 
                 <div className="space-y-1 text-xs text-stone-600">
                   <p className="truncate">
-                    {recentOrder.items.map((i) => `${i.quantity}x ${i.name}`).join(', ')}
+                    {recentOrder.items.map((i) => `${i.quantity}x ${i.name}${i.portionLabel ? ` (${i.portionLabel})` : ''}`).join(', ')}
                   </p>
                   <p className="font-bold text-stone-900 font-mono text-sm pt-1">
                     Total: {formatCurrency(recentOrder.total)}

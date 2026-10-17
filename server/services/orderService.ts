@@ -6,6 +6,7 @@ import crypto from 'crypto';
 import { config } from '../config/index.ts';
 import { db } from '../database/db.ts';
 import { getFirestoreDb } from '../database/firestoreSync.ts';
+import { buildOrderLine } from './orderLinePricing.ts';
 import { MenuRepository } from '../repositories/menuRepository.ts';
 import { OrderRepository } from '../repositories/orderRepository.ts';
 import { RestaurantRepository } from '../repositories/tableRepository.ts';
@@ -42,15 +43,19 @@ export class OrderService {
       menuItemId: string;
       quantity: number;
       specialInstructions?: string;
+      portionId?: string;
+      addonIds?: string[];
     }>;
   }): string {
     const sortedItems = [...(params.items || [])]
       .map((i) => ({
         menuItemId: String(i.menuItemId || '').trim(),
         quantity: Number(i.quantity || 0),
-        specialInstructions: String(i.specialInstructions || '').trim()
+        specialInstructions: String(i.specialInstructions || '').trim(),
+        portionId: String(i.portionId || ''),
+        addonIds: [...(i.addonIds || [])].map(String).sort()
       }))
-      .sort((a, b) => a.menuItemId.localeCompare(b.menuItemId));
+      .sort((a, b) => a.menuItemId.localeCompare(b.menuItemId) || a.portionId.localeCompare(b.portionId) || a.addonIds.join(',').localeCompare(b.addonIds.join(',')));
 
     const canonical = {
       userId: String(params.userId || '').trim(),
@@ -92,6 +97,8 @@ export class OrderService {
       menuItemId: string;
       quantity: number;
       specialInstructions?: string;
+      portionId?: string;
+      addonIds?: string[];
     }>;
   }): Promise<Order> {
     if (!params.items || params.items.length === 0) {
@@ -171,24 +178,10 @@ export class OrderService {
           if (!dbItem.available) {
             throw new Error(`"${dbItem.name}" is currently unavailable.`);
           }
-          if (rawItem.quantity <= 0) {
-            throw new Error(`Quantity for "${dbItem.name}" must be greater than zero.`);
-          }
-
-          const itemTotal = dbItem.price * rawItem.quantity;
-          subtotal += itemTotal;
-
-          validatedOrderItems.push({
-            id: `ord-item-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
-            orderId,
-            menuItemId: dbItem.id,
-            name: dbItem.name,
-            imageUrl: dbItem.imageUrl,
-            quantity: rawItem.quantity,
-            unitPrice: dbItem.price,
-            totalPrice: itemTotal,
-            specialInstructions: rawItem.specialInstructions?.trim()
-          });
+          // Price from the menu configuration (portion + add-ons), never from the client.
+          const line = buildOrderLine(dbItem, rawItem, orderId);
+          subtotal += line.totalPrice;
+          validatedOrderItems.push(line);
         }
 
         let discount = 0;
@@ -339,25 +332,10 @@ export class OrderService {
           throw new Error(`"${dbItem.name}" is currently unavailable.`);
         }
 
-        if (rawItem.quantity <= 0) {
-          throw new Error(`Quantity for "${dbItem.name}" must be greater than zero.`);
-        }
-
-        // Snapshot unit price strictly from database
-        const itemTotal = dbItem.price * rawItem.quantity;
-        subtotal += itemTotal;
-
-        validatedOrderItems.push({
-          id: `ord-item-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
-          orderId,
-          menuItemId: dbItem.id,
-          name: dbItem.name,
-          imageUrl: dbItem.imageUrl,
-          quantity: rawItem.quantity,
-          unitPrice: dbItem.price,
-          totalPrice: itemTotal,
-          specialInstructions: rawItem.specialInstructions?.trim()
-        });
+        // Snapshot unit price strictly from the menu configuration
+        const line = buildOrderLine(dbItem, rawItem, orderId);
+        subtotal += line.totalPrice;
+        validatedOrderItems.push(line);
       }
 
       // Discounts
@@ -544,6 +522,8 @@ export class OrderService {
       menuItemId: string;
       quantity: number;
       specialInstructions?: string;
+      portionId?: string;
+      addonIds?: string[];
     }>,
     userId?: string,
     isAdmin = false
@@ -580,37 +560,16 @@ export class OrderService {
         throw new Error(`"${dbItem.name}" is currently unavailable.`);
       }
 
-      if (rawItem.quantity <= 0) {
-        throw new Error(`Quantity for "${dbItem.name}" must be greater than zero.`);
-      }
-
-      const itemTotal = dbItem.price * rawItem.quantity;
-
-      validatedNewItems.push({
-        id: `ord-item-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
-        orderId: order.id,
-        menuItemId: dbItem.id,
-        name: dbItem.name,
-        imageUrl: dbItem.imageUrl,
-        quantity: rawItem.quantity,
-        unitPrice: dbItem.price,
-        totalPrice: itemTotal,
-        specialInstructions: rawItem.specialInstructions?.trim(),
-        isAddon: true,
-        addedAt: now
-      });
+      validatedNewItems.push(buildOrderLine(dbItem, rawItem, order.id, { isAddon: true, addedAt: now }));
     }
 
     // Append newly validated items to order
     order.items = [...order.items, ...validatedNewItems];
 
-    // Recalculate full order subtotal strictly from DB items
+    // Recalculate the subtotal from the server-priced line snapshots. Existing
+    // lines keep the price they were ordered at (menu changes never re-price them).
     let trustedSubtotal = 0;
     for (const it of order.items) {
-      const dbItem = await MenuRepository.getItemById(it.menuItemId);
-      const unitP = dbItem ? dbItem.price : it.unitPrice;
-      it.unitPrice = unitP;
-      it.totalPrice = unitP * it.quantity;
       trustedSubtotal += it.totalPrice;
     }
 

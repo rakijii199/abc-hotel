@@ -9,6 +9,8 @@ import { DietaryBadge, Modal } from '../common/Footer.tsx';
 import { RestaurantImage } from '../common/RestaurantImage.tsx';
 import { useCart } from '../../context/CartContext.tsx';
 import { useToast } from '../../context/ToastContext.tsx';
+import { ItemCustomizerModal, ItemCustomizerPanel } from './ItemCustomizer.tsx';
+import { ItemSelection, describeSelection, hasCustomization, resolveItemConfiguration, selectionKey, startingPrice } from '../../../shared/menuConfig.ts';
 
 interface MenuItemCardProps {
   item: MenuItem;
@@ -18,26 +20,50 @@ export const MenuItemCard: React.FC<MenuItemCardProps> = ({ item }) => {
   const { items, addItem, updateQuantity } = useCart();
   const { success } = useToast();
   const [detailModalOpen, setDetailModalOpen] = useState(false);
+  const [customizerOpen, setCustomizerOpen] = useState(false);
 
-  const cartItem = items.find((i) => i.menuItem.id === item.id);
-  const quantity = cartItem ? cartItem.quantity : 0;
+  // Items with portions/add-ons are chosen through the customizer; each set of
+  // choices is its own cart line, so the card shows the total across lines.
+  const configurable = hasCustomization(item);
+  const itemLines = items.filter((i) => i.menuItem.id === item.id);
+  const quantity = itemLines.reduce((sum, i) => sum + i.quantity, 0);
+  const simpleLineId = selectionKey(item.id);
 
   const handleAdd = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (!item.available) return;
+    if (configurable) {
+      setCustomizerOpen(true);
+      return;
+    }
     addItem(item, 1);
     success(`Added ${item.name} to cart`);
   };
 
+  const handleCustomized = (selection: ItemSelection, qty: number) => {
+    addItem(item, qty, undefined, selection);
+    const label = describeSelection(resolveItemConfiguration(item, selection));
+    success(`Added ${qty} × ${item.name}${label ? ` (${label})` : ''} to cart`);
+    setCustomizerOpen(false);
+    setDetailModalOpen(false);
+  };
+
   const handleIncrement = (e: React.MouseEvent) => {
     e.stopPropagation();
-    updateQuantity(item.id, quantity + 1);
+    if (configurable) {
+      setCustomizerOpen(true);
+      return;
+    }
+    updateQuantity(simpleLineId, quantity + 1);
   };
 
   const handleDecrement = (e: React.MouseEvent) => {
     e.stopPropagation();
-    updateQuantity(item.id, quantity - 1);
+    const last = itemLines[itemLines.length - 1];
+    if (last) updateQuantity(last.lineId, last.quantity - 1);
   };
+
+  const priceLabel = configurable ? `From ${formatCurrency(startingPrice(item))}` : formatCurrency(item.price);
 
   return (
     <>
@@ -129,7 +155,7 @@ export const MenuItemCard: React.FC<MenuItemCardProps> = ({ item }) => {
           {/* Pricing & Add To Cart Button */}
           <div className="mt-auto pt-4 border-t border-stone-200/70 flex items-center justify-between gap-3">
             <span className="text-lg font-semibold text-stone-900 font-mono">
-              {formatCurrency(item.price)}
+              {priceLabel}
             </span>
 
             {item.available ? (
@@ -158,7 +184,7 @@ export const MenuItemCard: React.FC<MenuItemCardProps> = ({ item }) => {
                 <button
                   onClick={handleAdd}
                   className="h-10 flex items-center gap-1.5 px-4 text-[10.5px] font-bold uppercase tracking-[0.14em] text-ink border border-ink/80 hover:bg-ink hover:text-ivory active:scale-[0.97] rounded-full transition-all duration-300 cursor-pointer"
-                  aria-label={`Add ${item.name} to cart`}
+                  aria-label={configurable ? `Customize and add ${item.name}` : `Add ${item.name} to cart`}
                 >
                   <Plus className="w-3.5 h-3.5" />
                   Add
@@ -180,7 +206,17 @@ export const MenuItemCard: React.FC<MenuItemCardProps> = ({ item }) => {
         onAdd={handleAdd}
         onIncrement={handleIncrement}
         onDecrement={handleDecrement}
+        onCustomized={configurable ? handleCustomized : undefined}
       />
+
+      {configurable && (
+        <ItemCustomizerModal
+          isOpen={customizerOpen}
+          onClose={() => setCustomizerOpen(false)}
+          item={item}
+          onConfirm={handleCustomized}
+        />
+      )}
     </>
   );
 };
@@ -193,7 +229,9 @@ export const DishDetailModal: React.FC<{
   onAdd: (e: any) => void;
   onIncrement: (e: any) => void;
   onDecrement: (e: any) => void;
-}> = ({ item, isOpen, onClose, quantity, onAdd, onIncrement, onDecrement }) => {
+  /** Set for configurable items: the detail view shows the customizer inline. */
+  onCustomized?: (selection: ItemSelection, quantity: number) => void;
+}> = ({ item, isOpen, onClose, quantity, onAdd, onIncrement, onDecrement, onCustomized }) => {
   return (
     <Modal isOpen={isOpen} onClose={onClose} title={item.name} maxWidth="max-w-2xl">
       <div className="space-y-5">
@@ -215,7 +253,7 @@ export const DishDetailModal: React.FC<{
               {item.categoryName}
             </span>
             <span className="text-2xl font-semibold font-mono text-stone-900">
-              {formatCurrency(item.price)}
+              {onCustomized ? `From ${formatCurrency(startingPrice(item))}` : formatCurrency(item.price)}
             </span>
           </div>
           <p className="text-stone-600 text-sm leading-relaxed">{item.description}</p>
@@ -256,8 +294,15 @@ export const DishDetailModal: React.FC<{
           </div>
         )}
 
+        {/* Configurable items: choose portion/add-ons right here */}
+        {onCustomized && item.available && (
+          <div className="pt-4 border-t border-stone-100">
+            <ItemCustomizerPanel key={String(isOpen)} item={item} onConfirm={onCustomized} />
+          </div>
+        )}
+
         {/* Action Button */}
-        <div className="pt-4 border-t border-stone-100 flex items-center justify-between">
+        <div className={`pt-4 border-t border-stone-100 flex items-center justify-between ${onCustomized && item.available ? 'hidden' : ''}`}>
           <button
             onClick={onClose}
             className="px-4 py-2.5 text-sm font-medium text-stone-600 hover:text-stone-900 hover:bg-stone-100 rounded-full transition-colors cursor-pointer"

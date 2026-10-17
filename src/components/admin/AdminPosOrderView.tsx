@@ -48,6 +48,9 @@ import {
 import { useToast } from '../../context/ToastContext.tsx';
 import { DietaryBadge, Modal } from '../common/Footer.tsx';
 import { RestaurantImage } from '../common/RestaurantImage.tsx';
+import { ItemCustomizerModal } from '../menu/ItemCustomizer.tsx';
+import { ItemSelection, describeSelection, hasCustomization, resolveItemConfiguration, selectionKey, startingPrice } from '../../../shared/menuConfig.ts';
+import { OrderLineChoices } from '../orders/OrderLineChoices.tsx';
 
 interface AdminPosOrderViewProps {
   menuItems: MenuItem[];
@@ -59,9 +62,21 @@ interface AdminPosOrderViewProps {
 }
 
 interface PosCartItem {
+  /** Item + chosen portion/add-ons (one dish can be on the ticket with different choices). */
+  lineId: string;
   menuItem: MenuItem;
   quantity: number;
   specialInstructions: string;
+  selection: ItemSelection;
+}
+
+/** Unit price from the item's configuration (the server re-prices on submit). */
+function posUnitPrice(item: PosCartItem): number {
+  try {
+    return resolveItemConfiguration(item.menuItem, item.selection).unitPrice;
+  } catch {
+    return item.menuItem.price;
+  }
 }
 
 export const AdminPosOrderView: React.FC<AdminPosOrderViewProps> = ({
@@ -110,6 +125,7 @@ export const AdminPosOrderView: React.FC<AdminPosOrderViewProps> = ({
 
   // POS Cart Items
   const [cart, setCart] = useState<PosCartItem[]>([]);
+  const [customizingDish, setCustomizingDish] = useState<MenuItem | null>(null);
   const [submitting, setSubmitting] = useState<boolean>(false);
   const [dispatchedOrder, setDispatchedOrder] = useState<Order | null>(null);
 
@@ -171,28 +187,46 @@ export const AdminPosOrderView: React.FC<AdminPosOrderViewProps> = ({
   }, [dayOrders, orderSearchQuery]);
 
   // Add Item to Ticket
-  const handleAddItem = (dish: MenuItem) => {
+  const handleAddItem = (dish: MenuItem, selection?: ItemSelection, qty = 1) => {
     if (!dish.available) {
       error(`"${dish.name}" is currently marked unavailable.`);
       return;
     }
+    // Dishes with portions/add-ons are configured first.
+    if (!selection && hasCustomization(dish)) {
+      setCustomizingDish(dish);
+      return;
+    }
 
+    const chosen = selection || {};
+    const lineId = selectionKey(dish.id, chosen);
     setCart((prev) => {
-      const idx = prev.findIndex((i) => i.menuItem.id === dish.id);
+      const idx = prev.findIndex((i) => i.lineId === lineId);
       if (idx > -1) {
         const copy = [...prev];
-        copy[idx].quantity += 1;
+        copy[idx] = { ...copy[idx], quantity: copy[idx].quantity + qty };
         return copy;
       }
-      return [...prev, { menuItem: dish, quantity: 1, specialInstructions: '' }];
+      return [...prev, { lineId, menuItem: dish, quantity: qty, specialInstructions: '', selection: chosen }];
     });
   };
 
-  const handleUpdateQty = (dishId: string, delta: number) => {
+  /** Dish-grid stepper: "+" adds (or opens the customizer), "-" reduces the latest line of that dish. */
+  const handleDishStep = (dish: MenuItem, delta: number) => {
+    if (delta > 0) {
+      handleAddItem(dish);
+      return;
+    }
+    const lines = cart.filter((i) => i.menuItem.id === dish.id);
+    const last = lines[lines.length - 1];
+    if (last) handleUpdateQty(last.lineId, -1);
+  };
+
+  const handleUpdateQty = (lineId: string, delta: number) => {
     setCart((prev) => {
       return prev
         .map((item) => {
-          if (item.menuItem.id === dishId) {
+          if (item.lineId === lineId) {
             const nextQty = item.quantity + delta;
             return nextQty > 0 ? { ...item, quantity: nextQty } : null;
           }
@@ -202,16 +236,16 @@ export const AdminPosOrderView: React.FC<AdminPosOrderViewProps> = ({
     });
   };
 
-  const handleUpdateInstruction = (dishId: string, instructions: string) => {
+  const handleUpdateInstruction = (lineId: string, instructions: string) => {
     setCart((prev) =>
       prev.map((item) =>
-        item.menuItem.id === dishId ? { ...item, specialInstructions: instructions } : item
+        item.lineId === lineId ? { ...item, specialInstructions: instructions } : item
       )
     );
   };
 
-  const handleRemoveItem = (dishId: string) => {
-    setCart((prev) => prev.filter((i) => i.menuItem.id !== dishId));
+  const handleRemoveItem = (lineId: string) => {
+    setCart((prev) => prev.filter((i) => i.lineId !== lineId));
   };
 
   const handleClearTicket = () => {
@@ -225,10 +259,22 @@ export const AdminPosOrderView: React.FC<AdminPosOrderViewProps> = ({
     historicalOrder.items.forEach((item) => {
       const foundDish = menuItems.find((m) => m.id === item.menuItemId || m.name === item.name);
       if (foundDish) {
+        const selection: ItemSelection = {
+          ...(item.portionId ? { portionId: item.portionId } : {}),
+          ...(item.addons && item.addons.length ? { addonIds: item.addons.map((a) => a.addonId) } : {})
+        };
+        // Skip lines whose options are no longer offered; staff can re-add them.
+        try {
+          resolveItemConfiguration(foundDish, selection);
+        } catch {
+          return;
+        }
         newCartItems.push({
+          lineId: selectionKey(foundDish.id, selection),
           menuItem: foundDish,
           quantity: item.quantity,
-          specialInstructions: item.specialInstructions || ''
+          specialInstructions: item.specialInstructions || '',
+          selection
         });
       }
     });
@@ -251,7 +297,7 @@ export const AdminPosOrderView: React.FC<AdminPosOrderViewProps> = ({
 
   // Calculations
   const totalItemCount = cart.reduce((acc, curr) => acc + curr.quantity, 0);
-  const subtotal = cart.reduce((acc, curr) => acc + curr.menuItem.price * curr.quantity, 0);
+  const subtotal = cart.reduce((acc, curr) => acc + posUnitPrice(curr) * curr.quantity, 0);
   const discountAmount = discountCode.trim().toUpperCase() === 'WELCOME10' ? Math.round(subtotal * 0.1) : 0;
   const taxable = Math.max(0, subtotal - discountAmount);
   const tax = Math.round(taxable * 0.05); // 5% GST
@@ -286,7 +332,9 @@ export const AdminPosOrderView: React.FC<AdminPosOrderViewProps> = ({
         items: cart.map((i) => ({
           menuItemId: i.menuItem.id,
           quantity: i.quantity,
-          specialInstructions: i.specialInstructions.trim() || undefined
+          specialInstructions: i.specialInstructions.trim() || undefined,
+          ...(i.selection.portionId ? { portionId: i.selection.portionId } : {}),
+          ...(i.selection.addonIds && i.selection.addonIds.length ? { addonIds: i.selection.addonIds } : {})
         }))
       };
 
@@ -456,7 +504,7 @@ export const AdminPosOrderView: React.FC<AdminPosOrderViewProps> = ({
                         <div className="space-y-0.5 max-h-20 overflow-y-auto">
                           {order.items.map((it, idx) => (
                             <div key={idx} className="flex justify-between text-stone-700">
-                              <span>{it.quantity}× {it.name}</span>
+                              <span>{it.quantity}× {it.name}<OrderLineChoices item={it} /></span>
                               <span className="font-mono text-stone-500">{formatCurrency(it.totalPrice)}</span>
                             </div>
                           ))}
@@ -721,7 +769,8 @@ export const AdminPosOrderView: React.FC<AdminPosOrderViewProps> = ({
               {/* Dish Items Grid */}
               <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3">
                 {filteredItems.map((dish) => {
-                  const inCart = cart.find((i) => i.menuItem.id === dish.id);
+                  const dishQty = cart.filter((i) => i.menuItem.id === dish.id).reduce((sum, i) => sum + i.quantity, 0);
+                  const inCart = dishQty > 0 ? { quantity: dishQty } : null;
                   const isAvailable = dish.available;
 
                   return (
@@ -780,14 +829,14 @@ export const AdminPosOrderView: React.FC<AdminPosOrderViewProps> = ({
                       {/* Bottom Row: Price & Quantity Controller */}
                       <div className="flex items-center justify-between pt-2.5 mt-2 border-t border-stone-100">
                         <span className="font-serif font-bold text-sm text-stone-900">
-                          {formatCurrency(dish.price)}
+                          {hasCustomization(dish) ? `From ${formatCurrency(startingPrice(dish))}` : formatCurrency(dish.price)}
                         </span>
 
                         {inCart ? (
                           <div className="flex items-center bg-amber-50 border border-amber-300 rounded-xl p-0.5">
                             <button
                               type="button"
-                              onClick={() => handleUpdateQty(dish.id, -1)}
+                              onClick={() => handleDishStep(dish, -1)}
                               className="p-1 hover:bg-amber-200/70 rounded-lg text-amber-900 cursor-pointer"
                             >
                               <Minus className="w-3 h-3" />
@@ -797,7 +846,7 @@ export const AdminPosOrderView: React.FC<AdminPosOrderViewProps> = ({
                             </span>
                             <button
                               type="button"
-                              onClick={() => handleUpdateQty(dish.id, 1)}
+                              onClick={() => handleDishStep(dish, 1)}
                               className="p-1 hover:bg-amber-200/70 rounded-lg text-amber-900 cursor-pointer"
                             >
                               <Plus className="w-3 h-3" />
@@ -871,16 +920,21 @@ export const AdminPosOrderView: React.FC<AdminPosOrderViewProps> = ({
                     </div>
                   ) : (
                     cart.map((item) => (
-                      <div key={item.menuItem.id} className="pt-2 first:pt-0 space-y-1">
+                      <div key={item.lineId} className="pt-2 first:pt-0 space-y-1">
                         <div className="flex items-center justify-between gap-2">
                           <div className="min-w-0 flex-1">
                             <p className="font-bold text-xs text-stone-900 truncate">
                               {item.menuItem.name}
                             </p>
+                            {(item.selection.portionId || item.selection.addonIds?.length) ? (
+                              <p className="text-[10.5px] text-stone-600 truncate">
+                                {describeSelection(resolveItemConfiguration(item.menuItem, item.selection))}
+                              </p>
+                            ) : null}
                             <p className="text-[10px] text-stone-500 font-mono">
-                              {formatCurrency(item.menuItem.price)} × {item.quantity} ={' '}
+                              {formatCurrency(posUnitPrice(item))} × {item.quantity} ={' '}
                               <strong className="text-stone-800 font-bold">
-                                {formatCurrency(item.menuItem.price * item.quantity)}
+                                {formatCurrency(posUnitPrice(item) * item.quantity)}
                               </strong>
                             </p>
                           </div>
@@ -889,7 +943,7 @@ export const AdminPosOrderView: React.FC<AdminPosOrderViewProps> = ({
                             <div className="flex items-center bg-stone-50 border border-stone-200 rounded-lg p-0.5">
                               <button
                                 type="button"
-                                onClick={() => handleUpdateQty(item.menuItem.id, -1)}
+                                onClick={() => handleUpdateQty(item.lineId, -1)}
                                 className="p-1 hover:bg-stone-200 rounded text-stone-700 cursor-pointer"
                               >
                                 <Minus className="w-3 h-3" />
@@ -899,7 +953,7 @@ export const AdminPosOrderView: React.FC<AdminPosOrderViewProps> = ({
                               </span>
                               <button
                                 type="button"
-                                onClick={() => handleUpdateQty(item.menuItem.id, 1)}
+                                onClick={() => handleUpdateQty(item.lineId, 1)}
                                 className="p-1 hover:bg-stone-200 rounded text-stone-700 cursor-pointer"
                               >
                                 <Plus className="w-3 h-3" />
@@ -910,7 +964,7 @@ export const AdminPosOrderView: React.FC<AdminPosOrderViewProps> = ({
                               type="button"
                               onClick={() =>
                                 setActiveNoteItemId(
-                                  activeNoteItemId === item.menuItem.id ? null : item.menuItem.id
+                                  activeNoteItemId === item.lineId ? null : item.lineId
                                 )
                               }
                               className={`p-1.5 rounded-lg border transition-colors cursor-pointer ${
@@ -925,7 +979,7 @@ export const AdminPosOrderView: React.FC<AdminPosOrderViewProps> = ({
 
                             <button
                               type="button"
-                              onClick={() => handleRemoveItem(item.menuItem.id)}
+                              onClick={() => handleRemoveItem(item.lineId)}
                               className="p-1.5 text-stone-400 hover:text-rose-600 cursor-pointer"
                             >
                               <Trash2 className="w-3 h-3" />
@@ -933,13 +987,13 @@ export const AdminPosOrderView: React.FC<AdminPosOrderViewProps> = ({
                           </div>
                         </div>
 
-                        {activeNoteItemId === item.menuItem.id && (
+                        {activeNoteItemId === item.lineId && (
                           <div className="pt-1">
                             <input
                               type="text"
                               placeholder="Kitchen instructions (e.g. Less spicy, Extra butter)..."
                               value={item.specialInstructions}
-                              onChange={(e) => handleUpdateInstruction(item.menuItem.id, e.target.value)}
+                              onChange={(e) => handleUpdateInstruction(item.lineId, e.target.value)}
                               className="w-full px-2.5 py-1 text-[11px] bg-amber-50/50 border border-amber-200 rounded-lg focus:outline-hidden"
                             />
                           </div>
@@ -1049,7 +1103,7 @@ export const AdminPosOrderView: React.FC<AdminPosOrderViewProps> = ({
               <div className="space-y-1.5 text-stone-800 max-h-36 overflow-y-auto text-[12px]">
                 {dispatchedOrder.items.map((i) => (
                   <div key={i.id} className="flex justify-between items-center py-0.5 border-b border-amber-100/30 last:border-b-0">
-                    <span className="font-medium">{i.quantity}× {i.name}</span>
+                    <span className="font-medium">{i.quantity}× {i.name}<OrderLineChoices item={i} /></span>
                     <span className="text-stone-600 font-semibold">{formatCurrency(i.totalPrice)}</span>
                   </div>
                 ))}
@@ -1123,7 +1177,7 @@ export const AdminPosOrderView: React.FC<AdminPosOrderViewProps> = ({
                 {inspectingOrder.items.map((it, idx) => (
                   <div key={idx} className="p-2.5 flex justify-between items-center bg-white">
                     <div>
-                      <p className="font-bold text-stone-900">{it.quantity}× {it.name}</p>
+                      <p className="font-bold text-stone-900">{it.quantity}× {it.name}<OrderLineChoices item={it} /></p>
                       {it.specialInstructions && (
                         <p className="text-[10px] text-amber-800 italic">{it.specialInstructions}</p>
                       )}
@@ -1171,6 +1225,20 @@ export const AdminPosOrderView: React.FC<AdminPosOrderViewProps> = ({
             </div>
           </div>
         </Modal>
+      )}
+
+      {customizingDish && (
+        <ItemCustomizerModal
+          isOpen={!!customizingDish}
+          onClose={() => setCustomizingDish(null)}
+          item={customizingDish}
+          maxQuantity={50}
+          confirmLabel="Add to Ticket"
+          onConfirm={(selection, qty) => {
+            handleAddItem(customizingDish, selection, qty);
+            setCustomizingDish(null);
+          }}
+        />
       )}
     </div>
   );

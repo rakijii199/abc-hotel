@@ -32,9 +32,10 @@ import {
   Trash2
 } from 'lucide-react';
 import { OrderType, PaymentMethod, TableBooking } from '../types/index.ts';
-import { OrderApi, BookingApi, PaymentApi } from '../api/index.ts';
+import { OrderApi, BookingApi, PaymentApi, MenuApi } from '../api/index.ts';
 import { useAuth } from '../context/AuthContext.tsx';
-import { useCart } from '../context/CartContext.tsx';
+import { priceCartLine, useCart } from '../context/CartContext.tsx';
+import { describeSelection } from '../../shared/menuConfig.ts';
 import { useToast } from '../context/ToastContext.tsx';
 import { formatCurrency } from '../utils/formatters.ts';
 import { HotelUpiQrPaymentModal, PaymentModalMode } from '../components/payment/HotelUpiQrPaymentModal.tsx';
@@ -46,7 +47,7 @@ export const CheckoutPage: React.FC<{
   navigate: (route: string, state?: any) => void;
 }> = ({ navigate }) => {
   const { user, isAuthenticated, isLoading } = useAuth();
-  const { items, subtotal, tax, discount, discountCode, serviceCharge: cartServiceCharge, total: cartTotal, clearCart } =
+  const { items, subtotal, tax, discount, discountCode, serviceCharge: cartServiceCharge, total: cartTotal, clearCart, invalidLineIds, syncMenuItems } =
     useCart();
   const { error, success } = useToast();
 
@@ -79,6 +80,12 @@ export const CheckoutPage: React.FC<{
   const [myBookings, setMyBookings] = useState<TableBooking[]>([]);
   const [submitting, setSubmitting] = useState<boolean>(false);
   const checkoutKeyRef = useRef<{ fingerprint: string; key: string } | null>(null);
+
+  // Use current menu prices/options for the summary (the server re-prices anyway).
+  useEffect(() => {
+    MenuApi.getItems().then(syncMenuItems).catch(() => {});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const [paymentStatusMessage, setPaymentStatusMessage] = useState<string>('');
   const [failedOrderRef, setFailedOrderRef] = useState<any | null>(null);
 
@@ -232,6 +239,10 @@ export const CheckoutPage: React.FC<{
   // Handle Order Placement & Payment Workflow Launch
   const handlePlaceOrder = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!failedOrderRef && invalidLineIds.length > 0) {
+      error('Some items in your cart need their choices updated. Please review your cart.');
+      return;
+    }
     if (!customerName || !customerPhone || !customerEmail) {
       error('Please fill in all customer contact details.');
       return;
@@ -299,7 +310,9 @@ export const CheckoutPage: React.FC<{
           items: items.map((i) => ({
             menuItemId: i.menuItem.id,
             quantity: i.quantity,
-            specialInstructions: i.specialInstructions
+            specialInstructions: i.specialInstructions,
+            ...(i.portionId ? { portionId: i.portionId } : {}),
+            ...(i.addonIds && i.addonIds.length ? { addonIds: i.addonIds } : {})
           }))
         };
         // Retrying the same order (e.g. after a network error) reuses its
@@ -994,15 +1007,23 @@ export const CheckoutPage: React.FC<{
 
             {/* Line items preview */}
             <div className="space-y-1.5 max-h-40 overflow-y-auto pr-1">
-              {items.map((item) => (
-                <div key={item.menuItem.id} className="text-xs flex justify-between items-center text-stone-700 py-0.5 border-b border-stone-50 last:border-0">
-                  <span className="truncate max-w-[170px]">
-                    <strong className="text-amber-900 mr-1">{item.quantity}×</strong>
-                    {item.menuItem.name}
-                  </span>
-                  <span className="font-mono font-medium">{formatCurrency(item.menuItem.price * item.quantity)}</span>
-                </div>
-              ))}
+              {items.map((item) => {
+                const pricing = priceCartLine(item);
+                const choices = pricing.resolved ? describeSelection(pricing.resolved) : '';
+                return (
+                  <div key={item.lineId} className="text-xs flex justify-between items-start gap-2 text-stone-700 py-0.5 border-b border-stone-50 last:border-0">
+                    <span className="min-w-0">
+                      <span className="block truncate max-w-[190px]">
+                        <strong className="text-amber-900 mr-1">{item.quantity}×</strong>
+                        {item.menuItem.name}
+                      </span>
+                      {choices && <span className="block text-[11px] text-stone-500 truncate max-w-[190px]">{choices}</span>}
+                      {pricing.error && <span className="block text-[11px] text-rose-700">{pricing.error}</span>}
+                    </span>
+                    <span className="font-mono font-medium shrink-0">{formatCurrency(pricing.lineTotal)}</span>
+                  </div>
+                );
+              })}
             </div>
 
             {/* Financial breakdown */}

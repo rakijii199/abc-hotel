@@ -29,6 +29,7 @@ import { useToast } from '../context/ToastContext.tsx';
 import { AdminApi } from '../api/index.ts';
 import { Order, OrderStatus } from '../types/index.ts';
 import { formatCurrency, formatTime } from '../utils/formatters.ts';
+import { OrderLineChoices } from '../components/orders/OrderLineChoices.tsx';
 
 type DeliveryTab = 'NEW_ORDERS' | 'ACCEPTED' | 'DELIVERED';
 
@@ -448,7 +449,7 @@ export const DeliveryPortalPage: React.FC<{
                           <div key={idx} className="py-1 flex items-center justify-between">
                             <span className="font-medium text-stone-800">
                               <span className="font-bold text-amber-700 mr-1.5">{item.quantity}×</span>
-                              {item.name}
+                              {item.name}<OrderLineChoices item={item} />
                             </span>
                             <span className="text-stone-500 font-mono">
                               {formatCurrency(item.totalPrice || item.unitPrice * item.quantity)}

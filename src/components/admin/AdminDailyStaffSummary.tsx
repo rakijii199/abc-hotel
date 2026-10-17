@@ -73,6 +73,7 @@ import { Modal } from '../common/Footer.tsx';
 import { useAuth } from '../../context/AuthContext.tsx';
 import { useToast } from '../../context/ToastContext.tsx';
 import { AdminApi } from '../../api/index.ts';
+import { OrderLineChoices } from '../orders/OrderLineChoices.tsx';
 
 interface AdminDailyStaffSummaryProps {
   stats: any;
@@ -1839,7 +1840,7 @@ export const AdminDailyStaffSummary: React.FC<AdminDailyStaffSummaryProps> = ({
               <div className="divide-y divide-stone-100 border border-stone-200 rounded-xl p-2 bg-white">
                 {inspectOrder.items?.map((item: any, idx: number) => (
                   <div key={idx} className="py-1.5 flex justify-between">
-                    <span>{item.quantity}x {item.name}</span>
+                    <span>{item.quantity}x {item.name}<OrderLineChoices item={item} /></span>
                     <span className="font-serif font-bold">{formatCurrency(item.totalPrice)}</span>
                   </div>
                 ))}

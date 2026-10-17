@@ -47,6 +47,7 @@ import {
 import { useToast } from '../../context/ToastContext.tsx';
 import { useAuth } from '../../context/AuthContext.tsx';
 import { Spinner } from '../common/Footer.tsx';
+import { OrderLineChoices } from '../orders/OrderLineChoices.tsx';
 
 export type KitchenFilterTab = 'ALL' | 'NEW_ORDER' | 'ACCEPTED' | 'READY' | 'DISPATCHED';
 export type KitchenTimePreset = 'TODAY' | 'LAST_7_DAYS' | 'LAST_30_DAYS' | 'CUSTOM';
@@ -875,7 +876,7 @@ export const KitchenKdsView: React.FC<KitchenKdsViewProps> = ({ onBackToAdmin, o
                             {item.quantity}×
                           </span>
                           <span className="font-bold text-xs text-stone-900 leading-snug">
-                            {item.name}
+                            {item.name}<OrderLineChoices item={item} className="block text-[11px] font-semibold text-amber-900 leading-snug" />
                           </span>
                         </div>
                       </div>

@@ -15,7 +15,8 @@ import {
   updateTableSchema,
   updateBookingStatusSchema,
   updateOrderStatusSchema,
-  createStaffOrderSchema
+  createStaffOrderSchema,
+  staffAddOrderItemsSchema
 } from '../validators/index.ts';
 
 import { PaymentController } from '../controllers/paymentController.ts';
@@ -52,7 +53,7 @@ adminRouter.get('/orders/paginated', AdminController.getAllOrders);
 adminRouter.post('/orders', validateBody(createStaffOrderSchema), AdminController.createStaffOrder);
 adminRouter.get('/orders/:id', AdminController.getOrderById);
 adminRouter.put('/orders/:id/status', validateBody(updateOrderStatusSchema), AdminController.updateOrderStatus);
-adminRouter.post('/orders/:id/items', AdminController.addItemsToOrder);
+adminRouter.post('/orders/:id/items', validateBody(staffAddOrderItemsSchema), AdminController.addItemsToOrder);
 adminRouter.put('/orders/:id/payment', AdminController.updatePaymentStatus);
 
 // Bookings Operations

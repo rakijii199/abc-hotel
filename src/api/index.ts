@@ -171,7 +171,7 @@ export const OrderApi = {
 
   addOrderItems: (
     orderId: string,
-    items: Array<{ menuItemId: string; quantity: number; specialInstructions?: string }>
+    items: Array<{ menuItemId: string; quantity: number; specialInstructions?: string; portionId?: string; addonIds?: string[] }>
   ) =>
     request<Order>(`/orders/${orderId}/items`, {
       method: 'POST',
@@ -505,7 +505,7 @@ export const AdminApi = {
       body: JSON.stringify({ status, ...(riderInfo || {}) })
     }),
 
-  addItemsToOrder: (orderId: string, itemsToAdd: Array<{ menuItemId: string; quantity: number; specialInstructions?: string }>) =>
+  addItemsToOrder: (orderId: string, itemsToAdd: Array<{ menuItemId: string; quantity: number; specialInstructions?: string; portionId?: string; addonIds?: string[] }>) =>
     request<Order>(`/admin/orders/${orderId}/items`, {
       method: 'POST',
       body: JSON.stringify({ itemsToAdd })

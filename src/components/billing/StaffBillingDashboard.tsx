@@ -22,6 +22,7 @@ import { formatCurrency, formatDate } from '../../utils/formatters.ts';
 import { Spinner, EmptyState } from '../common/Footer.tsx';
 import { useToast } from '../../context/ToastContext.tsx';
 import { InvoiceViewModal } from './InvoiceViewModal.tsx';
+import { OrderLineChoices } from '../orders/OrderLineChoices.tsx';
 
 export const StaffBillingDashboard: React.FC<{
   isStaffOrAdmin?: boolean;
@@ -283,7 +284,7 @@ export const StaffBillingDashboard: React.FC<{
                       {order.items.slice(0, 3).map((item) => (
                         <div key={item.id} className="flex justify-between">
                           <span className="truncate max-w-[180px] font-medium text-stone-800">
-                            {item.quantity}× {item.name}
+                            {item.quantity}× {item.name}<OrderLineChoices item={item} />
                           </span>
                           <span className="font-mono text-stone-600">{formatCurrency(item.totalPrice)}</span>
                         </div>

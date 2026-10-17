@@ -63,6 +63,9 @@ import {
 import { Modal } from '../common/Footer.tsx';
 import { OrderStatusTimeline } from '../orders/OrderStatusTimeline.tsx';
 import { InvoiceViewModal } from '../billing/InvoiceViewModal.tsx';
+import { OrderLineChoices } from '../orders/OrderLineChoices.tsx';
+import { ItemCustomizerPanel } from '../menu/ItemCustomizer.tsx';
+import { ItemSelection, hasCustomization, resolveItemConfiguration, selectionKey, startingPrice } from '../../../shared/menuConfig.ts';
 
 const AVAILABLE_RIDERS = [
   { id: 'rider-staff-01', name: 'Delivery Staff Rider', phone: '+91 98765 43210', status: 'Active', vehicle: 'ABC Hotel Delivery Partner' }
@@ -80,11 +83,18 @@ interface AdminOrdersViewProps {
 }
 
 interface StagedDishItem {
+  /** Item + chosen portion/add-ons. */
+  lineKey: string;
   menuItemId: string;
   name: string;
+  /** Unit price preview (portion + add-ons); the server re-prices. */
   price: number;
   quantity: number;
   specialInstructions?: string;
+  portionId?: string;
+  addonIds?: string[];
+  portionLabel?: string;
+  addons?: Array<{ name: string }>;
 }
 
 export const AdminOrdersView: React.FC<AdminOrdersViewProps> = ({
@@ -405,15 +415,23 @@ export const AdminOrdersView: React.FC<AdminOrdersViewProps> = ({
   };
 
   // Stage dish for order
-  const handleStageDish = () => {
+  const handleStageDish = (selection: ItemSelection = {}, qty: number = dishQuantity) => {
     if (!selectedDishId) return;
     const item = menuItems.find((m) => m.id === selectedDishId);
     if (!item) return;
 
-    const existingIdx = stagedItems.findIndex((s) => s.menuItemId === item.id);
+    let resolved;
+    try {
+      resolved = resolveItemConfiguration(item, selection);
+    } catch (err: any) {
+      error(err.message);
+      return;
+    }
+    const lineKey = selectionKey(item.id, selection);
+    const existingIdx = stagedItems.findIndex((s) => s.lineKey === lineKey);
     if (existingIdx >= 0) {
       const copy = [...stagedItems];
-      copy[existingIdx].quantity += dishQuantity;
+      copy[existingIdx] = { ...copy[existingIdx], quantity: copy[existingIdx].quantity + qty };
       if (dishInstructions.trim()) {
         copy[existingIdx].specialInstructions = dishInstructions.trim();
       }
@@ -422,11 +440,14 @@ export const AdminOrdersView: React.FC<AdminOrdersViewProps> = ({
       setStagedItems([
         ...stagedItems,
         {
+          lineKey,
           menuItemId: item.id,
           name: item.name,
-          price: item.price,
-          quantity: dishQuantity,
-          specialInstructions: dishInstructions.trim() || undefined
+          price: resolved.unitPrice,
+          quantity: qty,
+          specialInstructions: dishInstructions.trim() || undefined,
+          ...(resolved.portionId ? { portionId: resolved.portionId, portionLabel: resolved.portionLabel } : {}),
+          ...(resolved.addons.length ? { addonIds: resolved.addons.map((a) => a.addonId), addons: resolved.addons } : {})
         }
       ]);
     }
@@ -436,8 +457,8 @@ export const AdminOrdersView: React.FC<AdminOrdersViewProps> = ({
     setDishInstructions('');
   };
 
-  const handleRemoveStagedDish = (menuItemId: string) => {
-    setStagedItems((prev) => prev.filter((i) => i.menuItemId !== menuItemId));
+  const handleRemoveStagedDish = (lineKey: string) => {
+    setStagedItems((prev) => prev.filter((i) => i.lineKey !== lineKey));
   };
 
   // Save additional dishes to order
@@ -445,7 +466,16 @@ export const AdminOrdersView: React.FC<AdminOrdersViewProps> = ({
     if (!editingOrder || stagedItems.length === 0) return;
     setSubmittingAddItems(true);
     try {
-      await AdminApi.addItemsToOrder(editingOrder.id, stagedItems);
+      await AdminApi.addItemsToOrder(
+        editingOrder.id,
+        stagedItems.map((i) => ({
+          menuItemId: i.menuItemId,
+          quantity: i.quantity,
+          specialInstructions: i.specialInstructions,
+          ...(i.portionId ? { portionId: i.portionId } : {}),
+          ...(i.addonIds && i.addonIds.length ? { addonIds: i.addonIds } : {})
+        }))
+      );
       success(`Added ${stagedItems.length} new dish(es) to Order #${editingOrder.orderNumber}!`);
       setEditingOrder(null);
       setStagedItems([]);
@@ -1032,7 +1062,7 @@ export const AdminOrdersView: React.FC<AdminOrdersViewProps> = ({
                       <div key={item.id || idx} className="text-xs flex items-start justify-between gap-2">
                         <div className="min-w-0">
                           <span className="font-semibold text-stone-800">
-                            {item.quantity}× {item.name}
+                            {item.quantity}× {item.name}<OrderLineChoices item={item} />
                           </span>
                           {item.specialInstructions && (
                             <p className="text-[10px] text-amber-900 bg-amber-50 px-1.5 py-0.2 rounded-sm inline-block mt-0.5">
@@ -1488,7 +1518,7 @@ export const AdminOrdersView: React.FC<AdminOrdersViewProps> = ({
                   <div key={item.id || idx} className="py-1.5 flex justify-between items-center text-xs">
                     <div>
                       <p className="font-bold text-stone-900">
-                        {item.quantity}× {item.name}
+                        {item.quantity}× {item.name}<OrderLineChoices item={item} />
                       </p>
                       {item.specialInstructions && (
                         <p className="text-[10px] text-amber-900 bg-amber-50 px-1.5 py-0.5 rounded-sm inline-block mt-0.5">
@@ -1573,15 +1603,32 @@ export const AdminOrdersView: React.FC<AdminOrdersViewProps> = ({
                   >
                     <div className="flex justify-between">
                       <span className="truncate">{dish.name}</span>
-                      <span className="font-mono">{formatCurrency(dish.price)}</span>
+                      <span className="font-mono">{hasCustomization(dish) ? `From ${formatCurrency(startingPrice(dish))}` : formatCurrency(dish.price)}</span>
                     </div>
                   </button>
                 ))}
               </div>
             </div>
 
+            {/* Dishes with portions/add-ons: configure, then stage */}
+            {selectedDishId && (() => {
+              const dish = menuItems.find((m) => m.id === selectedDishId);
+              return dish && hasCustomization(dish) ? (
+                <div className="space-y-2 p-3 bg-amber-50/70 border border-amber-200 rounded-xl">
+                  <input
+                    type="text"
+                    placeholder="Special instructions for kitchen (optional)..."
+                    value={dishInstructions}
+                    onChange={(e) => setDishInstructions(e.target.value)}
+                    className="w-full px-3 py-1 bg-white border border-amber-200 rounded-lg text-xs"
+                  />
+                  <ItemCustomizerPanel key={dish.id} item={dish} maxQuantity={50} confirmLabel="Stage Dish" onConfirm={(selection, qty) => handleStageDish(selection, qty)} />
+                </div>
+              ) : null;
+            })()}
+
             {/* Quantity and special instruction */}
-            {selectedDishId && (
+            {selectedDishId && !hasCustomization(menuItems.find((m) => m.id === selectedDishId) || { id: '', name: '', price: 0 }) && (
               <div className="space-y-2 p-3 bg-amber-50/70 border border-amber-200 rounded-xl">
                 <div className="flex items-center gap-3">
                   <span className="font-bold text-stone-700">Quantity:</span>
@@ -1614,7 +1661,7 @@ export const AdminOrdersView: React.FC<AdminOrdersViewProps> = ({
 
                 <button
                   type="button"
-                  onClick={handleStageDish}
+                  onClick={() => handleStageDish()}
                   className="w-full py-1.5 bg-amber-800 text-white font-bold rounded-lg text-xs cursor-pointer hover:bg-amber-900"
                 >
                   + Stage Dish to Order
@@ -1630,10 +1677,10 @@ export const AdminOrdersView: React.FC<AdminOrdersViewProps> = ({
                 </span>
                 <div className="divide-y divide-stone-100">
                   {stagedItems.map((item) => (
-                    <div key={item.menuItemId} className="py-1 flex justify-between items-center text-xs">
+                    <div key={item.lineKey} className="py-1 flex justify-between items-center text-xs">
                       <div>
                         <span className="font-semibold text-stone-800">
-                          {item.quantity}× {item.name}
+                          {item.quantity}× {item.name}<OrderLineChoices item={item} />
                         </span>
                         {item.specialInstructions && (
                           <span className="text-[10px] text-stone-500 block">
@@ -1647,7 +1694,7 @@ export const AdminOrdersView: React.FC<AdminOrdersViewProps> = ({
                         </span>
                         <button
                           type="button"
-                          onClick={() => handleRemoveStagedDish(item.menuItemId)}
+                          onClick={() => handleRemoveStagedDish(item.lineKey)}
                           className="text-stone-400 hover:text-rose-600 font-bold"
                         >
                           ✕
