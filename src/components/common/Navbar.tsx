@@ -104,17 +104,17 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
   };
 
   const roleAvatarClass = isStaffOrManager
-    ? 'bg-gradient-to-tr from-purple-800 to-indigo-600 text-white'
+    ? 'bg-gradient-to-tr from-amber-800 to-amber-600 text-white'
     : isKitchen
-    ? 'bg-gradient-to-tr from-orange-600 to-amber-600 text-white'
+    ? 'bg-gradient-to-tr from-amber-600 to-amber-600 text-white'
     : isDelivery
     ? 'bg-gradient-to-tr from-emerald-600 to-teal-700 text-white'
     : 'bg-gradient-to-br from-champagne to-gold text-ink';
 
   const roleBadgeClass = isStaffOrManager
-    ? 'bg-purple-100 text-purple-800'
+    ? 'bg-amber-100 text-amber-800'
     : isKitchen
-    ? 'bg-orange-100 text-orange-800'
+    ? 'bg-amber-100 text-amber-800'
     : isDelivery
     ? 'bg-emerald-100 text-emerald-800'
     : 'bg-amber-100 text-amber-800';
@@ -222,18 +222,18 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
               // Kitchen link
               <button
                 onClick={() => handleNav('kitchen')}
-                className="px-4 py-2 text-xs font-bold rounded-full transition-all flex items-center gap-2 cursor-pointer text-orange-950 bg-orange-100 border border-orange-300"
+                className="px-4 py-2 text-xs font-bold rounded-full transition-all flex items-center gap-2 cursor-pointer text-amber-950 bg-amber-100 border border-amber-300"
               >
-                <ChefHat className="w-4 h-4 text-orange-700" />
+                <ChefHat className="w-4 h-4 text-amber-700" />
                 Kitchen Display System
               </button>
             ) : (
               // Staff Admin / Manager link
               <button
                 onClick={() => handleNav('admin')}
-                className="px-4 py-2 text-xs font-bold rounded-full transition-all flex items-center gap-2 cursor-pointer text-purple-100 bg-purple-900/60 border border-purple-400/40 hover:bg-purple-800/70"
+                className="px-4 py-2 text-xs font-bold rounded-full transition-all flex items-center gap-2 cursor-pointer text-amber-100 bg-amber-900/60 border border-amber-400/40 hover:bg-amber-800/70"
               >
-                <Shield className="w-4 h-4 text-purple-300" />
+                <Shield className="w-4 h-4 text-amber-300" />
                 {isManager ? 'Hotel Manager Suite' : 'Staff Operations Suite'}
               </button>
             )}
@@ -310,9 +310,9 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
                       <button
                         role="menuitem"
                         onClick={() => handleNav('kitchen')}
-                        className="w-full text-left px-4 py-2.5 text-sm font-semibold text-orange-800 hover:bg-orange-50 flex items-center gap-2.5 cursor-pointer"
+                        className="w-full text-left px-4 py-2.5 text-sm font-semibold text-amber-800 hover:bg-amber-50 flex items-center gap-2.5 cursor-pointer"
                       >
-                        <ChefHat className="w-4 h-4 text-orange-700" />
+                        <ChefHat className="w-4 h-4 text-amber-700" />
                         Kitchen Display System
                       </button>
                     ) : isStaffOrManager ? (
@@ -320,9 +320,9 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
                       <button
                         role="menuitem"
                         onClick={() => handleNav('admin')}
-                        className="w-full text-left px-4 py-2.5 text-sm font-semibold text-purple-800 hover:bg-purple-50 flex items-center gap-2.5 cursor-pointer"
+                        className="w-full text-left px-4 py-2.5 text-sm font-semibold text-amber-800 hover:bg-amber-50 flex items-center gap-2.5 cursor-pointer"
                       >
-                        <LayoutDashboard className="w-4 h-4 text-purple-700" />
+                        <LayoutDashboard className="w-4 h-4 text-amber-700" />
                         Operations Suite
                       </button>
                     ) : (
@@ -479,25 +479,25 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
                 // Kitchen mobile link
                 <button
                   onClick={() => handleNav('kitchen')}
-                  className="w-full text-left px-4 py-3.5 text-sm font-bold text-orange-950 bg-orange-50 rounded-xl flex items-center justify-between cursor-pointer"
+                  className="w-full text-left px-4 py-3.5 text-sm font-bold text-amber-950 bg-amber-50 rounded-xl flex items-center justify-between cursor-pointer"
                 >
                   <div className="flex items-center gap-2.5">
-                    <ChefHat className="w-5 h-5 text-orange-700" />
+                    <ChefHat className="w-5 h-5 text-amber-700" />
                     <span>Kitchen Display System</span>
                   </div>
-                  <ChevronRight className="w-4 h-4 text-orange-500" />
+                  <ChevronRight className="w-4 h-4 text-amber-500" />
                 </button>
               ) : (
                 // Staff Admin / Manager mobile link
                 <button
                   onClick={() => handleNav('admin')}
-                  className="w-full text-left px-4 py-3.5 text-sm font-bold text-purple-900 bg-purple-50 rounded-xl flex items-center justify-between cursor-pointer"
+                  className="w-full text-left px-4 py-3.5 text-sm font-bold text-amber-900 bg-amber-50 rounded-xl flex items-center justify-between cursor-pointer"
                 >
                   <div className="flex items-center gap-2.5">
-                    <Shield className="w-5 h-5 text-purple-700" />
+                    <Shield className="w-5 h-5 text-amber-700" />
                     <span>{isAdmin ? 'Staff Operations Suite' : 'Hotel Manager Suite'}</span>
                   </div>
-                  <ChevronRight className="w-4 h-4 text-purple-500" />
+                  <ChevronRight className="w-4 h-4 text-amber-500" />
                 </button>
               )}
             </nav>
@@ -579,7 +579,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
                   className="w-full py-3 px-4 rounded-xl border border-white/10 text-ivory/70 hover:text-ivory hover:border-white/25 flex items-center justify-between cursor-pointer min-h-[44px] transition-colors"
                 >
                   <span className="flex items-center gap-3">
-                    <Shield className="w-4 h-4 text-purple-300" />
+                    <Shield className="w-4 h-4 text-amber-300" />
                     <span className="text-left">
                       <span className="font-semibold block text-xs">Login as Staff</span>
                       <span className="text-[10px] text-ivory/45 block leading-tight">Admin, Kitchen & Delivery portal</span>

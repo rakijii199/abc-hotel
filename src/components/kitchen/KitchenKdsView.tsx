@@ -548,21 +548,21 @@ export const KitchenKdsView: React.FC<KitchenKdsViewProps> = ({ onBackToAdmin, o
             onClick={() => setActiveFilter('ALL')}
             className={`p-3.5 rounded-2xl border transition-all cursor-pointer flex items-center justify-between ${
               activeFilter === 'ALL'
-                ? 'bg-blue-100/90 border-blue-400 ring-2 ring-blue-500/20 shadow-xs'
-                : 'bg-blue-50/50 border-blue-200 hover:bg-blue-50'
+                ? 'bg-amber-50 border-amber-500 ring-2 ring-amber-500/25 shadow-xs'
+                : 'bg-white border-stone-200 hover:bg-amber-50/60'
             }`}
           >
             <div>
-              <span className="text-[10px] font-bold uppercase tracking-wider text-blue-900 block">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-amber-900 block">
                 📋 All Orders
               </span>
-              <p className="font-serif font-bold text-2xl sm:text-3xl text-blue-950 mt-0.5">
+              <p className="font-serif font-bold text-2xl sm:text-3xl text-stone-900 mt-0.5">
                 {totalAllCount}
               </p>
-              <span className="text-[10px] text-blue-700 font-medium">All tickets combined</span>
+              <span className="text-[10px] text-amber-800 font-medium">All tickets combined</span>
             </div>
-            <div className="w-9 h-9 rounded-xl bg-blue-200 text-blue-900 flex items-center justify-center font-bold shrink-0">
-              <Layers className="w-5 h-5 text-blue-800" />
+            <div className="w-9 h-9 rounded-xl bg-amber-100 text-amber-900 flex items-center justify-center font-bold shrink-0">
+              <Layers className="w-5 h-5 text-amber-800" />
             </div>
           </div>
 

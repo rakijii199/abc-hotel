@@ -232,14 +232,14 @@ function MainApp() {
     <div className="lux min-h-screen flex flex-col justify-between overflow-x-clip">
       <div>
         {(isAdmin || isManager) && (
-          <div className="bg-purple-950 text-purple-200 px-4 py-2 text-xs flex items-center justify-between border-b border-purple-800/60 sticky top-0 z-50">
+          <div className="bg-amber-50 text-amber-900 px-4 py-2 text-xs flex items-center justify-between border-b border-amber-200 sticky top-0 z-50">
             <span className="font-semibold flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
               Logged in as {isAdmin ? 'Staff Administrator' : 'Hotel Manager'} (Previewing Website)
             </span>
             <button
               onClick={() => navigate('admin')}
-              className="bg-purple-800 hover:bg-purple-700 text-white px-3 py-1 rounded-lg font-bold text-xs transition-all cursor-pointer shadow-xs"
+              className="btn btn-primary !min-h-8 !px-3 !text-xs"
             >
               ← Back to Operations Suite
             </button>

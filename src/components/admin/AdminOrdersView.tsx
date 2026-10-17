@@ -1241,9 +1241,9 @@ export const AdminOrdersView: React.FC<AdminOrdersViewProps> = ({
                                 setAssigningRiderOrder(order);
                                 setSelectedRider(null);
                               }}
-                              className="w-full py-2 px-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-2xs"
+                              className="w-full py-2 px-3 bg-amber-800 hover:bg-amber-900 active:bg-amber-950 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-2xs"
                             >
-                              <Truck className="w-4 h-4 text-indigo-200 animate-bounce" />
+                              <Truck className="w-4 h-4 text-amber-200 animate-bounce" />
                               <span>2. 🚴 Assign Delivery Rider</span>
                             </button>
                           )}
@@ -1273,9 +1273,9 @@ export const AdminOrdersView: React.FC<AdminOrdersViewProps> = ({
                                 <button
                                   type="button"
                                   onClick={() => onUpdateStatus(order.id, 'DELIVERY_ACCEPTED').then(() => onRefresh())}
-                                  className="flex-1 py-1.5 px-2 bg-indigo-700 hover:bg-indigo-800 text-white rounded-lg text-[11px] font-bold transition-all cursor-pointer flex items-center justify-center gap-1"
+                                  className="flex-1 py-1.5 px-2 bg-amber-800 hover:bg-amber-900 active:bg-amber-950 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg text-[11px] font-bold transition-all cursor-pointer flex items-center justify-center gap-1"
                                 >
-                                  <CheckCircle2 className="w-3.5 h-3.5 text-indigo-200" />
+                                  <CheckCircle2 className="w-3.5 h-3.5 text-amber-200" />
                                   <span>Manual Accept</span>
                                 </button>
                               </div>
@@ -1285,9 +1285,9 @@ export const AdminOrdersView: React.FC<AdminOrdersViewProps> = ({
                           <button
                             type="button"
                             onClick={() => onUpdateStatus(order.id, 'PICKED_UP').then(() => onRefresh())}
-                            className="w-full py-2 px-3 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-2xs"
+                            className="w-full py-2 px-3 bg-amber-800 hover:bg-amber-900 active:bg-amber-950 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-2xs"
                           >
-                            <PackageCheck className="w-4 h-4 text-purple-200" />
+                            <PackageCheck className="w-4 h-4 text-amber-200" />
                             <span>4. Picked Up from Kitchen</span>
                           </button>
                         )}
@@ -1295,9 +1295,9 @@ export const AdminOrdersView: React.FC<AdminOrdersViewProps> = ({
                           <button
                             type="button"
                             onClick={() => onUpdateStatus(order.id, 'OUT_FOR_DELIVERY').then(() => onRefresh())}
-                            className="w-full py-2 px-3 bg-purple-700 hover:bg-purple-800 text-white rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-2xs"
+                            className="w-full py-2 px-3 bg-amber-800 hover:bg-amber-900 active:bg-amber-950 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-2xs"
                           >
-                            <Truck className="w-4 h-4 text-purple-200 animate-pulse" />
+                            <Truck className="w-4 h-4 text-amber-200 animate-pulse" />
                             <span>5. Out for Delivery</span>
                           </button>
                         )}
@@ -1375,9 +1375,9 @@ export const AdminOrdersView: React.FC<AdminOrdersViewProps> = ({
                             type="button"
                             disabled={processing}
                             onClick={() => handleExecuteStatus(order.id, 'SERVED')}
-                            className="w-full py-2 px-3 bg-indigo-700 hover:bg-indigo-800 text-white rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-2xs"
+                            className="w-full py-2 px-3 bg-amber-800 hover:bg-amber-900 active:bg-amber-950 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-2xs"
                           >
-                            <Utensils className="w-4 h-4 text-indigo-200" />
+                            <Utensils className="w-4 h-4 text-amber-200" />
                             <span>Mark Served to Customer</span>
                           </button>
                         )}

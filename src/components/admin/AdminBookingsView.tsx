@@ -464,7 +464,7 @@ export const AdminBookingsView: React.FC<AdminBookingsViewProps> = ({
                             <>
                               <button
                                 onClick={() => handleExecuteStatus(b.id, 'SEATED')}
-                                className="px-2.5 py-1 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg text-[11px] cursor-pointer"
+                                className="px-2.5 py-1 bg-amber-800 hover:bg-amber-900 active:bg-amber-950 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold rounded-lg text-[11px] cursor-pointer"
                               >
                                 Seat
                               </button>
@@ -604,7 +604,7 @@ export const AdminBookingsView: React.FC<AdminBookingsViewProps> = ({
                   <>
                     <button
                       onClick={() => handleExecuteStatus(selectedBooking.id, 'SEATED')}
-                      className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl cursor-pointer"
+                      className="px-4 py-2 bg-amber-800 hover:bg-amber-900 active:bg-amber-950 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold rounded-xl cursor-pointer"
                     >
                       Seat Guests
                     </button>

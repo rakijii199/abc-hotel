@@ -51,7 +51,7 @@ interface AdminSidebarProps {
   pendingBookingsCount?: number;
 }
 
-interface NavItem {
+export interface NavItem {
   id: AdminTab;
   label: string;
   icon: React.ComponentType<{ className?: string; strokeWidth?: number }>;
@@ -59,20 +59,22 @@ interface NavItem {
   badgeColor?: string;
 }
 
-interface NavSection {
+export interface NavSection {
   title: string;
   items: NavItem[];
 }
 
-export const AdminSidebar: React.FC<AdminSidebarProps> = ({
-  activeTab,
-  setActiveTab,
-  onLogout,
-  unreadCount = 0,
-  pendingOrdersCount = 0,
-  pendingBookingsCount = 0
-}) => {
-  const { user } = useAuth();
+/**
+ * Navigation items visible to a staff role. Shared by the desktop top
+ * navigation and the mobile drawer so both always show the same items with
+ * the same role filtering.
+ */
+export function getAdminNavSections(
+  role: string | undefined,
+  counts: { pendingOrdersCount?: number; pendingBookingsCount?: number } = {}
+): NavSection[] {
+  const pendingOrdersCount = counts.pendingOrdersCount || 0;
+  const pendingBookingsCount = counts.pendingBookingsCount || 0;
 
   const rawNavSections: NavSection[] = [
     {
@@ -152,13 +154,13 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
   ];
   const adminTabIds: AdminTab[] = ['POS_ORDER', 'ORDERS', 'BOOKINGS', 'TABLES', 'MENU', 'CATEGORIES'];
 
-  const navSections = rawNavSections
+  return rawNavSections
     .map((section) => {
       const filteredItems = section.items.filter((item) => {
-        if (user?.role === 'MANAGER') {
+        if (role === 'MANAGER') {
           return managerTabIds.includes(item.id);
         }
-        if (user?.role === 'ADMIN' || user?.role === 'STAFF') {
+        if (role === 'ADMIN' || role === 'STAFF') {
           return adminTabIds.includes(item.id);
         }
         return false;
@@ -166,6 +168,18 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
       return { ...section, items: filteredItems };
     })
     .filter((section) => section.items.length > 0);
+}
+
+export const AdminSidebar: React.FC<AdminSidebarProps> = ({
+  activeTab,
+  setActiveTab,
+  onLogout,
+  unreadCount = 0,
+  pendingOrdersCount = 0,
+  pendingBookingsCount = 0
+}) => {
+  const { user } = useAuth();
+  const navSections = getAdminNavSections(user?.role, { pendingOrdersCount, pendingBookingsCount });
 
   const roleLabel =
     user?.role === 'MANAGER' ? 'Hotel Manager' : user?.role === 'ADMIN' ? 'Administrator' : 'Floor Staff';

@@ -1,23 +1,24 @@
 /**
- * Admin Top Header with Live Notifications, Demo Switcher, & Quick Controls
- * Exclusively tailored for the Staff Admin Workflow
+ * Staff top navigation bar: brand, role-filtered navigation (flat links or
+ * grouped dropdowns), refresh, live notifications and the account menu.
+ * On screens below `lg` the navigation moves into the existing drawer
+ * (opened with the menu button), which uses the same role-filtered items.
  */
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   Bell,
   RotateCcw,
-  CheckCircle2,
   Calendar,
   ShoppingBag,
   AlertTriangle,
   Menu,
-  Shield,
   LogOut,
-  User as UserIcon
+  ChevronDown
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext.tsx';
 import { AdminNotification } from '../../types/index.ts';
 import { formatDate, formatTime } from '../../utils/formatters.ts';
+import { AdminTab, NavItem, getAdminNavSections } from './AdminSidebar.tsx';
 
 interface AdminHeaderProps {
   notifications: AdminNotification[];
@@ -27,7 +28,21 @@ interface AdminHeaderProps {
   onSelectNotification: (notif: AdminNotification) => void;
   onToggleMobileSidebar: () => void;
   refreshing?: boolean;
+  activeTab: AdminTab;
+  onSelectTab: (tab: AdminTab) => void;
+  pendingOrdersCount?: number;
+  pendingBookingsCount?: number;
 }
+
+/** Roles with this many pages or fewer get a flat row of links instead of grouped dropdowns. */
+const FLAT_NAV_LIMIT = 7;
+
+const NavBadge: React.FC<{ value?: number }> = ({ value }) =>
+  value === undefined ? null : (
+    <span className="min-w-5 h-5 px-1.5 rounded-full bg-[var(--brand)] text-white text-[10px] font-bold flex items-center justify-center">
+      {value}
+    </span>
+  );
 
 export const AdminHeader: React.FC<AdminHeaderProps> = ({
   notifications,
@@ -36,64 +51,159 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({
   onMarkAllRead,
   onSelectNotification,
   onToggleMobileSidebar,
-  refreshing = false
+  refreshing = false,
+  activeTab,
+  onSelectTab,
+  pendingOrdersCount = 0,
+  pendingBookingsCount = 0
 }) => {
   const { user, logout } = useAuth();
   const [notifDropdownOpen, setNotifDropdownOpen] = useState(false);
   const [staffDropdownOpen, setStaffDropdownOpen] = useState(false);
+  const [openGroup, setOpenGroup] = useState<string | null>(null);
+  const navRef = useRef<HTMLElement>(null);
+
+  const sections = getAdminNavSections(user?.role, { pendingOrdersCount, pendingBookingsCount });
+  const totalItems = sections.reduce((n, s) => n + s.items.length, 0);
+  const flat = totalItems <= FLAT_NAV_LIMIT;
+  const roleLabel = user?.role === 'MANAGER' ? 'Hotel Manager' : user?.role === 'ADMIN' ? 'Administrator' : 'Floor Staff';
+
+  // Close an open nav dropdown on outside click or Escape.
+  useEffect(() => {
+    if (!openGroup) return;
+    const onDown = (e: MouseEvent) => {
+      if (navRef.current && !navRef.current.contains(e.target as Node)) setOpenGroup(null);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setOpenGroup(null);
+    };
+    document.addEventListener('mousedown', onDown);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('mousedown', onDown);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [openGroup]);
+
+  const go = (tab: AdminTab) => {
+    setOpenGroup(null);
+    onSelectTab(tab);
+  };
+
+  const renderLink = (item: NavItem) => {
+    const Icon = item.icon;
+    const isActive = activeTab === item.id;
+    return (
+      <button
+        key={item.id}
+        type="button"
+        onClick={() => go(item.id)}
+        aria-current={isActive ? 'page' : undefined}
+        className="nav-item"
+      >
+        <Icon className="w-4 h-4" strokeWidth={1.75} />
+        <span>{item.label}</span>
+        <NavBadge value={item.badge} />
+      </button>
+    );
+  };
 
   return (
-    <header className="bg-[#fffdf9]/85 backdrop-blur-xl border-b border-stone-200/80 px-4 sm:px-8 py-3 flex items-center justify-between sticky top-0 z-30 shadow-[0_10px_30px_-24px_rgba(26,23,21,0.5)]">
-      {/* Left: Mobile Menu Toggle & Title */}
-      <div className="flex items-center gap-3">
+    <header className="bg-[var(--surface)]/90 backdrop-blur-xl border-b border-[var(--border-subtle)] sticky top-0 z-30 shadow-[0_10px_30px_-26px_rgba(26,23,21,0.55)]">
+      <div className="mx-auto max-w-[1440px] h-16 px-3 sm:px-6 flex items-center gap-3 lg:gap-6">
+        {/* Mobile / tablet: navigation lives in the drawer */}
         <button
           onClick={onToggleMobileSidebar}
-          className="lg:hidden p-2 text-stone-700 hover:bg-stone-100 rounded-xl cursor-pointer"
-          aria-label="Toggle admin sidebar"
+          className="lg:hidden w-10 h-10 flex items-center justify-center text-stone-700 hover:bg-[var(--brand-soft)] hover:text-[var(--brand-text)] rounded-xl cursor-pointer"
+          aria-label="Open navigation menu"
         >
           <Menu className="w-5 h-5" />
         </button>
 
-        <div className="flex items-center gap-2.5">
-          <span className="lg:hidden relative w-9 h-9 items-center justify-center border border-amber-600/60 text-amber-800 hidden sm:flex">
-            <span className="absolute inset-[3px] border border-amber-600/25" />
+        {/* Brand */}
+        <div className="flex items-center gap-2.5 shrink-0">
+          <span className="relative w-9 h-9 flex items-center justify-center border border-amber-600/50 text-amber-800 bg-white">
+            <span className="absolute inset-[3px] border border-amber-600/20" />
             <span className="font-display text-[12px] font-semibold tracking-[0.06em]">ABC</span>
           </span>
-          <div>
-            <div className="flex items-center gap-2">
-              <h1 className="lux-display text-lg sm:text-2xl text-stone-900 !leading-tight">
-                ABC Hotel Operations Suite
-              </h1>
-              <span className={`px-2.5 py-0.5 rounded-full font-bold text-[9.5px] uppercase tracking-[0.18em] hidden md:inline-block ${
-                user?.role === 'MANAGER'
-                  ? 'bg-wine text-champagne'
-                  : 'bg-ink text-champagne'
-              }`}>
-                {user?.role === 'MANAGER' ? 'Manager' : 'Staff'}
-              </span>
-            </div>
-            <p className="text-[11px] text-stone-500 hidden sm:block mt-0.5">
-              {user?.role === 'MANAGER' 
-                ? 'Centralized analytics, catalog command & configuration center' 
-                : 'Centralized restaurant floor, kitchen dispatch & catalog command center'}
-            </p>
+          <div className="leading-none hidden sm:block">
+            <span className="font-display font-semibold text-stone-900 text-base tracking-[0.16em] block">ABC HOTEL</span>
+            <span className="text-[9px] uppercase tracking-[0.28em] text-amber-700 font-semibold block mt-1">Staff Portal</span>
           </div>
         </div>
-      </div>
 
-      {/* Right: Quick Controls, Refresh, Notifications, Staff Account */}
-      <div className="flex items-center gap-2.5 sm:gap-3">
-        {/* Refresh button */}
-        <button
-          onClick={onRefresh}
-          disabled={refreshing}
-          className="p-2 text-stone-600 hover:text-stone-900 hover:bg-stone-100 active:bg-stone-200 rounded-xl transition-all cursor-pointer flex items-center gap-1.5 text-xs font-semibold"
-          title="Refresh live data"
-        >
-          <RotateCcw className={`w-4 h-4 ${refreshing ? 'animate-spin text-amber-700' : ''}`} />
-          <span className="hidden lg:inline">Refresh</span>
-        </button>
+        {/* Desktop navigation */}
+        <nav ref={navRef} className="hidden lg:flex items-center gap-1 flex-1 min-w-0" aria-label="Operations">
+          {flat
+            ? sections.flatMap((s) => s.items).map(renderLink)
+            : sections.map((section) => {
+                if (section.items.length === 1) return renderLink(section.items[0]);
+                const containsActive = section.items.some((i) => i.id === activeTab);
+                const isOpen = openGroup === section.title;
+                const groupBadge = section.items.reduce((n, i) => n + (i.badge || 0), 0);
+                return (
+                  <div key={section.title} className="relative">
+                    <button
+                      type="button"
+                      onClick={() => setOpenGroup(isOpen ? null : section.title)}
+                      aria-haspopup="menu"
+                      aria-expanded={isOpen}
+                      data-active={containsActive ? 'true' : undefined}
+                      className="nav-item"
+                    >
+                      <span>{section.title}</span>
+                      {groupBadge > 0 && <NavBadge value={groupBadge} />}
+                      <ChevronDown className={`w-3.5 h-3.5 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+                    </button>
+                    {isOpen && (
+                      <div role="menu" aria-label={section.title} className="absolute left-0 top-full mt-2 min-w-[220px] bg-white rounded-xl border border-[var(--border-subtle)] shadow-[0_24px_48px_-24px_rgba(26,23,21,0.45)] p-1.5 z-50 animate-in fade-in zoom-in-95">
+                        {section.items.map((item) => {
+                          const Icon = item.icon;
+                          const isActive = activeTab === item.id;
+                          return (
+                            <button
+                              key={item.id}
+                              type="button"
+                              role="menuitem"
+                              onClick={() => go(item.id)}
+                              aria-current={isActive ? 'page' : undefined}
+                              className={`w-full flex items-center justify-between gap-3 px-3 min-h-10 rounded-lg text-[13px] text-left cursor-pointer transition-colors ${
+                                isActive
+                                  ? 'bg-[var(--brand-soft-hover)] text-[var(--brand-text)] font-semibold'
+                                  : 'text-stone-700 hover:bg-[var(--brand-soft)] hover:text-[var(--brand-text)]'
+                              }`}
+                            >
+                              <span className="flex items-center gap-2.5">
+                                <Icon className={`w-4 h-4 ${isActive ? 'text-[var(--brand)]' : 'text-stone-400'}`} strokeWidth={1.75} />
+                                {item.label}
+                              </span>
+                              <NavBadge value={item.badge} />
+                            </button>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+        </nav>
 
+        <div className="flex-1 lg:hidden" />
+
+        {/* Right: role, refresh, notifications, account */}
+        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+          <span className="hidden xl:inline-flex px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-[0.16em] bg-[var(--brand-soft)] text-[var(--brand-text)] border border-[var(--brand-border)]">
+            {user?.role === 'MANAGER' ? 'Manager' : user?.role === 'ADMIN' ? 'Admin' : 'Staff'}
+          </span>
+          <button
+            onClick={onRefresh}
+            disabled={refreshing}
+            className="btn btn-ghost !min-h-10 !px-2.5"
+            title="Refresh live data"
+            aria-label="Refresh live data"
+          >
+            <RotateCcw className={`w-4 h-4 ${refreshing ? 'animate-spin text-[var(--brand)]' : ''}`} />
+          </button>
         {/* Notifications Bell */}
         <div className="relative">
           <button
@@ -101,8 +211,9 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({
               setNotifDropdownOpen(!notifDropdownOpen);
               setStaffDropdownOpen(false);
             }}
-            className="p-2 text-stone-700 hover:text-amber-900 hover:bg-amber-50 rounded-xl relative transition-all cursor-pointer"
+            className="w-10 h-10 flex items-center justify-center text-stone-700 hover:text-[var(--brand-text)] hover:bg-[var(--brand-soft)] rounded-xl relative transition-all cursor-pointer"
             aria-label="Staff Notifications"
+            aria-expanded={notifDropdownOpen}
           >
             <Bell className="w-5 h-5" />
             {unreadCount > 0 && (
@@ -198,12 +309,14 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({
               setStaffDropdownOpen(!staffDropdownOpen);
               setNotifDropdownOpen(false);
             }}
-            className="flex items-center gap-2 p-1 pl-3 rounded-full bg-white hover:border-amber-400 border border-stone-200 transition-colors cursor-pointer"
+            className="flex items-center gap-2 p-1 sm:pl-3 rounded-full bg-white hover:border-[var(--brand-border)] hover:bg-[var(--brand-soft)] border border-[var(--border-subtle)] transition-colors cursor-pointer"
+            aria-label="Account menu"
+            aria-expanded={staffDropdownOpen}
           >
             <span className="text-xs font-bold text-stone-800 max-w-[90px] truncate hidden sm:inline-block">
               {user?.firstName || 'Admin'}
             </span>
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-champagne to-gold text-ink flex items-center justify-center text-xs font-bold">
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-amber-300 to-amber-600 text-white flex items-center justify-center text-xs font-bold">
               {user?.firstName?.[0] || 'A'}
             </div>
           </button>
@@ -218,6 +331,7 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({
                   {user?.firstName} {user?.lastName}
                 </p>
                 <p className="text-[11px] text-stone-400 font-mono truncate">{user?.email}</p>
+                <p className="mt-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--brand-text)]">{roleLabel}</p>
               </div>
 
               <button
@@ -232,6 +346,7 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({
               </button>
             </div>
           )}
+        </div>
         </div>
       </div>
     </header>

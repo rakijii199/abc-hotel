@@ -132,18 +132,18 @@ export const DeliveryPortalPage: React.FC<{
   return (
     <div className="min-h-screen bg-[#f4efe7] flex flex-col font-sans">
       {/* Top Navigation Bar */}
-      <header className="sticky top-0 z-30 bg-ink text-ivory border-b border-gold/20 shadow-[0_12px_30px_-18px_rgba(0,0,0,0.7)]">
+      <header className="sticky top-0 z-30 bg-[var(--surface)]/90 backdrop-blur-xl text-stone-900 border-b border-[var(--border-subtle)] shadow-[0_10px_30px_-26px_rgba(26,23,21,0.55)]">
         <div className="max-w-4xl mx-auto px-4 py-3.5 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="relative w-10 h-10 flex items-center justify-center border border-gold/60 text-champagne">
-              <span className="absolute inset-[3px] border border-gold/25" />
+            <div className="relative w-10 h-10 flex items-center justify-center border border-amber-600/50 text-amber-800 bg-white">
+              <span className="absolute inset-[3px] border border-amber-600/20" />
               <Truck className="w-[18px] h-[18px]" strokeWidth={1.6} />
             </div>
             <div>
-              <h1 className="lux-display text-xl text-ivory !leading-tight">Delivery Portal</h1>
-              <p className="text-xs text-ivory/55 font-medium flex items-center gap-1.5">
+              <h1 className="lux-display text-xl text-stone-900 !leading-tight">Delivery Portal</h1>
+              <p className="text-xs text-stone-500 font-medium flex items-center gap-1.5">
                 <span className="w-2 h-2 rounded-full bg-emerald-400 inline-block animate-pulse" />
-                Rider: <span className="font-semibold text-champagne">{user?.firstName || 'Delivery Staff'}</span>
+                Rider: <span className="font-semibold text-[var(--brand-text)]">{user?.firstName || 'Delivery Staff'}</span>
               </p>
             </div>
           </div>
@@ -152,7 +152,7 @@ export const DeliveryPortalPage: React.FC<{
             <button
               onClick={() => fetchDeliveryOrders(true)}
               disabled={refreshing}
-              className="p-2 text-ivory/70 hover:text-ivory hover:bg-white/10 rounded-lg transition-colors cursor-pointer border border-white/15"
+              className="w-9 h-9 flex items-center justify-center text-stone-600 hover:text-[var(--brand-text)] hover:bg-[var(--brand-soft)] rounded-lg transition-colors cursor-pointer border border-[var(--border-subtle)] bg-white disabled:opacity-50"
               title="Refresh Orders"
               aria-label="Refresh Orders"
             >
@@ -164,7 +164,7 @@ export const DeliveryPortalPage: React.FC<{
                 logout();
                 navigate('staff-login');
               }}
-              className="px-3 py-2 bg-rose-500/10 hover:bg-rose-500/20 text-rose-200 rounded-lg text-xs font-semibold transition-colors cursor-pointer flex items-center gap-1.5 border border-rose-400/30"
+              className="px-3 min-h-9 bg-white hover:bg-rose-50 text-rose-700 rounded-lg text-xs font-semibold transition-colors cursor-pointer flex items-center gap-1.5 border border-rose-200"
             >
               <LogOut className="w-3.5 h-3.5" />
               <span>Log Out</span>
@@ -182,7 +182,7 @@ export const DeliveryPortalPage: React.FC<{
               onClick={() => setActiveTab('NEW_ORDERS')}
               className={`py-2.5 px-3 rounded-xl font-bold text-xs sm:text-sm transition-all flex items-center justify-center gap-2 cursor-pointer ${
                 activeTab === 'NEW_ORDERS'
-                  ? 'bg-amber-600 text-white shadow-sm'
+                  ? 'bg-amber-800 text-white shadow-sm'
                   : 'text-stone-600 hover:text-stone-900 hover:bg-stone-200/60'
               }`}
             >
@@ -191,7 +191,7 @@ export const DeliveryPortalPage: React.FC<{
               <span
                 className={`text-[11px] px-2 py-0.5 rounded-full font-extrabold ${
                   activeTab === 'NEW_ORDERS'
-                    ? 'bg-amber-800/50 text-white'
+                    ? 'bg-white/20 text-white'
                     : newOrders.length > 0
                     ? 'bg-amber-200 text-amber-900'
                     : 'bg-stone-200 text-stone-600'
@@ -206,7 +206,7 @@ export const DeliveryPortalPage: React.FC<{
               onClick={() => setActiveTab('ACCEPTED')}
               className={`py-2.5 px-3 rounded-xl font-bold text-xs sm:text-sm transition-all flex items-center justify-center gap-2 cursor-pointer ${
                 activeTab === 'ACCEPTED'
-                  ? 'bg-blue-600 text-white shadow-sm'
+                  ? 'bg-amber-800 text-white shadow-sm'
                   : 'text-stone-600 hover:text-stone-900 hover:bg-stone-200/60'
               }`}
             >
@@ -215,7 +215,7 @@ export const DeliveryPortalPage: React.FC<{
               <span
                 className={`text-[11px] px-2 py-0.5 rounded-full font-extrabold ${
                   activeTab === 'ACCEPTED'
-                    ? 'bg-blue-800/50 text-white'
+                    ? 'bg-white/20 text-white'
                     : acceptedOrders.length > 0
                     ? 'bg-blue-100 text-blue-800'
                     : 'bg-stone-200 text-stone-600'
@@ -230,7 +230,7 @@ export const DeliveryPortalPage: React.FC<{
               onClick={() => setActiveTab('DELIVERED')}
               className={`py-2.5 px-3 rounded-xl font-bold text-xs sm:text-sm transition-all flex items-center justify-center gap-2 cursor-pointer ${
                 activeTab === 'DELIVERED'
-                  ? 'bg-emerald-600 text-white shadow-sm'
+                  ? 'bg-amber-800 text-white shadow-sm'
                   : 'text-stone-600 hover:text-stone-900 hover:bg-stone-200/60'
               }`}
             >
@@ -239,7 +239,7 @@ export const DeliveryPortalPage: React.FC<{
               <span
                 className={`text-[11px] px-2 py-0.5 rounded-full font-extrabold ${
                   activeTab === 'DELIVERED'
-                    ? 'bg-emerald-800/50 text-white'
+                    ? 'bg-white/20 text-white'
                     : deliveredOrders.length > 0
                     ? 'bg-emerald-100 text-emerald-800'
                     : 'bg-stone-200 text-stone-600'
@@ -524,9 +524,9 @@ export const DeliveryPortalPage: React.FC<{
                                 )
                               }
                               disabled={isUpdating}
-                              className="w-full py-3 bg-purple-700 hover:bg-purple-800 text-white rounded-xl font-bold text-sm transition-all shadow-xs hover:shadow-md cursor-pointer flex items-center justify-center gap-2 disabled:opacity-50"
+                              className="w-full py-3 bg-amber-800 hover:bg-amber-900 active:bg-amber-950 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl font-bold text-sm transition-all shadow-xs hover:shadow-md cursor-pointer flex items-center justify-center gap-2 disabled:opacity-50"
                             >
-                              <Navigation className="w-4 h-4 text-purple-200 animate-pulse" />
+                              <Navigation className="w-4 h-4 text-amber-200 animate-pulse" />
                               <span>{isUpdating ? 'Updating...' : 'Update: Out for Delivery 🛵'}</span>
                               <ChevronRight className="w-4 h-4 ml-auto" />
                             </button>

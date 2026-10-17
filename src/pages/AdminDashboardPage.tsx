@@ -367,22 +367,7 @@ export const AdminDashboardPage: React.FC<{
 
   return (
     <div className="flex h-screen w-full overflow-hidden bg-[#f4efe7]">
-      {/* Desktop Sidebar (Static on Left) */}
-      <div className="hidden lg:flex h-full w-64 shrink-0 flex-col z-40 bg-[#fffdf9]">
-        <AdminSidebar
-          activeTab={activeTab}
-          setActiveTab={(tab) => handleTabChange(tab)}
-          onLogout={() => {
-            logout();
-            navigate('home');
-          }}
-          unreadCount={unreadCount}
-          pendingOrdersCount={stats?.pendingOrdersCount || 0}
-          pendingBookingsCount={stats?.pendingBookingsCount || 0}
-        />
-      </div>
-
-      {/* Mobile Drawer */}
+      {/* Navigation drawer for tablet / mobile (desktop uses the top navigation) */}
       {mobileSidebarOpen && (
         <div className="fixed inset-0 z-50 flex lg:hidden">
           <div
@@ -418,9 +403,13 @@ export const AdminDashboardPage: React.FC<{
           onSelectNotification={handleSelectNotification}
           onToggleMobileSidebar={() => setMobileSidebarOpen(!mobileSidebarOpen)}
           refreshing={refreshing}
+          activeTab={activeTab}
+          onSelectTab={(tab) => handleTabChange(tab)}
+          pendingOrdersCount={stats?.pendingOrdersCount || 0}
+          pendingBookingsCount={stats?.pendingBookingsCount || 0}
         />
 
-        <div className="p-2 sm:p-3 flex-1 max-w-7xl w-full mx-auto space-y-2 pb-6">
+        <div className="px-3 sm:px-6 py-3 sm:py-4 flex-1 max-w-[1440px] w-full mx-auto space-y-3 pb-8">
           {/* TAB: EMPLOYEE MANAGEMENT (EXCLUSIVELY FOR HOTEL MANAGER) */}
           {activeTab === 'EMPLOYEES' && isManager && (
             <div className="space-y-2 animate-in fade-in duration-200">

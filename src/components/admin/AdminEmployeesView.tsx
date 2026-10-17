@@ -664,11 +664,11 @@ export const AdminEmployeesView: React.FC<AdminEmployeesViewProps> = ({ onRefres
                     onClick={() => setNewRole('MANAGER')}
                     className={`p-2.5 rounded-xl border flex items-center gap-2 cursor-pointer transition-all ${
                       newRole === 'MANAGER'
-                        ? 'border-purple-600 bg-purple-50/70 ring-1 ring-purple-500'
+                        ? 'border-amber-600 bg-amber-50/70 ring-1 ring-amber-500'
                         : 'border-stone-200 hover:bg-stone-50'
                     }`}
                   >
-                    <Shield className="w-4 h-4 text-purple-700 shrink-0" />
+                    <Shield className="w-4 h-4 text-amber-700 shrink-0" />
                     <span className="text-xs font-bold text-stone-900">Manager</span>
                   </label>
 
@@ -676,11 +676,11 @@ export const AdminEmployeesView: React.FC<AdminEmployeesViewProps> = ({ onRefres
                     onClick={() => setNewRole('STAFF')}
                     className={`p-2.5 rounded-xl border flex items-center gap-2 cursor-pointer transition-all ${
                       newRole === 'STAFF'
-                        ? 'border-blue-600 bg-blue-50/70 ring-1 ring-blue-500'
+                        ? 'border-amber-600 bg-amber-50/70 ring-1 ring-amber-500'
                         : 'border-stone-200 hover:bg-stone-50'
                     }`}
                   >
-                    <Briefcase className="w-4 h-4 text-blue-700 shrink-0" />
+                    <Briefcase className="w-4 h-4 text-amber-700 shrink-0" />
                     <span className="text-xs font-bold text-stone-900">Staff</span>
                   </label>
 
@@ -700,11 +700,11 @@ export const AdminEmployeesView: React.FC<AdminEmployeesViewProps> = ({ onRefres
                     onClick={() => setNewRole('DELIVERY')}
                     className={`p-2.5 rounded-xl border flex items-center gap-2 cursor-pointer transition-all ${
                       newRole === 'DELIVERY'
-                        ? 'border-emerald-600 bg-emerald-50/70 ring-1 ring-emerald-500'
+                        ? 'border-amber-600 bg-amber-50/70 ring-1 ring-amber-500'
                         : 'border-stone-200 hover:bg-stone-50'
                     }`}
                   >
-                    <Truck className="w-4 h-4 text-emerald-700 shrink-0" />
+                    <Truck className="w-4 h-4 text-amber-700 shrink-0" />
                     <span className="text-xs font-bold text-stone-900">Delivery</span>
                   </label>
                 </div>

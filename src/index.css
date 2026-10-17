@@ -5,10 +5,24 @@
  * text-gold, font-display and do not alter any existing utility).
  * ------------------------------------------------------------------------- */
 @theme {
+  /* Primary brand colour: ABC bronze (from the gold logo). Every accent in the
+     app resolves to this one scale; the former burgundy "wine" now aliases it. */
+  --color-brand-50: #fbf7f0;
+  --color-brand-100: #f4ebdb;
+  --color-brand-200: #e9d8b9;
+  --color-brand-300: #dcc293;
+  --color-brand-400: #cfad73;
+  --color-brand-500: #b8925a;
+  --color-brand-600: #8f6c3b;
+  --color-brand-700: #7a5a30;
+  --color-brand-800: #634826;
+  --color-brand-900: #4b361d;
+  --color-brand-950: #2c1f11;
+
   --color-ink: #0e0c0b;
   --color-charcoal: #1a1715;
-  --color-wine: #5b1a26;
-  --color-wine-light: #74253a;
+  --color-wine: #634826;
+  --color-wine-light: #7a5a30;
   --color-gold: #c9a76a;
   --color-champagne: #e6d3ac;
   --color-ivory: #f7f2ea;
@@ -64,18 +78,34 @@
  * ------------------------------------------------------------------------- */
 .lux,
 .lux-ops {
-  /* Champagne → bronze accent scale (replaces the bright amber) */
-  --color-amber-50: #fbf7f0;
-  --color-amber-100: #f4ebdb;
-  --color-amber-200: #e9d8b9;
-  --color-amber-300: #dcc293;
-  --color-amber-400: #cfad73;
-  --color-amber-500: #b8925a;
-  --color-amber-600: #8f6c3b;
-  --color-amber-700: #7a5a30;
-  --color-amber-800: #634826;
-  --color-amber-900: #4b361d;
-  --color-amber-950: #2c1f11;
+  /* Accent utilities (amber-*) resolve to the single brand scale */
+  --color-amber-50: var(--color-brand-50);
+  --color-amber-100: var(--color-brand-100);
+  --color-amber-200: var(--color-brand-200);
+  --color-amber-300: var(--color-brand-300);
+  --color-amber-400: var(--color-brand-400);
+  --color-amber-500: var(--color-brand-500);
+  --color-amber-600: var(--color-brand-600);
+  --color-amber-700: var(--color-brand-700);
+  --color-amber-800: var(--color-brand-800);
+  --color-amber-900: var(--color-brand-900);
+  --color-amber-950: var(--color-brand-950);
+
+  /* Semantic design tokens — use these instead of hard-coded shades */
+  --brand: var(--color-brand-800);
+  --brand-hover: var(--color-brand-900);
+  --brand-active: var(--color-brand-950);
+  --brand-text: var(--color-brand-900);
+  --brand-soft: var(--color-brand-50);
+  --brand-soft-hover: var(--color-brand-100);
+  --brand-border: var(--color-brand-200);
+  --brand-ring: rgba(143, 108, 59, 0.45);
+  --surface: #fffdf9;
+  --surface-muted: #faf7f2;
+  --border-subtle: #e5ddd1;
+  --text-strong: #1a1715;
+  --text-body: #48413a;
+  --text-muted: #7b7266;
 
   /* Warm charcoal neutrals */
   --color-stone-50: #faf7f2;
@@ -394,7 +424,151 @@
   transform: scale(1.06);
 }
 
+
+/* --- Brand interaction system --------------------------------------------
+ * One set of states for every control: default, hover, active (pressed or
+ * current), keyboard focus and disabled.
+ * ------------------------------------------------------------------------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 2.5rem;
+  padding: 0 1rem;
+  border-radius: 0.625rem;
+  border: 1px solid transparent;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1;
+  cursor: pointer;
+  transition: background-color 0.18s ease, color 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+}
+.btn:focus-visible {
+  outline: 2px solid var(--color-brand-600);
+  outline-offset: 2px;
+}
+.btn:disabled,
+.btn[aria-disabled='true'] {
+  opacity: 0.5;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+.btn-primary {
+  background: var(--brand);
+  color: #fffdf9;
+  box-shadow: 0 6px 16px -10px rgba(75, 54, 29, 0.7);
+}
+.btn-primary:hover:not(:disabled) {
+  background: var(--brand-hover);
+}
+.btn-primary:active:not(:disabled) {
+  background: var(--brand-active);
+}
+.btn-secondary {
+  background: #fff;
+  color: var(--text-strong);
+  border-color: var(--border-subtle);
+}
+.btn-secondary:hover:not(:disabled) {
+  background: var(--brand-soft);
+  border-color: var(--brand-border);
+  color: var(--brand-text);
+}
+.btn-secondary:active:not(:disabled) {
+  background: var(--brand-soft-hover);
+}
+.btn-danger {
+  background: #be123c;
+  color: #fff;
+}
+.btn-danger:hover:not(:disabled) {
+  background: #9f1239;
+}
+.btn-ghost {
+  background: transparent;
+  color: var(--text-body);
+}
+.btn-ghost:hover:not(:disabled) {
+  background: var(--brand-soft);
+  color: var(--brand-text);
+}
+
+/* Navigation item: neutral → brand-tinted hover → brand current/open */
+.nav-item {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2.5rem;
+  padding: 0 0.875rem;
+  border-radius: 0.625rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--text-body);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color 0.18s ease, color 0.18s ease;
+}
+.nav-item:hover {
+  background: var(--brand-soft);
+  color: var(--brand-text);
+}
+.nav-item[aria-current='page'],
+.nav-item[data-active='true'] {
+  background: var(--brand-soft-hover);
+  color: var(--brand-text);
+  font-weight: 650;
+}
+.nav-item[aria-current='page']::after,
+.nav-item[data-active='true']::after {
+  content: '';
+  position: absolute;
+  left: 0.875rem;
+  right: 0.875rem;
+  bottom: -0.6875rem;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--brand);
+}
+.nav-item[aria-expanded='true'] {
+  background: var(--brand-soft);
+  color: var(--brand-text);
+}
+.nav-item:focus-visible {
+  outline: 2px solid var(--color-brand-600);
+  outline-offset: 2px;
+}
+
+/* Brand-styled CTA buttons also get real disabled/focus states */
+.lux-btn:focus-visible {
+  outline: 2px solid var(--color-brand-600);
+  outline-offset: 3px;
+}
+.lux-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
 } /* end @layer components */
+
+/* App-wide control defaults inside the themed shells */
+@layer base {
+  /* Visible keyboard focus everywhere (mouse clicks are unaffected) */
+  :where(.lux, .lux-ops) :where(button, a, [role='button'], [role='tab'], [role='radio'], [role='checkbox'], summary):focus-visible {
+    outline: 2px solid var(--color-brand-600);
+    outline-offset: 2px;
+  }
+  /* Native checkboxes, radios and ranges use the brand colour */
+  :where(.lux, .lux-ops) :where(input[type='checkbox'], input[type='radio'], input[type='range']) {
+    accent-color: var(--color-brand-700);
+  }
+  /* Disabled controls are clearly non-interactive */
+  :where(.lux, .lux-ops) :where(button, [role='button'], input, select, textarea):disabled {
+    cursor: not-allowed;
+  }
+}
 
 @media (prefers-reduced-motion: reduce) {
   :is(.lux, .lux-ops) *,
