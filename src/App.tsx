@@ -8,6 +8,7 @@ import { ToastProvider } from './context/ToastContext.tsx';
 import { Navbar } from './components/common/Navbar.tsx';
 import { Footer } from './components/common/Footer.tsx';
 import { parseUrlToRoute, routeToUrl } from './utils/router.ts';
+import { isStaffRole } from '../shared/accessControl.ts';
 import { LazyMotion, MotionConfig, domAnimation } from 'motion/react';
 
 // Pages
@@ -42,7 +43,7 @@ const PageLoader: React.FC = () => (
 );
 
 function MainApp() {
-  const { isAdmin, isKitchen, isManager, isDelivery, user, isLoading } = useAuth();
+  const { isAdmin, isKitchen, isManager, isDelivery, user, isLoading, can } = useAuth();
 
   // Initialize route directly from browser URL
   const [currentRoute, setCurrentRoute] = useState<string>(() => {
@@ -103,28 +104,45 @@ function MainApp() {
     // Wait for the stored session to be restored; otherwise reloading a staff
     // page sees "no user" and bounces to the login screen.
     if (isLoading) return;
-    const hasAccessToAdmin = isAdmin || isManager;
-    if (isDelivery) {
-      // Delivery staff should ONLY access the delivery dispatch portal
-      if (currentRoute === 'home' || currentRoute === 'dashboard' || currentRoute === 'my-orders' || currentRoute === 'orders' || currentRoute === 'my-bookings' || currentRoute === 'bookings' || currentRoute === 'admin' || currentRoute === 'kitchen' || currentRoute === 'cart' || currentRoute === 'checkout') {
-        navigate('delivery', {}, true);
-      }
-    } else if (isKitchen) {
-      // Kitchen department should ONLY access the kitchen KDS view
-      if (currentRoute === 'home' || currentRoute === 'dashboard' || currentRoute === 'my-orders' || currentRoute === 'orders' || currentRoute === 'my-bookings' || currentRoute === 'bookings' || currentRoute === 'admin' || currentRoute === 'delivery' || currentRoute === 'cart' || currentRoute === 'checkout') {
-        navigate('kitchen', {}, true);
-      }
-    } else if (hasAccessToAdmin) {
-      if (currentRoute === 'home') {
-        navigate('admin', {}, true);
-      }
-    } else {
-      // Customer / Guest attempting to access internal staff portals
+    const isStaffUser = isStaffRole(user?.role);
+    if (!isStaffUser) {
+      // Customer / guest attempting to open an internal staff portal
       if (currentRoute === 'admin' || currentRoute === 'kitchen' || currentRoute === 'delivery') {
         navigate('staff-login', { message: 'Please login with authorized employee credentials.' }, true);
       }
+      return;
     }
-  }, [isAdmin, isKitchen, isManager, isDelivery, isLoading, currentRoute, navigate]);
+
+    // Staff: portals open according to resolved section access (same rules as the API).
+    const canAdmin = Object.values(user?.access || {}).some((level) => level !== 'NONE');
+    const canKitchen = can('KITCHEN');
+    const canDelivery = can('DELIVERY');
+    const homePortal =
+      isDelivery && canDelivery ? 'delivery'
+      : isKitchen && canKitchen ? 'kitchen'
+      : canAdmin ? 'admin'
+      : null;
+    const customerRoutes = ['home', 'dashboard', 'my-orders', 'orders', 'my-bookings', 'bookings', 'cart', 'checkout'];
+
+    if (!homePortal) {
+      if (currentRoute === 'admin' || currentRoute === 'kitchen' || currentRoute === 'delivery') {
+        navigate('staff-login', { message: 'Your account has no access yet. Please contact a Super Admin.' }, true);
+      }
+      return;
+    }
+    const blocked =
+      (currentRoute === 'admin' && !canAdmin) ||
+      (currentRoute === 'kitchen' && !canKitchen) ||
+      (currentRoute === 'delivery' && !canDelivery);
+    if (blocked) {
+      navigate(homePortal, {}, true);
+    } else if ((isDelivery || isKitchen) && customerRoutes.includes(currentRoute)) {
+      // Kitchen and delivery staff land on their own portal
+      navigate(homePortal, {}, true);
+    } else if (currentRoute === 'home') {
+      navigate(homePortal, {}, true);
+    }
+  }, [user?.id, user?.access, isKitchen, isDelivery, isLoading, currentRoute, navigate]);
 
   const renderRoute = () => {
     switch (currentRoute) {

@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { MenuCategory, MenuItem } from '../../types/index.ts';
 import { Modal } from '../common/Footer.tsx';
+import { useAuth } from '../../context/AuthContext.tsx';
 
 interface AdminCategoriesViewProps {
   categories: MenuCategory[];
@@ -29,6 +30,8 @@ export const AdminCategoriesView: React.FC<AdminCategoriesViewProps> = ({
   onUpdateCategory,
   onDeleteCategory
 }) => {
+  const { can: canAccess } = useAuth();
+  const canEdit = canAccess('MENU', 'FULL');
   const [modalOpen, setModalOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<MenuCategory | null>(null);
   const [name, setName] = useState('');
@@ -95,6 +98,9 @@ export const AdminCategoriesView: React.FC<AdminCategoriesViewProps> = ({
         </div>
 
         <button
+          disabled={!canEdit}
+          data-locked={!canEdit || undefined}
+          title={canEdit ? undefined : 'View access — changes are disabled for your account'}
           onClick={openCreateModal}
           className="px-4 py-2.5 bg-amber-700 hover:bg-amber-800 text-white font-bold text-xs rounded-xl shadow-xs flex items-center gap-2 cursor-pointer self-start sm:self-auto"
         >
@@ -147,6 +153,8 @@ export const AdminCategoriesView: React.FC<AdminCategoriesViewProps> = ({
 
                 <div className="flex items-center gap-1.5">
                   <button
+                    disabled={!canEdit}
+                    data-locked={!canEdit || undefined}
                     onClick={() => openEditModal(cat)}
                     className="p-1.5 bg-stone-100 hover:bg-amber-100 text-stone-700 hover:text-amber-900 rounded-lg text-xs font-semibold transition-colors cursor-pointer"
                     title="Edit Category"
@@ -154,6 +162,8 @@ export const AdminCategoriesView: React.FC<AdminCategoriesViewProps> = ({
                     <Edit2 className="w-4 h-4" />
                   </button>
                   <button
+                    disabled={!canEdit}
+                    data-locked={!canEdit || undefined}
                     onClick={() => setDeleteTarget(cat)}
                     className="p-1.5 text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
                     title="Delete Category"

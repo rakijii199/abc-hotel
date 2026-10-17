@@ -5,7 +5,7 @@
  */
 import { Router } from 'express';
 import { PaymentController } from '../controllers/paymentController.ts';
-import { authenticateToken, requireRole, optionalAuth } from '../middleware/authMiddleware.ts';
+import { authenticateToken, optionalAuth, requireAccess, requireAnyAccess, requireSuperAdmin } from '../middleware/authMiddleware.ts';
 import { paymentRateLimiter } from '../middleware/errorHandler.ts';
 
 export const paymentRouter = Router();
@@ -38,42 +38,45 @@ paymentRouter.post('/webhook/razorpay', PaymentController.handleWebhook);
 paymentRouter.get(
   '/admin/all',
   authenticateToken,
-  requireRole('ADMIN', 'MANAGER'),
+  requireAccess('PAYMENTS', 'VIEW'),
   PaymentController.getAllPaymentsAdmin
 );
 paymentRouter.get(
   '/admin/payment-settings',
   authenticateToken,
-  requireRole('ADMIN', 'MANAGER'),
+  requireAccess('SETTINGS', 'VIEW'),
   PaymentController.getAdminPaymentSettings
 );
 paymentRouter.put(
   '/admin/payment-settings',
   authenticateToken,
-  requireRole('ADMIN'),
+  requireAccess('SETTINGS', 'FULL'),
+  requireSuperAdmin,
   PaymentController.updateAdminPaymentSettings
 );
 paymentRouter.post(
   '/admin/payment-settings/qr',
   authenticateToken,
-  requireRole('ADMIN'),
+  requireAccess('SETTINGS', 'FULL'),
+  requireSuperAdmin,
   PaymentController.uploadQrCode
 );
 paymentRouter.post(
   '/admin/send-request',
   authenticateToken,
-  requireRole('ADMIN', 'MANAGER'),
+  requireAnyAccess([['PAYMENTS', 'FULL'], ['BILLING', 'FULL']]),
   PaymentController.sendPaymentRequestAdmin
 );
 paymentRouter.post(
   '/admin/:id/refund',
   authenticateToken,
-  requireRole('ADMIN', 'MANAGER'),
+  requireAccess('PAYMENTS', 'FULL'),
+  requireSuperAdmin,
   PaymentController.refundPaymentAdmin
 );
 paymentRouter.post(
   '/admin/:id/reconcile',
   authenticateToken,
-  requireRole('ADMIN', 'MANAGER'),
+  requireAccess('PAYMENTS', 'FULL'),
   PaymentController.reconcilePaymentAdmin
 );

@@ -3,13 +3,14 @@
  */
 import { Router } from 'express';
 import { InventoryService } from '../services/inventoryService.ts';
-import { authenticateToken, requireRole } from '../middleware/authMiddleware.ts';
+import { authenticateToken, requireAccess, requireSuperAdmin } from '../middleware/authMiddleware.ts';
 
 const router = Router();
 
 // Require Staff / Manager / Admin role for inventory operations
 router.use(authenticateToken);
-router.use(requireRole('ADMIN', 'MANAGER', 'STAFF', 'KITCHEN'));
+// Inventory: GET needs VIEW, every change needs FULL (deleting items: Super Admin).
+router.use((req, res, next) => requireAccess('INVENTORY', req.method === 'GET' ? 'VIEW' : 'FULL')(req as any, res, next));
 
 /**
  * GET /api/inventory/items
@@ -195,7 +196,7 @@ router.post('/wastage', async (req, res) => {
  * DELETE /api/inventory/items/:id
  * Delete an inventory item (Strictly ADMIN only - STAFF and KITCHEN forbidden)
  */
-router.delete('/items/:id', requireRole('ADMIN'), async (req, res) => {
+router.delete('/items/:id', requireSuperAdmin, async (req, res) => {
   try {
     const user = (req as any).user;
     const deleted = await InventoryService.deleteItem(req.params.id, user?.id);

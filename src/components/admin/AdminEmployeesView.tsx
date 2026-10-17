@@ -28,6 +28,18 @@ import { SafeUser, UserRole, UserStatus } from '../../types/index.ts';
 import { ManagerApi } from '../../api/index.ts';
 import { useAuth } from '../../context/AuthContext.tsx';
 import { useToast } from '../../context/ToastContext.tsx';
+import { AccessEditor, PrivilegeChip, RoleTemplates } from './AccessEditor.tsx';
+import {
+  AccessLevel,
+  PrivilegeType,
+  ROLE_DEFINITIONS,
+  SectionId,
+  StaffRoleCode,
+  effectivePrivilege
+} from '../../../shared/accessControl.ts';
+
+const roleDefault = (role: string): PrivilegeType =>
+  ROLE_DEFINITIONS.find((r) => r.code === role)?.defaultPrivilege || 'USER';
 
 interface AdminEmployeesViewProps {
   onRefreshStats?: () => void;
@@ -47,7 +59,15 @@ function generateTemporaryPassword(): string {
   return chars.join('');
 }
 export const AdminEmployeesView: React.FC<AdminEmployeesViewProps> = ({ onRefreshStats }) => {
-  const { user: currentUser } = useAuth();
+  const { user: currentUser, isSuperAdmin } = useAuth();
+  const isOwner = currentUser?.role === 'ADMIN';
+  // Role templates (role defaults, including any Access Control customisation)
+  const [roleTemplates, setRoleTemplates] = useState<RoleTemplates>({});
+  useEffect(() => {
+    ManagerApi.getAccessOverview()
+      .then((o) => setRoleTemplates(Object.fromEntries(o.roles.map((r) => [r.code, r.access])) as RoleTemplates))
+      .catch(() => setRoleTemplates({}));
+  }, []);
   const { error, success, info } = useToast();
 
   const [employees, setEmployees] = useState<SafeUser[]>([]);
@@ -72,6 +92,9 @@ export const AdminEmployeesView: React.FC<AdminEmployeesViewProps> = ({ onRefres
   const [newEmail, setNewEmail] = useState('');
   const [newPhone, setNewPhone] = useState('');
   const [newRole, setNewRole] = useState<UserRole>('STAFF');
+  const [newPrivilege, setNewPrivilege] = useState<PrivilegeType>('USER');
+  const [newPrivilegeTouched, setNewPrivilegeTouched] = useState(false);
+  const [newOverrides, setNewOverrides] = useState<Partial<Record<SectionId, AccessLevel>>>({});
   const [newPassword, setNewPassword] = useState('');
   const [newConfirmPassword, setNewConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -82,6 +105,9 @@ export const AdminEmployeesView: React.FC<AdminEmployeesViewProps> = ({ onRefres
   const [editLastName, setEditLastName] = useState('');
   const [editPhone, setEditPhone] = useState('');
   const [editRole, setEditRole] = useState<UserRole>('STAFF');
+  const [editPrivilege, setEditPrivilege] = useState<PrivilegeType>('USER');
+  const [editPrivilegeTouched, setEditPrivilegeTouched] = useState(false);
+  const [editOverrides, setEditOverrides] = useState<Partial<Record<SectionId, AccessLevel>>>({});
   const [editStatus, setEditStatus] = useState<UserStatus>('ACTIVE');
   const [submittingEdit, setSubmittingEdit] = useState(false);
 
@@ -120,6 +146,10 @@ export const AdminEmployeesView: React.FC<AdminEmployeesViewProps> = ({ onRefres
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
+  useEffect(() => {
+    if (!newPrivilegeTouched) setNewPrivilege(roleDefault(newRole));
+  }, [newRole, newPrivilegeTouched]);
+
   // Handle Add Employee Submit
   const handleAddEmployee = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -147,7 +177,9 @@ export const AdminEmployeesView: React.FC<AdminEmployeesViewProps> = ({ onRefres
         role: newRole,
         password: newPassword,
         confirmPassword: newConfirmPassword,
-        status: 'ACTIVE'
+        status: 'ACTIVE',
+        privilege: newPrivilege,
+        ...(newPrivilege === 'USER' && Object.keys(newOverrides).length ? { sectionAccess: newOverrides } : {})
       });
 
       success(`Employee "${newFirstName} ${newLastName}" added successfully.`);
@@ -159,6 +191,9 @@ export const AdminEmployeesView: React.FC<AdminEmployeesViewProps> = ({ onRefres
       setNewEmail('');
       setNewPhone('');
       setNewRole('STAFF');
+      setNewPrivilege('USER');
+      setNewPrivilegeTouched(false);
+      setNewOverrides({});
       setNewPassword('');
       setNewConfirmPassword('');
       fetchEmployeesData();
@@ -176,8 +211,13 @@ export const AdminEmployeesView: React.FC<AdminEmployeesViewProps> = ({ onRefres
     setEditFirstName(emp.firstName);
     setEditLastName(emp.lastName);
     setEditPhone(emp.phone);
-    setEditRole(emp.role === 'ADMIN' ? 'STAFF' : emp.role);
+    // Keep the real role (Owner accounts used to be shown — and saved — as Staff).
+    setEditRole(emp.role);
     setEditStatus(emp.status);
+    setEditPrivilege(effectivePrivilege(emp) || 'USER');
+    // An explicitly stored privilege counts as a deliberate choice.
+    setEditPrivilegeTouched(!!emp.privilege);
+    setEditOverrides({ ...(emp.sectionAccess || {}) });
   };
 
   // Handle Edit Submit
@@ -192,7 +232,9 @@ export const AdminEmployeesView: React.FC<AdminEmployeesViewProps> = ({ onRefres
         lastName: editLastName.trim(),
         phone: editPhone.trim(),
         role: editRole,
-        status: editStatus
+        status: editStatus,
+        privilege: editPrivilege,
+        sectionAccess: editPrivilege === 'USER' && Object.keys(editOverrides).length ? editOverrides : null
       });
 
       success(`Employee updated successfully.`);
@@ -204,6 +246,11 @@ export const AdminEmployeesView: React.FC<AdminEmployeesViewProps> = ({ onRefres
     } finally {
       setSubmittingEdit(false);
     }
+  };
+
+  const handleEditRoleChange = (role: UserRole) => {
+    setEditRole(role);
+    if (!editPrivilegeTouched) setEditPrivilege(roleDefault(role));
   };
 
   // Handle Status Toggle (Activate / Deactivate)
@@ -285,8 +332,14 @@ export const AdminEmployeesView: React.FC<AdminEmployeesViewProps> = ({ onRefres
             Manager
           </span>
         );
-      case 'STAFF':
       case 'ADMIN':
+        return (
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[var(--brand-soft-hover)] text-[var(--brand-text)] border border-[var(--brand-border)]">
+            <Shield className="w-3 h-3" />
+            Owner
+          </span>
+        );
+      case 'STAFF':
         return (
           <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-100 text-blue-800 border border-blue-200">
             <Briefcase className="w-3 h-3 text-blue-700" />
@@ -297,14 +350,14 @@ export const AdminEmployeesView: React.FC<AdminEmployeesViewProps> = ({ onRefres
         return (
           <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-800 border border-amber-200">
             <ChefHat className="w-3 h-3 text-amber-700" />
-            Kitchen
+            Kitchen Staff
           </span>
         );
       case 'DELIVERY':
         return (
           <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200">
             <Truck className="w-3 h-3 text-emerald-700" />
-            Delivery
+            Delivery Staff
           </span>
         );
       default:
@@ -344,6 +397,8 @@ export const AdminEmployeesView: React.FC<AdminEmployeesViewProps> = ({ onRefres
 
           <button
             onClick={() => setShowAddModal(true)}
+            disabled={!isSuperAdmin}
+            title={isSuperAdmin ? 'Add a new user' : 'Only a Super Admin can add users'}
             className="px-4 py-2 rounded-xl bg-amber-700 hover:bg-amber-800 text-white text-xs font-bold shadow-xs flex items-center gap-1.5 transition-all cursor-pointer"
           >
             <UserPlus className="w-4 h-4" />
@@ -376,10 +431,11 @@ export const AdminEmployeesView: React.FC<AdminEmployeesViewProps> = ({ onRefres
               className="px-2.5 py-1.5 bg-stone-50 border border-stone-200 rounded-xl text-xs font-medium text-stone-700 focus:outline-hidden focus:border-amber-600 cursor-pointer"
             >
               <option value="ALL">All Roles</option>
+              <option value="ADMIN">Owner</option>
               <option value="MANAGER">Manager</option>
               <option value="STAFF">Staff</option>
-              <option value="KITCHEN">Kitchen</option>
-              <option value="DELIVERY">Delivery</option>
+              <option value="KITCHEN">Kitchen Staff</option>
+              <option value="DELIVERY">Delivery Staff</option>
             </select>
           </div>
 
@@ -469,7 +525,15 @@ export const AdminEmployeesView: React.FC<AdminEmployeesViewProps> = ({ onRefres
                       </td>
 
                       {/* Role */}
-                      <td className="py-3 px-4">{getRoleBadge(emp.role)}</td>
+                      <td className="py-3 px-4">
+                        <div className="flex flex-wrap items-center gap-1.5">
+                          {getRoleBadge(emp.role)}
+                          <PrivilegeChip privilege={effectivePrivilege(emp)} />
+                          {emp.sectionAccess && Object.keys(emp.sectionAccess).length > 0 && effectivePrivilege(emp) === 'USER' && (
+                            <span className="text-[10px] font-semibold text-[var(--brand-text)]" title="Has custom section access">Custom access</span>
+                          )}
+                        </div>
+                      </td>
 
                       {/* Username & Email */}
                       <td className="py-3 px-4">
@@ -518,6 +582,9 @@ export const AdminEmployeesView: React.FC<AdminEmployeesViewProps> = ({ onRefres
                       {/* Actions */}
                       <td className="py-3 px-4 text-right">
                         <div className="flex items-center justify-end gap-1">
+                          {!isSuperAdmin || (emp.role === 'ADMIN' && !isOwner) ? (
+                            <span className="text-[10.5px] text-stone-400">View only</span>
+                          ) : (<>
                           {/* Edit Details */}
                           <button
                             onClick={() => openEditModal(emp)}
@@ -550,6 +617,7 @@ export const AdminEmployeesView: React.FC<AdminEmployeesViewProps> = ({ onRefres
                               <Trash2 className="w-3.5 h-3.5" />
                             </button>
                           )}
+                          </>)}
                         </div>
                       </td>
                     </tr>
@@ -566,7 +634,7 @@ export const AdminEmployeesView: React.FC<AdminEmployeesViewProps> = ({ onRefres
       {/* ========================================================================= */}
       {showAddModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs animate-in fade-in">
-          <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-stone-200 space-y-4 max-h-[90vh] overflow-y-auto">
+          <div className="bg-white rounded-2xl max-w-xl w-full p-4 sm:p-6 shadow-2xl border border-stone-200 space-y-4 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-stone-100 pb-3">
               <div>
                 <h3 className="font-serif font-bold text-xl text-stone-900">
@@ -660,6 +728,19 @@ export const AdminEmployeesView: React.FC<AdminEmployeesViewProps> = ({ onRefres
               <div className="space-y-1">
                 <label className="text-xs font-bold text-stone-700">Role *</label>
                 <div className="grid grid-cols-2 gap-2">
+                  {isOwner && (
+                    <label
+                      onClick={() => setNewRole('ADMIN')}
+                      className={`p-2.5 rounded-xl border flex items-center gap-2 cursor-pointer transition-all ${
+                        newRole === 'ADMIN'
+                          ? 'border-amber-600 bg-amber-50/70 ring-1 ring-amber-500'
+                          : 'border-stone-200 hover:bg-stone-50'
+                      }`}
+                    >
+                      <Shield className="w-4 h-4 text-amber-700 shrink-0" />
+                      <span className="text-xs font-bold text-stone-900">Owner</span>
+                    </label>
+                  )}
                   <label
                     onClick={() => setNewRole('MANAGER')}
                     className={`p-2.5 rounded-xl border flex items-center gap-2 cursor-pointer transition-all ${
@@ -693,7 +774,7 @@ export const AdminEmployeesView: React.FC<AdminEmployeesViewProps> = ({ onRefres
                     }`}
                   >
                     <ChefHat className="w-4 h-4 text-amber-700 shrink-0" />
-                    <span className="text-xs font-bold text-stone-900">Kitchen</span>
+                    <span className="text-xs font-bold text-stone-900">Kitchen Staff</span>
                   </label>
 
                   <label
@@ -705,10 +786,25 @@ export const AdminEmployeesView: React.FC<AdminEmployeesViewProps> = ({ onRefres
                     }`}
                   >
                     <Truck className="w-4 h-4 text-amber-700 shrink-0" />
-                    <span className="text-xs font-bold text-stone-900">Delivery</span>
+                    <span className="text-xs font-bold text-stone-900">Delivery Staff</span>
                   </label>
                 </div>
+                <p className="text-[10.5px] text-stone-500 pt-0.5">{ROLE_DEFINITIONS.find((r) => r.code === newRole)?.purpose}</p>
               </div>
+
+              {/* Privilege & section access (defaults from the role; adjustable) */}
+              <AccessEditor
+                role={newRole as StaffRoleCode}
+                privilege={newPrivilege}
+                onPrivilegeChange={(p) => {
+                  setNewPrivilege(p);
+                  setNewPrivilegeTouched(true);
+                }}
+                overrides={newOverrides}
+                onOverridesChange={setNewOverrides}
+                templates={roleTemplates}
+                editable={isSuperAdmin}
+              />
 
               {/* Password */}
               <div className="p-3 bg-stone-50 rounded-xl border border-stone-200 space-y-2">
@@ -789,7 +885,7 @@ export const AdminEmployeesView: React.FC<AdminEmployeesViewProps> = ({ onRefres
       {/* ========================================================================= */}
       {editingEmployee && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs animate-in fade-in">
-          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-stone-200 space-y-4">
+          <div className="bg-white rounded-2xl max-w-xl w-full p-4 sm:p-6 shadow-2xl border border-stone-200 space-y-4 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-stone-100 pb-3">
               <div>
                 <h3 className="font-serif font-bold text-xl text-stone-900">
@@ -844,15 +940,33 @@ export const AdminEmployeesView: React.FC<AdminEmployeesViewProps> = ({ onRefres
                 <label className="text-xs font-bold text-stone-700">Role</label>
                 <select
                   value={editRole}
-                  onChange={(e) => setEditRole(e.target.value as UserRole)}
-                  className="w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs font-medium text-stone-900 focus:border-amber-600"
+                  onChange={(e) => handleEditRoleChange(e.target.value as UserRole)}
+                  disabled={editingEmployee.id === currentUser?.id}
+                  className="w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs font-medium text-stone-900 focus:border-amber-600 disabled:opacity-60"
                 >
+                  {(isOwner || editRole === 'ADMIN') && <option value="ADMIN">Owner</option>}
                   <option value="MANAGER">Manager</option>
                   <option value="STAFF">Staff</option>
-                  <option value="KITCHEN">Kitchen</option>
-                  <option value="DELIVERY">Delivery</option>
+                  <option value="KITCHEN">Kitchen Staff</option>
+                  <option value="DELIVERY">Delivery Staff</option>
                 </select>
+                {editingEmployee.id === currentUser?.id && (
+                  <p className="text-[10.5px] text-stone-500">You cannot change your own role, privilege or access.</p>
+                )}
               </div>
+
+              <AccessEditor
+                role={editRole as StaffRoleCode}
+                privilege={editPrivilege}
+                onPrivilegeChange={(p) => {
+                  setEditPrivilege(p);
+                  setEditPrivilegeTouched(true);
+                }}
+                overrides={editOverrides}
+                onOverridesChange={setEditOverrides}
+                templates={roleTemplates}
+                editable={isSuperAdmin && editingEmployee.id !== currentUser?.id}
+              />
 
               <div className="space-y-1">
                 <label className="text-xs font-bold text-stone-700">Status</label>

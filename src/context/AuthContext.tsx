@@ -8,10 +8,12 @@ import React, {
   useContext,
   useState,
   useEffect,
+  useMemo,
 } from 'react';
 import { SafeUser } from '../types/index.ts';
 import { AuthApi } from '../api/index.ts';
 import { SESSION_EXPIRED_EVENT } from '../api/client.ts';
+import { SectionId, effectivePrivilege, hasAccess, resolveAllAccess } from '../../shared/accessControl.ts';
 
 interface AuthContextType {
   user: SafeUser | null;
@@ -23,6 +25,11 @@ interface AuthContextType {
   isStaff: boolean;
   isKitchen: boolean;
   isDelivery: boolean;
+
+  /** Super Admin privilege (as resolved by the server). */
+  isSuperAdmin: boolean;
+  /** Section access as enforced by the server: can(section, 'VIEW' | 'FULL'). */
+  can: (section: SectionId, need?: 'VIEW' | 'FULL') => boolean;
 
   isLoading: boolean;
 
@@ -55,7 +62,15 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider: React.FC<{
   children: React.ReactNode;
 }> = ({ children }) => {
-  const [user, setUser] = useState<SafeUser | null>(null);
+  const [rawUser, setUser] = useState<SafeUser | null>(null);
+  // The server sends resolved access with the user. If it is missing (e.g. a
+  // server that has not been restarted onto this version), fall back to the
+  // role defaults so staff are never locked out of the UI; the API still
+  // enforces the real permissions on every request.
+  const user = useMemo<SafeUser | null>(() => {
+    if (!rawUser || rawUser.access) return rawUser;
+    return { ...rawUser, access: resolveAllAccess(rawUser), effectivePrivilege: effectivePrivilege(rawUser) };
+  }, [rawUser]);
 
   const [token, setToken] = useState<string | null>(() =>
     localStorage.getItem('abc_auth_token')
@@ -242,6 +257,9 @@ export const AuthProvider: React.FC<{
         isStaff: user?.role === 'STAFF',
         isKitchen: user?.role === 'KITCHEN',
         isDelivery: user?.role === 'DELIVERY',
+
+        isSuperAdmin: user?.effectivePrivilege === 'SUPER_ADMIN',
+        can: (section: SectionId, need: 'VIEW' | 'FULL' = 'VIEW') => hasAccess(user?.access?.[section], need),
 
         isLoading,
 

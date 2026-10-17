@@ -3,6 +3,7 @@
  * Single Source of Truth for Customer & Admin APIs
  */
 import { request } from './client.ts';
+import type { AccessLevel, PrivilegeType, RoleDefinition, SectionDefinition, SectionId } from '../../shared/accessControl.ts';
 import {
   SafeUser,
   EmployeeStats,
@@ -701,6 +702,14 @@ export const KitchenApi = {
 };
 
 // Manager Executive & Employee Management API
+export interface AccessOverview {
+  sections: SectionDefinition[];
+  levels: AccessLevel[];
+  privileges: PrivilegeType[];
+  roles: Array<RoleDefinition & { access: Partial<Record<SectionId, AccessLevel>>; customized: boolean; updatedAt?: string; updatedBy?: string }>;
+  users: SafeUser[];
+}
+
 export const ManagerApi = {
   getEmployees: (params?: { role?: string; status?: string; search?: string }) => {
     const query = new URLSearchParams();
@@ -741,6 +750,15 @@ export const ManagerApi = {
     request<{ success: boolean; message: string }>(`/manager/employees/${id}`, {
       method: 'DELETE',
       body: JSON.stringify({ reason })
+    }),
+
+  /** Sections, the five roles with their current templates, and staff users with resolved access. */
+  getAccessOverview: () => request<AccessOverview>('/manager/access'),
+
+  updateRoleAccess: (role: string, access: Record<string, string>) =>
+    request<any>(`/manager/access/roles/${role}`, {
+      method: 'PUT',
+      body: JSON.stringify({ access })
     }),
 
   getStats: () =>

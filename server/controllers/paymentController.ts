@@ -171,7 +171,7 @@ export class PaymentController {
    */
   public static async getAllPaymentsAdmin(req: AuthenticatedRequest, res: Response): Promise<void> {
     try {
-      if (req.user?.role !== 'ADMIN') {
+      if (!req.user) { // section access enforced by the route
         res.status(403).json({
           success: false,
           error: { code: 'FORBIDDEN', message: 'Admin privileges required.' }
@@ -197,7 +197,7 @@ export class PaymentController {
    */
   public static async refundPaymentAdmin(req: AuthenticatedRequest, res: Response): Promise<void> {
     try {
-      if (req.user?.role !== 'ADMIN') {
+      if (!req.user) { // section access enforced by the route
         res.status(403).json({
           success: false,
           error: { code: 'FORBIDDEN', message: 'Admin privileges required.' }
@@ -231,7 +231,7 @@ export class PaymentController {
    */
   public static async sendPaymentRequestAdmin(req: AuthenticatedRequest, res: Response): Promise<void> {
     try {
-      if (req.user?.role !== 'ADMIN') {
+      if (!req.user) { // section access enforced by the route
         res.status(403).json({
           success: false,
           error: { code: 'FORBIDDEN', message: 'Admin privileges required.' }
@@ -376,7 +376,7 @@ export class PaymentController {
    */
   public static async getAdminPaymentSettings(req: AuthenticatedRequest, res: Response): Promise<void> {
     try {
-      if (req.user?.role !== 'ADMIN' && req.user?.role !== 'MANAGER') {
+      if (!req.user) { // section access enforced by the route
         res.status(403).json({
           success: false,
           error: { code: 'FORBIDDEN', message: 'Admin or Manager privileges required.' }
@@ -402,7 +402,7 @@ export class PaymentController {
    */
   public static async updateAdminPaymentSettings(req: AuthenticatedRequest, res: Response): Promise<void> {
     try {
-      if (req.user?.role !== 'ADMIN' && req.user?.role !== 'MANAGER') {
+      if (!req.user) { // section access enforced by the route
         res.status(403).json({
           success: false,
           error: { code: 'FORBIDDEN', message: 'Admin or Manager privileges required.' }
@@ -429,7 +429,7 @@ export class PaymentController {
    */
   public static async uploadQrCode(req: AuthenticatedRequest, res: Response): Promise<void> {
     try {
-      if (req.user?.role !== 'ADMIN' && req.user?.role !== 'MANAGER') {
+      if (!req.user) { // section access enforced by the route
         res.status(403).json({
           success: false,
           error: { code: 'FORBIDDEN', message: 'Admin or Manager privileges required.' }
@@ -479,7 +479,7 @@ export class PaymentController {
    */
   public static async reconcilePaymentAdmin(req: AuthenticatedRequest, res: Response): Promise<void> {
     try {
-      if (req.user?.role !== 'ADMIN') {
+      if (!req.user) { // section access enforced by the route
         res.status(403).json({
           success: false,
           error: { code: 'FORBIDDEN', message: 'Admin privileges required.' }

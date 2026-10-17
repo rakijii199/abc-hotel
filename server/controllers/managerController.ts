@@ -10,6 +10,27 @@ import { AuditRepository } from '../repositories/auditRepository.ts';
 import { OrderRepository } from '../repositories/orderRepository.ts';
 import { TableRepository } from '../repositories/tableRepository.ts';
 import { User, UserRole, UserStatus } from '../types/index.ts';
+import { AccessControlService, AccessRuleError } from '../services/accessControlService.ts';
+import { AccessRepository } from '../repositories/accessRepository.ts';
+import {
+  ACCESS_LEVELS,
+  PRIVILEGE_TYPES,
+  ROLE_DEFINITIONS,
+  SECTIONS,
+  StaffRoleCode,
+  effectivePrivilege,
+  isStaffRole,
+  roleAccessTemplate
+} from '../../shared/accessControl.ts';
+
+/** Send an AccessRuleError as its HTTP status; anything else is rethrown. */
+function sendAccessError(res: Response, err: unknown): boolean {
+  if (err instanceof AccessRuleError) {
+    res.status(err.status).json({ success: false, error: { code: err.code, message: err.message } });
+    return true;
+  }
+  return false;
+}
 
 /**
  * Employee management may only touch employee accounts the caller outranks:
@@ -80,7 +101,14 @@ export class ManagerController {
    */
   public static async createEmployee(req: AuthenticatedRequest, res: Response): Promise<void> {
     try {
-      const { firstName, lastName, username, email, phone, password, role, status } = req.body;
+      const { firstName, lastName, username, email, phone, password, role, status, privilege, sectionAccess } = req.body;
+
+      try {
+        await AccessControlService.assertChangeAllowed(req.user!, null, { role, privilege, sectionAccess });
+      } catch (err) {
+        if (sendAccessError(res, err)) return;
+        throw err;
+      }
 
       const cleanUsername = (username || '').toLowerCase().trim();
       const cleanEmail = (email || '').toLowerCase().trim();
@@ -127,6 +155,9 @@ export class ManagerController {
         passwordHash,
         role: role as UserRole,
         status: (status as UserStatus) || 'ACTIVE',
+        ...(privilege ? { privilege } : {}),
+        ...(sectionAccess && Object.keys(sectionAccess).length ? { sectionAccess } : {}),
+        ...(privilege || sectionAccess ? { accessUpdatedAt: new Date().toISOString(), accessUpdatedBy: req.user?.id } : {}),
         createdBy: req.user?.id,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString()
@@ -146,7 +177,9 @@ export class ManagerController {
             name: `${newEmployee.firstName} ${newEmployee.lastName}`,
             username: newEmployee.username,
             role: newEmployee.role,
-            email: newEmployee.email
+            email: newEmployee.email,
+            privilege: effectivePrivilege(newEmployee),
+            sectionAccess: newEmployee.sectionAccess || null
           }
         });
       }
@@ -170,7 +203,9 @@ export class ManagerController {
   public static async updateEmployee(req: AuthenticatedRequest, res: Response): Promise<void> {
     try {
       const { id } = req.params;
-      const { firstName, lastName, email, phone, role, status } = req.body;
+      const { firstName, lastName, email, phone, role, status, privilege } = req.body;
+      // null resets per-user overrides to the role defaults
+      const sectionAccess = req.body.sectionAccess === null ? {} : req.body.sectionAccess;
 
       const user = await UserRepository.findById(id);
       if (!user || !canManageAccount(req.user?.role, user)) {
@@ -179,6 +214,13 @@ export class ManagerController {
           error: { code: 'EMPLOYEE_NOT_FOUND', message: 'Employee not found.' }
         });
         return;
+      }
+
+      try {
+        await AccessControlService.assertChangeAllowed(req.user!, user, { role, privilege, sectionAccess, status });
+      } catch (err) {
+        if (sendAccessError(res, err)) return;
+        throw err;
       }
 
       // Check unique email if email changed
@@ -200,8 +242,28 @@ export class ManagerController {
       if (phone !== undefined) updates.phone = phone.trim();
       if (role !== undefined) updates.role = role as UserRole;
       if (status !== undefined) updates.status = status as UserStatus;
+      if (privilege !== undefined) updates.privilege = privilege;
+      if (sectionAccess !== undefined) updates.sectionAccess = sectionAccess;
+      const accessChanged =
+        (role !== undefined && role !== user.role) ||
+        (privilege !== undefined && privilege !== user.privilege) ||
+        (sectionAccess !== undefined && JSON.stringify(sectionAccess) !== JSON.stringify(user.sectionAccess || {}));
+      if (accessChanged) {
+        updates.accessUpdatedAt = new Date().toISOString();
+        updates.accessUpdatedBy = req.user?.id;
+      }
 
       const updated = await UserRepository.update(id, updates);
+      if (req.user && updated && accessChanged) {
+        AccessControlService.recordChange(
+          req.user,
+          updated,
+          'ACCESS_UPDATED',
+          { role: user.role, privilege: effectivePrivilege(user), sectionAccess: user.sectionAccess || {} },
+          { role: updated.role, privilege: effectivePrivilege(updated), sectionAccess: updated.sectionAccess || {} },
+          `Role/privilege/access changed for ${updated.firstName} ${updated.lastName}`
+        );
+      }
 
       if (req.user && updated) {
         AuditRepository.record({
@@ -260,6 +322,13 @@ export class ManagerController {
           error: { code: 'NOT_FOUND', message: 'Employee not found.' }
         });
         return;
+      }
+
+      try {
+        await AccessControlService.assertChangeAllowed(req.user!, user, { status });
+      } catch (err) {
+        if (sendAccessError(res, err)) return;
+        throw err;
       }
 
       const updates: Partial<User> = {
@@ -363,6 +432,13 @@ export class ManagerController {
         return;
       }
 
+      try {
+        await AccessControlService.assertChangeAllowed(req.user!, user, { deleting: true });
+      } catch (err) {
+        if (sendAccessError(res, err)) return;
+        throw err;
+      }
+
       await UserRepository.softRemove(id, req.user?.id || 'manager', reason);
 
       if (req.user) {
@@ -419,6 +495,57 @@ export class ManagerController {
         success: false,
         error: { code: 'FETCH_STATS_FAILED', message: err.message }
       });
+    }
+  }
+
+  /**
+   * GET /api/manager/access — everything the Roles, Privileges and Access
+   * Control tabs need: sections, the five roles with their current templates,
+   * and each staff user's privilege, overrides and resolved access.
+   */
+  public static async getAccessOverview(_req: AuthenticatedRequest, res: Response): Promise<void> {
+    try {
+      const configs = AccessRepository.getRoleConfigs();
+      const employees = await UserRepository.findEmployees();
+      res.status(200).json({
+        success: true,
+        data: {
+          sections: SECTIONS,
+          levels: ACCESS_LEVELS,
+          privileges: PRIVILEGE_TYPES,
+          roles: ROLE_DEFINITIONS.map((r) => {
+            const stored = configs.find((c) => c.id === r.code);
+            return {
+              ...r,
+              access: roleAccessTemplate(r.code, configs),
+              customized: !!stored,
+              updatedAt: stored?.updatedAt,
+              updatedBy: stored?.updatedBy
+            };
+          }),
+          users: employees
+            .filter((u) => u.status !== 'REMOVED')
+            .map((u) => UserRepository.toSafeUser(u))
+        }
+      });
+    } catch (err: any) {
+      res.status(500).json({ success: false, error: { code: 'ACCESS_OVERVIEW_FAILED', message: 'Unable to load access settings.' } });
+    }
+  }
+
+  /** PUT /api/manager/access/roles/:role — update a role's default section access (Super Admin). */
+  public static async updateRoleAccess(req: AuthenticatedRequest, res: Response): Promise<void> {
+    try {
+      const role = String(req.params.role || '').toUpperCase();
+      if (!isStaffRole(role)) {
+        res.status(404).json({ success: false, error: { code: 'ROLE_NOT_FOUND', message: 'Role not found.' } });
+        return;
+      }
+      const config = await AccessControlService.updateRoleTemplate(req.user!, role as StaffRoleCode, req.body.access || {});
+      res.status(200).json({ success: true, data: { ...config, access: roleAccessTemplate(role, AccessRepository.getRoleConfigs()) }, message: 'Role access updated.' });
+    } catch (err: any) {
+      if (sendAccessError(res, err)) return;
+      res.status(500).json({ success: false, error: { code: 'ROLE_ACCESS_FAILED', message: 'Unable to update role access.' } });
     }
   }
 }

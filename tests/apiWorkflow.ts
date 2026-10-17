@@ -125,7 +125,6 @@ export async function runApiWorkflows(baseUrl: string): Promise<{ passed: number
       await step(`GET ${path} as ${group.role}`, async () => {
         const res = await api('GET', path, { token: group.role === 'public' ? undefined : tokens[group.role] });
         if (res.status >= 500) return `HTTP ${res.status}: ${JSON.stringify(res.json).slice(0, 200)}`;
-        if (group.role === 'delivery' && path === '/admin/orders') return res.status === 403 || `delivery should be refused admin orders, got ${res.status}`;
         if (res.status !== 200 || res.json?.success === false) return `HTTP ${res.status}: ${JSON.stringify(res.json?.error || res.json).slice(0, 200)}`;
         const empties = findEmptyObjects(res.json?.data);
         return empties.length === 0 || `empty object at ${empties.join(', ')} (likely an un-awaited Promise)`;
@@ -518,6 +517,144 @@ export async function runApiWorkflows(baseUrl: string): Promise<{ passed: number
     const first = await api('POST', '/orders', cfgOrderBody([{ menuItemId: biryaniId, quantity: 1, portionId: 'HALF', addonIds: ['add-mild'] }], key));
     const changed = await api('POST', '/orders', cfgOrderBody([{ menuItemId: biryaniId, quantity: 1, portionId: 'HALF', addonIds: ['add-hot'] }], key));
     return (first.status === 201 && changed.status === 409) || `first ${first.status}, changed choices with same key ${changed.status}`;
+  });
+
+  // ---- Workflow 10: users, roles, privileges and access control ----
+  const me = async (token: string) => (await api('GET', '/auth/me', { token })).data;
+
+  await step('Access: overview lists the five predefined roles and all sections (Super Admin)', async () => {
+    const res = await api('GET', '/manager/access', { token: tokens.manager });
+    const names = (res.data?.roles || []).map((r: Json) => r.name);
+    return (JSON.stringify(names) === JSON.stringify(['Owner', 'Manager', 'Staff', 'Kitchen Staff', 'Delivery Staff']) && res.data?.sections?.length >= 15) || `${res.status} ${JSON.stringify(names)}`;
+  });
+  await step('Access: non-admin roles cannot open user/role/access management', async () => {
+    const s1 = await api('GET', '/manager/access', { token: tokens.staff });
+    const s2 = await api('GET', '/manager/employees', { token: tokens.kitchen });
+    return (s1.status === 403 && s2.status === 403) || `staff ${s1.status}, kitchen ${s2.status}`;
+  });
+  await step('Access: existing accounts get default privileges from their role (no stored field needed)', async () => {
+    const [o, m, s, k, d] = await Promise.all([me(tokens.admin), me(tokens.manager), me(tokens.staff), me(tokens.kitchen), me(tokens.delivery)]);
+    const ok = o.effectivePrivilege === 'SUPER_ADMIN' && m.effectivePrivilege === 'SUPER_ADMIN' &&
+      s.effectivePrivilege === 'USER' && k.effectivePrivilege === 'USER' && d.effectivePrivilege === 'USER' &&
+      !o.privilege && !s.privilege;
+    return ok || JSON.stringify([o, m, s, k, d].map((u) => `${u.role}:${u.effectivePrivilege}`));
+  });
+  await step('Access: default section access per role', async () => {
+    const [s, k, d] = await Promise.all([me(tokens.staff), me(tokens.kitchen), me(tokens.delivery)]);
+    const ok = s.access.POS === 'FULL' && s.access.MENU === 'VIEW' && s.access.DASHBOARD === 'NONE' && s.access.USERS === 'NONE' &&
+      k.access.KITCHEN === 'FULL' && k.access.ORDERS === 'VIEW' && k.access.POS === 'NONE' &&
+      d.access.DELIVERY === 'FULL' && d.access.ORDERS === 'VIEW' && d.access.MENU === 'NONE';
+    return ok || JSON.stringify({ staff: s.access, kitchen: k.access, delivery: d.access });
+  });
+  await step('Access: View Access reads but cannot modify, even via direct API calls', async () => {
+    const read = await api('GET', '/admin/menu', { token: tokens.staff });
+    const write = await api('POST', '/admin/menu/categories', { token: tokens.staff, body: { name: 'Staff Attempt' } });
+    const toggle = await api('PATCH', '/admin/menu/itm-001/toggle-availability', { token: tokens.staff });
+    const invWrite = await api('POST', '/inventory/wastage', { token: tokens.kitchen, body: { inventoryItemId: 'inv-001', quantity: 1, reason: 'x' } });
+    return (read.status === 200 && write.status === 403 && write.json?.error?.code === 'VIEW_ONLY_ACCESS' && toggle.status === 403 && invWrite.status === 403) ||
+      `read ${read.status}, write ${write.status}/${write.json?.error?.code}, toggle ${toggle.status}, kitchen inventory write ${invWrite.status}`;
+  });
+  await step('Access: No Access sections are blocked; Full Access sections work', async () => {
+    const dash = await api('GET', '/admin/dashboard', { token: tokens.staff });
+    const cust = await api('GET', '/admin/customers', { token: tokens.kitchen });
+    const pos = await api('POST', '/admin/orders', { token: tokens.staff, body: { orderType: 'Takeaway', customerName: 'Access POS', paymentMethod: 'Cash', items: [{ menuItemId: 'itm-001', quantity: 1 }] } });
+    const deliveryOrders = await api('GET', '/admin/orders', { token: tokens.delivery });
+    return (dash.status === 403 && dash.json?.error?.code === 'FORBIDDEN' && cust.status === 403 && (pos.status === 201 || pos.status === 200) && deliveryOrders.status === 200) ||
+      `dashboard ${dash.status}, kitchen customers ${cust.status}, staff POS ${pos.status}, delivery orders ${deliveryOrders.status}`;
+  });
+
+  const accessUser = `acl_user_${stamp.slice(-6)}`;
+  let accessUserId = '';
+  let accessUserToken = '';
+  await step('Access: Super Admin creates a Staff user with custom section overrides; summary resolves correctly', async () => {
+    const created = await api('POST', '/manager/employees', {
+      token: tokens.manager,
+      body: { firstName: 'Access', lastName: 'Tester', username: accessUser, email: `${accessUser}@example.com`, phone: `97${stamp.slice(-8)}`, password: 'Acc3ss!Pass', confirmPassword: 'Acc3ss!Pass', role: 'STAFF', privilege: 'USER', sectionAccess: { MENU: 'FULL', BOOKINGS: 'NONE' } }
+    });
+    accessUserId = created.data?.id;
+    if (!accessUserId) return `create ${created.status}: ${JSON.stringify(created.json?.error)}`;
+    accessUserToken = await login(accessUser, 'Acc3ss!Pass');
+    const u = await me(accessUserToken);
+    const menuWrite = await api('POST', '/admin/menu/categories', { token: accessUserToken, body: { name: `ACL Cat ${stamp.slice(-4)}` } });
+    const bookings = await api('GET', '/admin/bookings', { token: accessUserToken });
+    return (u.access.MENU === 'FULL' && u.access.BOOKINGS === 'NONE' && u.access.POS === 'FULL' && menuWrite.status === 201 && bookings.status === 403) ||
+      `access ${JSON.stringify(u?.access)}, menu write ${menuWrite.status}, bookings ${bookings.status}`;
+  });
+  await step('Access: permission changes apply immediately and can be reset to role defaults', async () => {
+    const upd = await api('PUT', `/manager/employees/${accessUserId}`, { token: tokens.manager, body: { sectionAccess: { BOOKINGS: 'FULL' } } });
+    const bookings = await api('GET', '/admin/bookings', { token: accessUserToken });
+    const reset = await api('PUT', `/manager/employees/${accessUserId}`, { token: tokens.manager, body: { sectionAccess: null } });
+    const u = await me(accessUserToken);
+    return (upd.status === 200 && bookings.status === 200 && reset.status === 200 && u.access.MENU === 'VIEW' && Object.keys(u.sectionAccess || {}).length === 0) ||
+      `update ${upd.status}, bookings ${bookings.status}, reset ${reset.status}, menu ${u?.access?.MENU}`;
+  });
+  await step('Access: a User cannot escalate privileges or edit access through the API', async () => {
+    const selfEscalate = await api('PUT', `/manager/employees/${accessUserId}`, { token: accessUserToken, body: { privilege: 'SUPER_ADMIN' } });
+    const otherEscalate = await api('PUT', `/manager/employees/usr-staff-alias-001`, { token: tokens.staff, body: { privilege: 'SUPER_ADMIN', sectionAccess: { USERS: 'FULL' } } });
+    const roleTemplate = await api('PUT', '/manager/access/roles/STAFF', { token: tokens.staff, body: { access: { DASHBOARD: 'FULL' } } });
+    const createAdmin = await api('POST', '/manager/employees', { token: tokens.kitchen, body: { firstName: 'X', lastName: 'Y', username: 'xy_attack', email: 'xy@example.com', phone: '9800000001', password: 'Att4ck!Pass', confirmPassword: 'Att4ck!Pass', role: 'MANAGER' } });
+    const all = [selfEscalate, otherEscalate, roleTemplate, createAdmin];
+    return all.every((r) => r.status === 403) || `statuses ${all.map((r) => r.status).join('/')}`;
+  });
+  await step('Access: Super Admins cannot change their own role, privilege or access', async () => {
+    const managerId = (await me(tokens.manager)).id;
+    const demote = await api('PUT', `/manager/employees/${managerId}`, { token: tokens.manager, body: { privilege: 'USER' } });
+    const role = await api('PUT', `/manager/employees/${managerId}`, { token: tokens.manager, body: { role: 'STAFF' } });
+    const deactivate = await api('PATCH', `/manager/employees/${managerId}/status`, { token: tokens.manager, body: { status: 'INACTIVE' } });
+    return (demote.status === 403 && demote.json?.error?.code === 'CANNOT_CHANGE_OWN_ACCESS' && role.status === 403 && deactivate.status >= 400) ||
+      `demote ${demote.status}/${demote.json?.error?.code}, role ${role.status}, deactivate ${deactivate.status}`;
+  });
+  await step('Access: only an Owner can assign the Owner role or modify Owner accounts', async () => {
+    const promote = await api('PUT', `/manager/employees/${accessUserId}`, { token: tokens.manager, body: { role: 'ADMIN' } });
+    const editOwner = await api('PUT', '/manager/employees/usr-admin-001', { token: tokens.manager, body: { privilege: 'USER' } });
+    const ownerPromotes = await api('PUT', `/manager/employees/${accessUserId}`, { token: tokens.admin, body: { role: 'ADMIN' } });
+    const after = await me(accessUserToken);
+    return (promote.status === 403 && editOwner.status === 404 && ownerPromotes.status === 200 && after.role === 'ADMIN' && after.effectivePrivilege === 'USER') ||
+      `manager promote ${promote.status}, manager edit owner ${editOwner.status}, owner promote ${ownerPromotes.status}, after ${after?.role}/${after?.effectivePrivilege}`;
+  });
+  await step('Access: invalid sections, levels and privileges are rejected', async () => {
+    const badSection = await api('PUT', `/manager/employees/${accessUserId}`, { token: tokens.admin, body: { sectionAccess: { SECRET_ADMIN: 'FULL' } } });
+    const badLevel = await api('PUT', `/manager/employees/${accessUserId}`, { token: tokens.admin, body: { sectionAccess: { MENU: 'ROOT' } } });
+    const badPrivilege = await api('PUT', `/manager/employees/${accessUserId}`, { token: tokens.admin, body: { privilege: 'GOD' } });
+    const badRoleTemplate = await api('PUT', '/manager/access/roles/STAFF', { token: tokens.admin, body: { access: { MENU: 'EVERYTHING' } } });
+    const all = [badSection, badLevel, badPrivilege, badRoleTemplate];
+    return all.every((r) => r.status === 400) || `statuses ${all.map((r) => r.status).join('/')}`;
+  });
+  await step('Access: editing a role template changes access for users relying on it', async () => {
+    const before = await api('GET', '/admin/dashboard', { token: tokens.staff });
+    const overview = await api('GET', '/manager/access', { token: tokens.manager });
+    const staffAccess = overview.data.roles.find((r: Json) => r.code === 'STAFF').access;
+    const upd = await api('PUT', '/manager/access/roles/STAFF', { token: tokens.manager, body: { access: { ...staffAccess, DASHBOARD: 'VIEW' } } });
+    const after = await api('GET', '/admin/dashboard', { token: tokens.staff });
+    const audit = await api('GET', '/admin/audit-logs', { token: tokens.manager });
+    const audited = JSON.stringify(audit.data || '').includes('ROLE_ACCESS_UPDATED');
+    await api('PUT', '/manager/access/roles/STAFF', { token: tokens.manager, body: { access: staffAccess } });
+    return (before.status === 403 && upd.status === 200 && after.status === 200 && audited) || `before ${before.status}, update ${upd.status}, after ${after.status}, audited ${audited}`;
+  });
+  await step('Access: the last active Super Admin cannot be demoted, deactivated or removed', async () => {
+    // Leave the Owner as the only Super Admin, then try to remove that status via the rules engine.
+    const managerId = (await me(tokens.manager)).id;
+    const demoteManager = await api('PUT', `/manager/employees/${managerId}`, { token: tokens.admin, body: { privilege: 'USER' } });
+    const { AccessControlService } = await import('../server/services/accessControlService.ts');
+    const { UserRepository } = await import('../server/repositories/userRepository.ts');
+    const owner = (await UserRepository.findById('usr-admin-001'))!;
+    const otherSuperAdmin = { id: 'usr-external-auditor', role: 'ADMIN', status: 'ACTIVE', email: 'x@example.com' } as any;
+    const codes: string[] = [];
+    for (const change of [{ privilege: 'USER' as const }, { status: 'INACTIVE' }, { deleting: true }, { role: 'STAFF' }]) {
+      try {
+        await AccessControlService.assertChangeAllowed(otherSuperAdmin, owner, change);
+        codes.push('allowed');
+      } catch (err: any) {
+        codes.push(err.code);
+      }
+    }
+    await api('PUT', `/manager/employees/${managerId}`, { token: tokens.admin, body: { privilege: 'SUPER_ADMIN' } });
+    return (demoteManager.status === 200 && codes.every((c) => c === 'LAST_SUPER_ADMIN')) || `demote manager ${demoteManager.status}, rule results ${codes.join(',')}`;
+  });
+  await step('Access: deactivated users lose access immediately', async () => {
+    const deact = await api('PATCH', `/manager/employees/${accessUserId}/status`, { token: tokens.admin, body: { status: 'INACTIVE' } });
+    const blocked = await api('GET', '/admin/orders', { token: accessUserToken });
+    return (deact.status === 200 && (blocked.status === 401 || blocked.status === 403)) || `deactivate ${deact.status}, request ${blocked.status}`;
   });
 
   const failed = results.filter((r) => !r.passed).length;

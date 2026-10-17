@@ -3,6 +3,10 @@
  */
 import { z } from 'zod';
 import { validateMenuConfiguration } from '../../shared/menuConfig.ts';
+import { ACCESS_LEVELS, PRIVILEGE_TYPES, SECTION_IDS } from '../../shared/accessControl.ts';
+
+const sectionAccessSchema = z.partialRecord(z.enum(SECTION_IDS as [string, ...string[]]), z.enum(ACCESS_LEVELS as [string, ...string[]]));
+const privilegeSchema = z.enum(PRIVILEGE_TYPES as [string, ...string[]]);
 
 export const registerSchema = z.object({
   firstName: z.string().min(2, 'First name must be at least 2 characters').max(50),
@@ -68,10 +72,12 @@ export const createEmployeeSchema = z.object({
     .regex(/[0-9]/, 'Password must contain at least one number')
     .regex(/[^A-Za-z0-9]/, 'Password must contain at least one special character'),
   confirmPassword: z.string().min(1, 'Please confirm password'),
-  role: z.enum(['STAFF', 'KITCHEN', 'DELIVERY', 'MANAGER'], {
-    message: 'Role must be one of: STAFF, KITCHEN, DELIVERY, MANAGER'
+  role: z.enum(['ADMIN', 'MANAGER', 'STAFF', 'KITCHEN', 'DELIVERY'], {
+    message: 'Role must be one of: Owner, Manager, Staff, Kitchen Staff, Delivery Staff'
   }),
-  status: z.enum(['ACTIVE', 'INACTIVE']).default('ACTIVE')
+  status: z.enum(['ACTIVE', 'INACTIVE']).default('ACTIVE'),
+  privilege: privilegeSchema.optional(),
+  sectionAccess: sectionAccessSchema.optional()
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Passwords don't match",
   path: ['confirmPassword']
@@ -87,8 +93,15 @@ export const updateEmployeeSchema = z.object({
     .max(16, 'Mobile number is too long')
     .regex(/^(\+?\d{1,4}[-\s]?)?\(?\d{3,5}\)?[-\s]?\d{3,5}[-\s]?\d{3,5}$/, 'Please enter a valid mobile number')
     .optional(),
-  role: z.enum(['STAFF', 'KITCHEN', 'DELIVERY', 'MANAGER']).optional(),
-  status: z.enum(['ACTIVE', 'INACTIVE', 'REMOVED']).optional()
+  role: z.enum(['ADMIN', 'MANAGER', 'STAFF', 'KITCHEN', 'DELIVERY']).optional(),
+  status: z.enum(['ACTIVE', 'INACTIVE', 'REMOVED']).optional(),
+  privilege: privilegeSchema.optional(),
+  /** null resets per-user overrides to the role defaults */
+  sectionAccess: sectionAccessSchema.nullable().optional()
+});
+
+export const updateRoleAccessSchema = z.object({
+  access: sectionAccessSchema
 });
 
 export const resetEmployeePasswordSchema = z.object({

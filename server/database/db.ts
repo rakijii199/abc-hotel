@@ -4,6 +4,7 @@
  * Relational Foreign Keys, and Real-Time Staff Audit Logging.
  */
 import fs from 'fs';
+import type { RoleAccessConfig } from '../../shared/accessControl.ts';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import {
@@ -82,6 +83,7 @@ interface SerializedDatabase {
   dailyStockLogs?: DailyStockLog[];
   monthlyReconciliations?: MonthlyReconciliation[];
   suppliers?: Supplier[];
+  accessRoleConfigs?: RoleAccessConfig[];
   purchaseOrders?: PurchaseOrder[];
   wastageRecords?: WastageRecord[];
   inventoryBatches?: InventoryBatch[];
@@ -184,6 +186,8 @@ class DatabaseEngine {
   public dailyStockLogs: Map<string, DailyStockLog> = new Map(); // logId (date_itemId) -> DailyStockLog
   public monthlyReconciliations: Map<string, MonthlyReconciliation> = new Map(); // month (YYYY-MM) -> MonthlyReconciliation
   public suppliers: Map<string, Supplier> = new Map();
+  /** Editable per-role access templates (Access Control); defaults live in shared/accessControl.ts. */
+  public accessRoleConfigs: Map<string, RoleAccessConfig> = new Map();
   public purchaseOrders: Map<string, PurchaseOrder> = new Map();
   public wastageRecords: Map<string, WastageRecord> = new Map();
   public inventoryBatches: Map<string, InventoryBatch> = new Map();
@@ -328,6 +332,11 @@ class DatabaseEngine {
       const fsInventory = await loadCollectionFromFirestore<InventoryItem>('inventoryItems');
       for (const inv of fsInventory || []) {
         this.inventoryItems.set(inv.id, inv);
+      }
+
+      const fsAccessRoles = await loadCollectionFromFirestore<RoleAccessConfig>('accessRoles');
+      for (const cfg of fsAccessRoles || []) {
+        this.accessRoleConfigs.set(cfg.id, cfg);
       }
     } catch (err) {
       if (isProduction) {
@@ -699,6 +708,9 @@ class DatabaseEngine {
         }
         for (const rec of data.monthlyReconciliations || []) {
           this.monthlyReconciliations.set(rec.month, rec);
+        }
+        for (const cfg of data.accessRoleConfigs || []) {
+          this.accessRoleConfigs.set(cfg.id, cfg);
         }
         for (const sup of data.suppliers || []) {
           this.suppliers.set(sup.id, sup);
@@ -1967,6 +1979,7 @@ class DatabaseEngine {
           dailyStockLogs: Array.from(this.dailyStockLogs.values()),
           monthlyReconciliations: Array.from(this.monthlyReconciliations.values()),
           suppliers: Array.from(this.suppliers.values()),
+          accessRoleConfigs: Array.from(this.accessRoleConfigs.values()),
           purchaseOrders: Array.from(this.purchaseOrders.values()),
           wastageRecords: Array.from(this.wastageRecords.values()),
           inventoryBatches: Array.from(this.inventoryBatches.values()),

@@ -23,6 +23,7 @@ import {
   Warehouse
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext.tsx';
+import { AccessLevel, SectionId, hasAccess, roleDisplayName } from '../../../shared/accessControl.ts';
 
 export type AdminTab =
   | 'DASHBOARD'
@@ -64,13 +65,38 @@ export interface NavSection {
   items: NavItem[];
 }
 
+/** Which access-control section each staff tab belongs to. */
+export const TAB_SECTIONS: Record<AdminTab, SectionId[]> = {
+  DASHBOARD: ['DASHBOARD'],
+  EMPLOYEES: ['USERS', 'ROLES', 'PRIVILEGES', 'ACCESS_CONTROL'],
+  BILLING: ['BILLING'],
+  INVENTORY: ['INVENTORY'],
+  POS_ORDER: ['POS'],
+  KITCHEN_KDS: ['KITCHEN'],
+  DELIVERY_PORTAL: ['DELIVERY'],
+  BOOKINGS: ['BOOKINGS'],
+  ORDERS: ['ORDERS'],
+  PAYMENTS: ['PAYMENTS'],
+  MENU: ['MENU'],
+  CATEGORIES: ['MENU'],
+  TABLES: ['TABLES'],
+  PAYMENT_SETTINGS: ['SETTINGS'],
+  BILLING_SETTINGS: ['SETTINGS'],
+  BILLING_REPORTS: ['REPORTS']
+};
+
+/** True when the resolved access allows viewing the tab (any of its sections). */
+export function canViewTab(access: Partial<Record<SectionId, AccessLevel>> | undefined, tab: AdminTab): boolean {
+  return TAB_SECTIONS[tab].some((section) => hasAccess(access?.[section], 'VIEW'));
+}
+
 /**
- * Navigation items visible to a staff role. Shared by the desktop top
- * navigation and the mobile drawer so both always show the same items with
- * the same role filtering.
+ * Navigation items the signed-in user may open, filtered by their resolved
+ * section access (the same access the API enforces). Shared by the desktop
+ * top navigation and the mobile drawer.
  */
 export function getAdminNavSections(
-  role: string | undefined,
+  access: Partial<Record<SectionId, AccessLevel>> | undefined,
   counts: { pendingOrdersCount?: number; pendingBookingsCount?: number } = {}
 ): NavSection[] {
   const pendingOrdersCount = counts.pendingOrdersCount || 0;
@@ -79,28 +105,20 @@ export function getAdminNavSections(
   const rawNavSections: NavSection[] = [
     {
       title: 'Main',
-      items: [
-        { id: 'DASHBOARD', label: 'Dashboard', icon: LayoutDashboard }
-      ]
+      items: [{ id: 'DASHBOARD', label: 'Dashboard', icon: LayoutDashboard }]
     },
     {
       title: 'POS & Orders',
       items: [
-        {
-          id: 'POS_ORDER',
-          label: 'Take Order',
-          icon: Send
-        },
+        { id: 'POS_ORDER', label: 'Take Order', icon: Send },
         {
           id: 'ORDERS',
           label: 'View Orders',
           icon: ShoppingBag,
-          badge: pendingOrdersCount > 0 ? pendingOrdersCount : undefined,
-          badgeColor: 'bg-indigo-100 text-indigo-800 border-indigo-200'
+          badge: pendingOrdersCount > 0 ? pendingOrdersCount : undefined
         }
       ]
     },
-
     {
       title: 'Operations',
       items: [
@@ -108,14 +126,9 @@ export function getAdminNavSections(
           id: 'BOOKINGS',
           label: 'Reservations',
           icon: Calendar,
-          badge: pendingBookingsCount > 0 ? pendingBookingsCount : undefined,
-          badgeColor: 'bg-amber-100 text-amber-900 border-amber-200'
+          badge: pendingBookingsCount > 0 ? pendingBookingsCount : undefined
         },
-        {
-          id: 'TABLES',
-          label: 'Table QR Config',
-          icon: SquareDashedBottom
-        }
+        { id: 'TABLES', label: 'Table QR Config', icon: SquareDashedBottom }
       ]
     },
     {
@@ -127,46 +140,28 @@ export function getAdminNavSections(
       ]
     },
     {
-      title: 'Staff',
+      title: 'Finance',
       items: [
-        { id: 'EMPLOYEES', label: 'Employees', icon: Users }
+        { id: 'BILLING', label: 'Billing & Invoices', icon: Receipt },
+        { id: 'PAYMENTS', label: 'Payments', icon: CreditCard },
+        { id: 'BILLING_REPORTS', label: 'Reports', icon: PieChart }
       ]
+    },
+    {
+      title: 'Staff',
+      items: [{ id: 'EMPLOYEES', label: 'User Management', icon: Users }]
     },
     {
       title: 'Settings',
       items: [
-        { id: 'PAYMENT_SETTINGS', label: 'Payment Settings', icon: QrCode }
+        { id: 'PAYMENT_SETTINGS', label: 'Payment Settings', icon: QrCode },
+        { id: 'BILLING_SETTINGS', label: 'Billing Settings', icon: Building2 }
       ]
     }
   ];
 
-  const managerTabIds: AdminTab[] = [
-    'DASHBOARD',
-    'POS_ORDER',
-    'EMPLOYEES',
-    'ORDERS',
-    'BOOKINGS',
-    'TABLES',
-    'MENU',
-    'CATEGORIES',
-    'INVENTORY',
-    'PAYMENT_SETTINGS'
-  ];
-  const adminTabIds: AdminTab[] = ['POS_ORDER', 'ORDERS', 'BOOKINGS', 'TABLES', 'MENU', 'CATEGORIES'];
-
   return rawNavSections
-    .map((section) => {
-      const filteredItems = section.items.filter((item) => {
-        if (role === 'MANAGER') {
-          return managerTabIds.includes(item.id);
-        }
-        if (role === 'ADMIN' || role === 'STAFF') {
-          return adminTabIds.includes(item.id);
-        }
-        return false;
-      });
-      return { ...section, items: filteredItems };
-    })
+    .map((section) => ({ ...section, items: section.items.filter((item) => canViewTab(access, item.id)) }))
     .filter((section) => section.items.length > 0);
 }
 
@@ -179,10 +174,10 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
   pendingBookingsCount = 0
 }) => {
   const { user } = useAuth();
-  const navSections = getAdminNavSections(user?.role, { pendingOrdersCount, pendingBookingsCount });
+  const navSections = getAdminNavSections(user?.access, { pendingOrdersCount, pendingBookingsCount });
 
   const roleLabel =
-    user?.role === 'MANAGER' ? 'Hotel Manager' : user?.role === 'ADMIN' ? 'Administrator' : 'Floor Staff';
+    `${roleDisplayName(user?.role)} · ${user?.effectivePrivilege === 'SUPER_ADMIN' ? 'Super Admin' : 'User'}`;
 
   return (
     <aside className="w-full h-full bg-gradient-to-b from-[#fffdf9] to-[#faf6ef] text-stone-600 flex flex-col justify-between shrink-0 border-r border-stone-200/80 select-none relative overflow-hidden">

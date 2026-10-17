@@ -19,6 +19,7 @@ import { useAuth } from '../../context/AuthContext.tsx';
 import { AdminNotification } from '../../types/index.ts';
 import { formatDate, formatTime } from '../../utils/formatters.ts';
 import { AdminTab, NavItem, getAdminNavSections } from './AdminSidebar.tsx';
+import { roleDisplayName } from '../../../shared/accessControl.ts';
 
 interface AdminHeaderProps {
   notifications: AdminNotification[];
@@ -63,10 +64,10 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({
   const [openGroup, setOpenGroup] = useState<string | null>(null);
   const navRef = useRef<HTMLElement>(null);
 
-  const sections = getAdminNavSections(user?.role, { pendingOrdersCount, pendingBookingsCount });
+  const sections = getAdminNavSections(user?.access, { pendingOrdersCount, pendingBookingsCount });
   const totalItems = sections.reduce((n, s) => n + s.items.length, 0);
   const flat = totalItems <= FLAT_NAV_LIMIT;
-  const roleLabel = user?.role === 'MANAGER' ? 'Hotel Manager' : user?.role === 'ADMIN' ? 'Administrator' : 'Floor Staff';
+  const roleLabel = `${roleDisplayName(user?.role)} · ${user?.effectivePrivilege === 'SUPER_ADMIN' ? 'Super Admin' : 'User'}`;
 
   // Close an open nav dropdown on outside click or Escape.
   useEffect(() => {
@@ -193,7 +194,7 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({
         {/* Right: role, refresh, notifications, account */}
         <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
           <span className="hidden xl:inline-flex px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-[0.16em] bg-[var(--brand-soft)] text-[var(--brand-text)] border border-[var(--brand-border)]">
-            {user?.role === 'MANAGER' ? 'Manager' : user?.role === 'ADMIN' ? 'Admin' : 'Staff'}
+            {roleDisplayName(user?.role)}
           </span>
           <button
             onClick={onRefresh}

@@ -56,8 +56,11 @@ import { InventoryApi, AdminApi } from '../../api/index.ts';
 import { formatCurrency, formatDate } from '../../utils/formatters.ts';
 import { useToast } from '../../context/ToastContext.tsx';
 import { Modal } from '../common/Footer.tsx';
+import { useAuth } from '../../context/AuthContext.tsx';
 
 export const AdminInventoryView: React.FC = () => {
+  const { can: canAccess } = useAuth();
+  const canEdit = canAccess('INVENTORY', 'FULL');
   const [activeTab, setActiveTab] = useState<'ITEMS' | 'RECIPES' | 'DAILY' | 'MONTHLY' | 'WASTAGE'>('ITEMS');
   const [items, setItems] = useState<InventoryItem[]>([]);
   const [recipes, setRecipes] = useState<MenuItemRecipe[]>([]);
@@ -804,6 +807,8 @@ export const AdminInventoryView: React.FC = () => {
               <div className="flex items-center gap-2 self-start sm:self-auto shrink-0">
                 <button
                   type="button"
+                  disabled={!canEdit}
+                  data-locked={!canEdit || undefined}
                   onClick={() => handleOpenAddOnModal()}
                   className="px-3.5 py-2 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 font-bold text-xs rounded-xl transition-all cursor-pointer flex items-center gap-1.5 shadow-2xs"
                   title="Quick Add-On Stock (Emergency / Mid-Month Extra Demand)"
@@ -814,6 +819,9 @@ export const AdminInventoryView: React.FC = () => {
 
                 <button
                   type="button"
+                  disabled={!canEdit}
+                  data-locked={!canEdit || undefined}
+                  title={canEdit ? undefined : 'View access — changes are disabled for your account'}
                   onClick={() => setCreateItemModalOpen(true)}
                   className="px-3.5 py-2 bg-amber-800 hover:bg-amber-900 text-white font-bold text-xs rounded-xl transition-all shadow-2xs flex items-center gap-1.5 cursor-pointer"
                 >
@@ -1116,6 +1124,8 @@ export const AdminInventoryView: React.FC = () => {
                               {(isLow || isOut) && (
                                 <button
                                   type="button"
+                                  disabled={!canEdit}
+                                  data-locked={!canEdit || undefined}
                                   onClick={() => handleOpenReplenish(item)}
                                   className="px-2 py-0.5 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 text-[10px] font-bold rounded-lg transition-all cursor-pointer flex items-center gap-1 shadow-2xs"
                                   title={`Replenish stock for ${item.name}`}
@@ -1281,6 +1291,9 @@ export const AdminInventoryView: React.FC = () => {
                     </div>
                     <button
                       type="button"
+                      disabled={!canEdit}
+                      data-locked={!canEdit || undefined}
+                      title={canEdit ? undefined : 'View access — changes are disabled for your account'}
                       onClick={() => handleOpenRecipeModal(menuItem)}
                       className={`px-4 py-2 text-[10px] font-black uppercase rounded-xl transition-all shadow-2xs cursor-pointer ${
                         hasRecipe
@@ -1318,6 +1331,9 @@ export const AdminInventoryView: React.FC = () => {
 
             <button
               type="button"
+              disabled={!canEdit}
+              data-locked={!canEdit || undefined}
+              title={canEdit ? undefined : 'View access — changes are disabled for your account'}
               onClick={() => handleOpenWastageModal()}
               className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs rounded-2xl transition-all shadow-sm flex items-center gap-2 cursor-pointer self-start sm:self-auto"
             >
@@ -1442,6 +1458,9 @@ export const AdminInventoryView: React.FC = () => {
                             <td className="py-2.5 px-3.5 text-right whitespace-nowrap">
                               <button
                                 type="button"
+                                disabled={!canEdit}
+                                data-locked={!canEdit || undefined}
+                                title={canEdit ? undefined : 'View access — changes are disabled for your account'}
                                 onClick={() => handleOpenWastageModal(mov.inventoryItemId)}
                                 className="text-[11px] font-bold text-rose-700 hover:text-rose-900 hover:underline cursor-pointer"
                               >
@@ -1568,6 +1587,9 @@ export const AdminInventoryView: React.FC = () => {
                           <td className="py-2.5 px-3.5 text-right whitespace-nowrap">
                             <button
                               type="button"
+                              disabled={!canEdit}
+                              data-locked={!canEdit || undefined}
+                              title={canEdit ? undefined : 'View access — changes are disabled for your account'}
                               onClick={() => handleOpenReconcile(log)}
                               className={`px-3 py-1 font-bold text-[11px] rounded-xl transition-all shadow-2xs inline-flex items-center gap-1 cursor-pointer ${
                                 isReconciled
@@ -1628,6 +1650,9 @@ export const AdminInventoryView: React.FC = () => {
               {/* Add-On Stock CTA */}
               <button
                 type="button"
+                disabled={!canEdit}
+                data-locked={!canEdit || undefined}
+                title={canEdit ? undefined : 'View access — changes are disabled for your account'}
                 onClick={() => handleOpenAddOnModal()}
                 className="px-3.5 py-2 bg-amber-700 hover:bg-amber-800 text-white font-bold text-xs rounded-2xl transition-all shadow-md flex items-center gap-1.5 cursor-pointer"
               >
@@ -1776,6 +1801,9 @@ export const AdminInventoryView: React.FC = () => {
                   <div className="flex items-center gap-2">
                     <button
                       type="button"
+                      disabled={!canEdit}
+                      data-locked={!canEdit || undefined}
+                      title={canEdit ? undefined : 'View access — changes are disabled for your account'}
                       onClick={() => handleOpenAddOnModal()}
                       className="px-3 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 font-bold text-xs rounded-xl transition-all cursor-pointer flex items-center gap-1.5 shadow-2xs"
                     >
@@ -1849,6 +1877,8 @@ export const AdminInventoryView: React.FC = () => {
                                 <button
                                   type="button"
                                   title={`Log Add-On Stock for ${row.itemName}`}
+                                  disabled={!canEdit}
+                                  data-locked={!canEdit || undefined}
                                   onClick={() => handleOpenAddOnModal(row.itemId)}
                                   className="px-2.5 py-1 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 font-bold text-[11px] rounded-lg transition-all cursor-pointer inline-flex items-center gap-1"
                                 >

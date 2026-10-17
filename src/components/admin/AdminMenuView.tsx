@@ -33,6 +33,7 @@ import { formatCurrency } from '../../utils/formatters.ts';
 import { Modal } from '../common/Footer.tsx';
 import { RestaurantImage } from '../common/RestaurantImage.tsx';
 import { useToast } from '../../context/ToastContext.tsx';
+import { useAuth } from '../../context/AuthContext.tsx';
 
 interface AdminMenuViewProps {
   menuItems: MenuItem[];
@@ -87,6 +88,8 @@ export const AdminMenuView: React.FC<AdminMenuViewProps> = ({
   onDeleteItem,
   onToggleAvailability
 }) => {
+  const { can: canAccess } = useAuth();
+  const canEdit = canAccess('MENU', 'FULL');
   const { success, error } = useToast();
 
   // Filters & Search
@@ -341,6 +344,9 @@ export const AdminMenuView: React.FC<AdminMenuViewProps> = ({
           </div>
 
           <button
+            disabled={!canEdit}
+            data-locked={!canEdit || undefined}
+            title={canEdit ? undefined : 'View access — changes are disabled for your account'}
             onClick={openCreateModal}
             className="px-3.5 py-1.5 bg-amber-800 hover:bg-amber-900 text-white font-bold text-xs rounded-xl shadow-xs transition-all flex items-center gap-1.5 cursor-pointer shrink-0"
           >
@@ -485,6 +491,8 @@ export const AdminMenuView: React.FC<AdminMenuViewProps> = ({
                           {/* Quick 1-Click Local Photo Upload Button */}
                           <button
                             type="button"
+                            disabled={!canEdit}
+                            data-locked={!canEdit || undefined}
                             onClick={() => handleCardQuickUploadClick(item.id)}
                             className="p-1.5 rounded-lg bg-black/60 hover:bg-amber-800 text-white shadow-xs backdrop-blur-xs transition-colors cursor-pointer"
                             title="Upload new photo from computer"
@@ -561,6 +569,9 @@ export const AdminMenuView: React.FC<AdminMenuViewProps> = ({
                         {/* Availability Toggle */}
                         <button
                           type="button"
+                          disabled={!canEdit}
+                          data-locked={!canEdit || undefined}
+                          title={canEdit ? undefined : 'View access — changes are disabled for your account'}
                           onClick={() => onToggleAvailability(item.id)}
                           className={`px-2 py-0.5 rounded-lg text-[10px] font-bold border transition-all flex items-center gap-1 cursor-pointer ${
                             item.available
@@ -603,6 +614,8 @@ export const AdminMenuView: React.FC<AdminMenuViewProps> = ({
 
                       <button
                         type="button"
+                        disabled={!canEdit}
+                        data-locked={!canEdit || undefined}
                         onClick={() => openEditModal(item)}
                         className="p-1.5 bg-white hover:bg-amber-50 hover:text-amber-900 hover:border-amber-200 text-stone-700 border border-stone-200 rounded-lg text-xs transition-colors cursor-pointer"
                         title="Edit Dish & Photo"
@@ -612,6 +625,8 @@ export const AdminMenuView: React.FC<AdminMenuViewProps> = ({
 
                       <button
                         type="button"
+                        disabled={!canEdit}
+                        data-locked={!canEdit || undefined}
                         onClick={() => setDeleteTarget(item)}
                         className="p-1.5 bg-white hover:bg-rose-50 text-stone-500 hover:text-rose-600 border border-stone-200 hover:border-rose-200 rounded-lg text-xs transition-colors cursor-pointer"
                         title="Remove Dish"

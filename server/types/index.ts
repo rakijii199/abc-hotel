@@ -2,6 +2,7 @@
  * Domain Models and Types for ABC Hotel Application
  * Single Source of Truth for Customer & Admin operations
  */
+import type { AccessLevel, PrivilegeType, SectionId } from '../../shared/accessControl.ts';
 import type { MenuItemAddonGroup, MenuItemPortion, SelectedAddonSnapshot } from '../../shared/menuConfig.ts';
 export type { MenuItemAddon, MenuItemAddonGroup, MenuItemPortion, SelectedAddonSnapshot } from '../../shared/menuConfig.ts';
 
@@ -32,9 +33,19 @@ export interface User {
   deletedAt?: string;
   deletedBy?: string;
   deletionReason?: string;
+  /** Administrative authority. Absent → default of the role (Owner/Manager: SUPER_ADMIN, others: USER). */
+  privilege?: PrivilegeType;
+  /** Per-user section overrides on top of the role template (absent sections inherit). */
+  sectionAccess?: Partial<Record<SectionId, AccessLevel>>;
+  accessUpdatedAt?: string;
+  accessUpdatedBy?: string;
 }
 
-export type SafeUser = Omit<User, 'passwordHash'>;
+export type SafeUser = Omit<User, 'passwordHash'> & {
+  /** Resolved at read time (never stored): effective privilege and per-section access. */
+  effectivePrivilege?: PrivilegeType | null;
+  access?: Record<SectionId, AccessLevel>;
+};
 
 export interface EmployeeStats {
   totalEmployees: number;

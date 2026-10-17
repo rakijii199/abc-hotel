@@ -1,6 +1,7 @@
 /**
  * Domain Models and Types for ABC Hotel Client
  */
+import type { AccessLevel, PrivilegeType, SectionId } from '../../shared/accessControl.ts';
 import type { MenuItemAddonGroup, MenuItemPortion, SelectedAddonSnapshot } from '../../shared/menuConfig.ts';
 export type { MenuItemAddon, MenuItemAddonGroup, MenuItemPortion, SelectedAddonSnapshot } from '../../shared/menuConfig.ts';
 
@@ -30,6 +31,14 @@ export interface SafeUser {
   deletedAt?: string;
   deletedBy?: string;
   deletionReason?: string;
+  /** Stored privilege (absent → role default) and per-user section overrides. */
+  privilege?: PrivilegeType;
+  sectionAccess?: Partial<Record<SectionId, AccessLevel>>;
+  accessUpdatedAt?: string;
+  accessUpdatedBy?: string;
+  /** Resolved by the server on every response (what the backend enforces). */
+  effectivePrivilege?: PrivilegeType | null;
+  access?: Record<SectionId, AccessLevel>;
 }
 
 export interface EmployeeStats {

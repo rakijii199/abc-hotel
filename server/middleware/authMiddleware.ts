@@ -6,6 +6,8 @@ import jwt from 'jsonwebtoken';
 import { config } from '../config/index.ts';
 import { SafeUser, UserRole } from '../types/index.ts';
 import { UserRepository } from '../repositories/userRepository.ts';
+import { AccessRepository } from '../repositories/accessRepository.ts';
+import { SECTIONS, SectionId, hasAccess, isSuperAdmin, resolveSectionAccess } from '../../shared/accessControl.ts';
 
 export interface AuthenticatedRequest extends Request {
   user?: SafeUser;
@@ -117,3 +119,39 @@ export const optionalAuth = async (
   }
   next();
 };
+
+const sectionLabel = (section: SectionId) => SECTIONS.find((s) => s.id === section)?.label || section;
+
+const deny = (res: Response, status: number, code: string, message: string) => {
+  res.status(status).json({ success: false, error: { code, message } });
+};
+
+/**
+ * Section-level authorization. `need` is VIEW for reads and FULL for any
+ * change. Super Admins pass; everyone else needs the resolved level
+ * (per-user override → role template → no access).
+ */
+export const requireAccess = (section: SectionId, need: 'VIEW' | 'FULL') => requireAnyAccess([[section, need]]);
+
+/** Passes when the user satisfies ANY of the listed section requirements. */
+export const requireAnyAccess = (requirements: Array<[SectionId, 'VIEW' | 'FULL']>) => {
+  return (req: AuthenticatedRequest, res: Response, next: NextFunction): void => {
+    if (!req.user) return deny(res, 401, 'UNAUTHORIZED', 'Authentication required.');
+    const configs = AccessRepository.getRoleConfigs();
+    const levels = requirements.map(([section, need]) => ({ section, need, level: resolveSectionAccess(req.user, section, configs) }));
+    if (levels.some(({ level, need }) => hasAccess(level, need))) return next();
+    const first = levels[0];
+    if (first.level === 'VIEW') {
+      return deny(res, 403, 'VIEW_ONLY_ACCESS', `You have view-only access to ${sectionLabel(first.section)}.`);
+    }
+    return deny(res, 403, 'FORBIDDEN', `You do not have access to ${sectionLabel(first.section)}.`);
+  };
+};
+
+/** Protected administrative operations (users, roles, privileges, access control). */
+export const requireSuperAdmin = (req: AuthenticatedRequest, res: Response, next: NextFunction): void => {
+  if (!req.user) return deny(res, 401, 'UNAUTHORIZED', 'Authentication required.');
+  if (!isSuperAdmin(req.user)) return deny(res, 403, 'SUPER_ADMIN_REQUIRED', 'Only a Super Admin can perform this action.');
+  next();
+};
+

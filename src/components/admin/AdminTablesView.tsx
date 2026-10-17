@@ -19,6 +19,7 @@ import {
 import { DiningTable, TableLocation, TableStatus } from '../../types/index.ts';
 import { Modal } from '../common/Footer.tsx';
 import { useToast } from '../../context/ToastContext.tsx';
+import { useAuth } from '../../context/AuthContext.tsx';
 
 interface AdminTablesViewProps {
   tables: DiningTable[];
@@ -43,6 +44,8 @@ export const AdminTablesView: React.FC<AdminTablesViewProps> = ({
   onUpdateTable,
   onDeleteTable
 }) => {
+  const { can: canAccess } = useAuth();
+  const canEdit = canAccess('TABLES', 'FULL');
   const { success, error } = useToast();
 
   // Filter & Search State
@@ -283,6 +286,9 @@ export const AdminTablesView: React.FC<AdminTablesViewProps> = ({
         </div>
 
         <button
+          disabled={!canEdit}
+          data-locked={!canEdit || undefined}
+          title={canEdit ? undefined : 'View access — changes are disabled for your account'}
           onClick={openCreateModal}
           className="px-4 py-2 bg-amber-800 hover:bg-amber-900 text-white font-bold text-xs rounded-xl shadow-2xs flex items-center gap-2 cursor-pointer self-start sm:self-auto transition-colors"
         >
@@ -450,6 +456,9 @@ export const AdminTablesView: React.FC<AdminTablesViewProps> = ({
 
                 <div className="flex items-center gap-1.5">
                   <button
+                    disabled={!canEdit}
+                    data-locked={!canEdit || undefined}
+                    title={canEdit ? undefined : 'View access — changes are disabled for your account'}
                     onClick={() => openEditModal(tbl)}
                     className="px-2.5 py-1 bg-stone-100 hover:bg-amber-100 text-stone-700 hover:text-amber-900 rounded-lg text-xs font-bold transition-colors cursor-pointer flex items-center gap-1"
                   >
@@ -458,6 +467,8 @@ export const AdminTablesView: React.FC<AdminTablesViewProps> = ({
                   </button>
 
                   <button
+                    disabled={!canEdit}
+                    data-locked={!canEdit || undefined}
                     onClick={() => setDeleteTarget(tbl)}
                     className="p-1 hover:bg-rose-50 text-stone-400 hover:text-rose-600 rounded-lg transition-colors cursor-pointer"
                     title="Delete Table"

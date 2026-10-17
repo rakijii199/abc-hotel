@@ -3,6 +3,7 @@
  * Authoritative Firestore database with local memory cache fallback.
  */
 import { db } from '../database/db.ts';
+import { effectivePrivilege, isStaffRole, resolveAllAccess } from '../../shared/accessControl.ts';
 import { User, SafeUser, EmployeeStats, UserRole } from '../types/index.ts';
 import {
   getDocFromFirestore,
@@ -125,8 +126,12 @@ export class UserRepository {
   }
 
   public static toSafeUser(user: User): SafeUser {
-    const { passwordHash, ...safe } = user;
-    return safe;
+    const { passwordHash, effectivePrivilege: _ep, access: _ac, ...safe } = user as User & { effectivePrivilege?: unknown; access?: unknown };
+    // Resolved privilege/access travel with the user so the UI can show the
+    // same navigation the server enforces (computed, never stored).
+    if (!isStaffRole(user.role)) return safe;
+    const configs = Array.from(db.accessRoleConfigs.values());
+    return { ...safe, effectivePrivilege: effectivePrivilege(user), access: resolveAllAccess(user, configs) };
   }
 
   public static async create(user: User): Promise<User> {
@@ -199,11 +204,8 @@ export class UserRepository {
 
     if (filters?.role && filters.role !== 'ALL') {
       const targetRole = filters.role.toUpperCase();
-      if (targetRole === 'STAFF') {
-        list = list.filter((u) => u.role === 'STAFF' || u.role === 'ADMIN');
-      } else {
-        list = list.filter((u) => u.role === targetRole);
-      }
+      // Owner (ADMIN) is its own role now, no longer grouped under Staff.
+      list = list.filter((u) => u.role === targetRole);
     }
 
     if (filters?.status && filters.status !== 'ALL') {

@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { BillingController } from '../controllers/billingController.ts';
-import { authenticateToken, requireRole } from '../middleware/authMiddleware.ts';
+import { authenticateToken, requireAccess, requireAnyAccess, requireSuperAdmin } from '../middleware/authMiddleware.ts';
 
 export const billingRouter = Router();
 
@@ -14,7 +14,7 @@ billingRouter.post('/request/:orderId', authenticateToken, BillingController.req
 billingRouter.post(
   '/generate/:orderId',
   authenticateToken,
-  requireRole('ADMIN', 'MANAGER', 'STAFF'),
+  requireAccess('BILLING', 'FULL'),
   BillingController.generateInvoice
 );
 
@@ -25,7 +25,7 @@ billingRouter.get('/invoice/:id', authenticateToken, BillingController.getInvoic
 billingRouter.post(
   '/invoice/:id/pay',
   authenticateToken,
-  requireRole('ADMIN', 'MANAGER', 'STAFF'),
+  requireAccess('BILLING', 'FULL'),
   BillingController.payInvoice
 );
 
@@ -33,7 +33,8 @@ billingRouter.post(
 billingRouter.post(
   '/invoice/:id/void',
   authenticateToken,
-  requireRole('ADMIN', 'MANAGER'),
+  requireAccess('BILLING', 'FULL'),
+  requireSuperAdmin,
   BillingController.voidInvoice
 );
 
@@ -41,7 +42,7 @@ billingRouter.post(
 billingRouter.get(
   '/requests',
   authenticateToken,
-  requireRole('ADMIN', 'MANAGER', 'STAFF'),
+  requireAccess('BILLING', 'VIEW'),
   BillingController.getBillingRequests
 );
 
@@ -49,7 +50,7 @@ billingRouter.get(
 billingRouter.get(
   '/history',
   authenticateToken,
-  requireRole('ADMIN', 'MANAGER'),
+  requireAnyAccess([['BILLING', 'VIEW'], ['REPORTS', 'VIEW']]),
   BillingController.getBillingHistory
 );
 
@@ -57,13 +58,14 @@ billingRouter.get(
 billingRouter.get(
   '/settings',
   authenticateToken,
-  requireRole('ADMIN', 'MANAGER'),
+  requireAccess('SETTINGS', 'VIEW'),
   BillingController.getSettings
 );
 billingRouter.put(
   '/settings',
   authenticateToken,
-  requireRole('ADMIN'),
+  requireAccess('SETTINGS', 'FULL'),
+  requireSuperAdmin,
   BillingController.updateSettings
 );
 
@@ -71,12 +73,12 @@ billingRouter.put(
 billingRouter.get(
   '/reports',
   authenticateToken,
-  requireRole('ADMIN', 'MANAGER'),
+  requireAccess('REPORTS', 'VIEW'),
   BillingController.getReports
 );
 billingRouter.get(
   '/audits',
   authenticateToken,
-  requireRole('ADMIN', 'MANAGER'),
+  requireAccess('REPORTS', 'VIEW'),
   BillingController.getAuditLogs
 );

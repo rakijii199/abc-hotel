@@ -38,7 +38,9 @@ import { formatCurrency, formatDate, formatTime, getBookingStatusBadge, getOrder
 import { Spinner } from '../components/common/Footer.tsx';
 
 // Subcomponents
-import { AdminSidebar, AdminTab } from '../components/admin/AdminSidebar.tsx';
+import { AdminSidebar, AdminTab, TAB_SECTIONS, canViewTab } from '../components/admin/AdminSidebar.tsx';
+import { UserManagementView } from '../components/admin/UserManagementView.tsx';
+import type { SectionId } from '../../shared/accessControl.ts';
 import { AdminHeader } from '../components/admin/AdminHeader.tsx';
 import { AdminPosOrderView } from '../components/admin/AdminPosOrderView.tsx';
 import { KitchenKdsView } from '../components/kitchen/KitchenKdsView.tsx';
@@ -61,12 +63,17 @@ export const AdminDashboardPage: React.FC<{
   navigate: (route: string, state?: any, replace?: boolean) => void;
   initialTab?: AdminTab;
 }> = ({ navigate, initialTab }) => {
-  const { user, isAdmin, isManager, isAuthenticated, isLoading, logout } = useAuth();
+  const { user, isAuthenticated, isLoading, logout, can } = useAuth();
+
+  // Tabs this user may open (resolved section access, same as the API enforces).
+  const TAB_ORDER: AdminTab[] = ['DASHBOARD', 'POS_ORDER', 'ORDERS', 'BOOKINGS', 'TABLES', 'MENU', 'CATEGORIES', 'INVENTORY', 'BILLING', 'PAYMENTS', 'BILLING_REPORTS', 'EMPLOYEES', 'PAYMENT_SETTINGS', 'BILLING_SETTINGS', 'KITCHEN_KDS', 'DELIVERY_PORTAL'];
+  const allowedTabs = TAB_ORDER.filter((tab) => canViewTab(user?.access, tab));
+  const firstAllowedTab: AdminTab = allowedTabs[0] || 'POS_ORDER';
   const { error, success, info } = useToast();
 
   const [activeTab, setActiveTab] = useState<AdminTab>(() => {
-    if (initialTab) return initialTab;
-    return user?.role === 'MANAGER' ? 'DASHBOARD' : 'POS_ORDER';
+    if (initialTab && canViewTab(user?.access, initialTab)) return initialTab;
+    return firstAllowedTab;
   });
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -82,6 +89,9 @@ export const AdminDashboardPage: React.FC<{
       setActiveTab(initialTab);
     }
   }, [initialTab]);
+
+  const tabAllowed = canViewTab(user?.access, activeTab);
+  const viewOnly = tabAllowed && !TAB_SECTIONS[activeTab].some((sec) => can(sec, 'FULL'));
 
   const handleTabChange = (tab: AdminTab) => {
     setActiveTab(tab);
@@ -102,35 +112,33 @@ export const AdminDashboardPage: React.FC<{
   const [unreadCount, setUnreadCount] = useState<number>(0);
   const [reports, setReports] = useState<any>(null);
 
-  // Set initial active tab based on role & prevent non-manager from accessing manager-only tabs
+  // Never show a tab the user has no access to (direct links included).
   useEffect(() => {
-    if (!isLoading && isAuthenticated) {
-      if (!isManager) {
-        const staffAllowedTabs: AdminTab[] = ['POS_ORDER', 'ORDERS', 'BOOKINGS', 'TABLES', 'MENU', 'CATEGORIES'];
-        if (!staffAllowedTabs.includes(activeTab)) {
-          setActiveTab('POS_ORDER');
-        }
-      }
+    if (!isLoading && isAuthenticated && allowedTabs.length > 0 && !canViewTab(user?.access, activeTab)) {
+      setActiveTab(firstAllowedTab);
     }
-  }, [isManager, isAdmin, activeTab, isLoading, isAuthenticated]);
+  }, [activeTab, isLoading, isAuthenticated, user?.access]);
 
   const loadAllData = async (isBackground = false) => {
     const token = localStorage.getItem('abc_auth_token');
-    if (!token || !isAuthenticated || (!isAdmin && !isManager)) return;
+    if (!token || !isAuthenticated || allowedTabs.length === 0) return;
+    // Only request what this user may read; skipped calls are simply not loaded.
+    const skip = () => Promise.reject(new Error('No access'));
+    const canRead = (...sections: SectionId[]) => sections.some((sec) => can(sec, 'VIEW'));
 
     if (!isBackground) setRefreshing(true);
     try {
       const results = await Promise.allSettled([
-        AdminApi.getDashboardStats(selectedDailyDate),
-        AdminApi.getAllOrders({ pageSize: 500, includeArchived: true }),
-        AdminApi.getAllBookings(),
+        canRead('DASHBOARD') ? AdminApi.getDashboardStats(selectedDailyDate) : skip(),
+        canRead('ORDERS', 'DELIVERY', 'KITCHEN', 'POS', 'BILLING') ? AdminApi.getAllOrders({ pageSize: 500, includeArchived: true }) : skip(),
+        canRead('BOOKINGS') ? AdminApi.getAllBookings() : skip(),
         MenuApi.getItems(),
-        AdminApi.getCategories(),
-        AdminApi.getTables(),
-        AdminApi.getCustomers(),
-        AdminApi.getAuditLogs(),
-        AdminApi.getNotifications(),
-        AdminApi.getReports()
+        canRead('MENU', 'POS', 'ORDERS', 'INVENTORY') ? AdminApi.getCategories() : skip(),
+        canRead('TABLES', 'POS', 'BOOKINGS') ? AdminApi.getTables() : skip(),
+        canRead('CUSTOMERS') ? AdminApi.getCustomers() : skip(),
+        canRead('REPORTS') ? AdminApi.getAuditLogs() : skip(),
+        canRead('DASHBOARD', 'ORDERS', 'BOOKINGS', 'KITCHEN', 'DELIVERY', 'POS', 'BILLING') ? AdminApi.getNotifications() : skip(),
+        canRead('REPORTS') ? AdminApi.getReports() : skip()
       ]);
 
       if (results[0].status === 'fulfilled') setStats(results[0].value);
@@ -185,8 +193,8 @@ export const AdminDashboardPage: React.FC<{
       return;
     }
 
-    if (!isAdmin && !isManager) {
-      error('Access Denied: You must have the ADMIN or MANAGER role to access operations.');
+    if (allowedTabs.length === 0) {
+      error('Access Denied: your account has no access to the operations suite.');
       navigate('dashboard');
       return;
     }
@@ -205,7 +213,7 @@ export const AdminDashboardPage: React.FC<{
       isSubscribed = false;
       clearInterval(interval);
     };
-  }, [isAuthenticated, isAdmin, isManager, isLoading]);
+  }, [isAuthenticated, isLoading, user?.id]);
 
   if (isLoading || loading) {
     return (
@@ -410,15 +418,26 @@ export const AdminDashboardPage: React.FC<{
         />
 
         <div className="px-3 sm:px-6 py-3 sm:py-4 flex-1 max-w-[1440px] w-full mx-auto space-y-3 pb-8">
+          {allowedTabs.length === 0 && (
+            <div className="p-6 rounded-2xl bg-white border border-[var(--border-subtle)] text-center text-sm text-stone-600" role="alert">
+              Your account has no access to the operations suite yet. Please ask a Super Admin to grant section access.
+            </div>
+          )}
+          {tabAllowed && viewOnly && (
+            <div className="px-4 py-2.5 rounded-xl bg-[var(--brand-soft)] border border-[var(--brand-border)] text-[var(--brand-text)] text-xs font-semibold flex items-center gap-2" role="status">
+              <Eye className="w-4 h-4 shrink-0" />
+              View access — you can see this section but changes are disabled for your account.
+            </div>
+          )}
           {/* TAB: EMPLOYEE MANAGEMENT (EXCLUSIVELY FOR HOTEL MANAGER) */}
-          {activeTab === 'EMPLOYEES' && isManager && (
+          {tabAllowed && activeTab === 'EMPLOYEES' && (
             <div className="space-y-2 animate-in fade-in duration-200">
-              <AdminEmployeesView onRefreshStats={() => loadAllData(true)} />
+              <UserManagementView onRefreshStats={() => loadAllData(true)} />
             </div>
           )}
 
           {/* TAB 1: UNIFIED MINIMAL DASHBOARD (MANAGER ONLY) */}
-          {activeTab === 'DASHBOARD' && isManager && stats && (
+          {tabAllowed && activeTab === 'DASHBOARD' && stats && (
             <div className="space-y-2 animate-in fade-in duration-200">
               <AdminDailyStaffSummary
                 stats={stats}
@@ -433,7 +452,7 @@ export const AdminDashboardPage: React.FC<{
           )}
 
           {/* TAB: POS ORDER ENTRY & KITCHEN DISPATCH */}
-          {activeTab === 'POS_ORDER' && (
+          {tabAllowed && activeTab === 'POS_ORDER' && (
             <AdminPosOrderView
               menuItems={menuItems}
               categories={categories}
@@ -448,7 +467,7 @@ export const AdminDashboardPage: React.FC<{
           )}
 
           {/* TAB: KITCHEN DISPLAY SYSTEM */}
-          {activeTab === 'KITCHEN_KDS' && (
+          {tabAllowed && activeTab === 'KITCHEN_KDS' && (
             <KitchenKdsView
               onBackToAdmin={() => handleTabChange('DASHBOARD')}
               onNavigateToPos={() => handleTabChange('POS_ORDER')}
@@ -456,7 +475,7 @@ export const AdminDashboardPage: React.FC<{
           )}
 
           {/* TAB 2: BOOKINGS MANAGEMENT */}
-          {activeTab === 'BOOKINGS' && (
+          {tabAllowed && activeTab === 'BOOKINGS' && (
             <AdminBookingsView
               bookings={bookings}
               onUpdateStatus={handleUpdateBookingStatus}
@@ -465,7 +484,7 @@ export const AdminDashboardPage: React.FC<{
           )}
 
           {/* TAB 3: ORDERS MANAGEMENT */}
-          {activeTab === 'ORDERS' && (
+          {tabAllowed && activeTab === 'ORDERS' && (
             <AdminOrdersView
               orders={orders}
               menuItems={menuItems}
@@ -475,14 +494,14 @@ export const AdminDashboardPage: React.FC<{
           )}
 
           {/* TAB: DELIVERY STAFF PORTAL */}
-          {activeTab === 'DELIVERY_PORTAL' && (
+          {tabAllowed && activeTab === 'DELIVERY_PORTAL' && (
             <div className="space-y-6 animate-in fade-in duration-200">
               <DeliveryPortalPage navigate={(r) => navigate(r)} />
             </div>
           )}
 
           {/* TAB 4: MENU ITEMS */}
-          {activeTab === 'MENU' && (
+          {tabAllowed && activeTab === 'MENU' && (
             <AdminMenuView
               menuItems={menuItems}
               categories={categories}
@@ -494,7 +513,7 @@ export const AdminDashboardPage: React.FC<{
           )}
 
           {/* TAB 5: CATEGORIES */}
-          {activeTab === 'CATEGORIES' && (
+          {tabAllowed && activeTab === 'CATEGORIES' && (
             <AdminCategoriesView
               categories={categories}
               menuItems={menuItems}
@@ -505,7 +524,7 @@ export const AdminDashboardPage: React.FC<{
           )}
 
           {/* TAB: DINING TABLES & QR CONFIGURATION */}
-          {activeTab === 'TABLES' && (
+          {tabAllowed && activeTab === 'TABLES' && (
             <AdminTablesView
               tables={tables}
               onCreateTable={handleCreateTable}
@@ -515,42 +534,42 @@ export const AdminDashboardPage: React.FC<{
           )}
 
           {/* TAB: INVENTORY & STOCK MANAGEMENT */}
-          {activeTab === 'INVENTORY' && isManager && (
+          {tabAllowed && activeTab === 'INVENTORY' && (
             <div className="animate-in fade-in duration-200">
               <AdminInventoryView />
             </div>
           )}
 
           {/* TAB 7: PAYMENTS AUDIT & RECONCILIATION */}
-          {activeTab === 'PAYMENTS' && (
+          {tabAllowed && activeTab === 'PAYMENTS' && (
             <div className="space-y-6 animate-in fade-in duration-200">
               <AdminPaymentsView onRefreshOrders={() => loadAllData(false)} />
             </div>
           )}
 
           {/* TAB: STAFF BILLING & INVOICING DASHBOARD */}
-          {activeTab === 'BILLING' && (
+          {tabAllowed && activeTab === 'BILLING' && (
             <div className="space-y-6 animate-in fade-in duration-200">
               <StaffBillingDashboard isStaffOrAdmin={true} />
             </div>
           )}
 
           {/* TAB: FINANCIAL REPORTS */}
-          {activeTab === 'BILLING_REPORTS' && (
+          {tabAllowed && activeTab === 'BILLING_REPORTS' && (
             <div className="space-y-6 animate-in fade-in duration-200">
               <AdminBillingReports />
             </div>
           )}
 
           {/* TAB: HOTEL BILLING & TAX SETTINGS */}
-          {activeTab === 'BILLING_SETTINGS' && (
+          {tabAllowed && activeTab === 'BILLING_SETTINGS' && (
             <div className="space-y-6 animate-in fade-in duration-200">
               <AdminBillingSettings />
             </div>
           )}
 
           {/* TAB 8: HOTEL PAYMENT & QR SETTINGS */}
-          {activeTab === 'PAYMENT_SETTINGS' && (
+          {tabAllowed && activeTab === 'PAYMENT_SETTINGS' && (
             <div className="space-y-6 animate-in fade-in duration-200">
               <AdminPaymentSettingsView />
             </div>
