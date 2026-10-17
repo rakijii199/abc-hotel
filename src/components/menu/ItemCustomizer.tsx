@@ -70,6 +70,8 @@ export const ItemCustomizerPanel: React.FC<ItemCustomizerPanelProps> = ({
   const basePrice = portions.find((p) => p.id === portionId)?.price ?? (portions.length ? 0 : item.price);
   const addonsTotal = groups.flatMap((g) => g.addons).filter((a) => addonIds.includes(a.id)).reduce((s, a) => s + a.price, 0);
   const unitPrice = basePrice + addonsTotal;
+  // Until a required portion is picked there is no meaningful price to show.
+  const awaitingPortion = portions.length > 0 && !portionId;
 
   const toggleAddon = (groupId: string, addonId: string) => {
     const group = groups.find((g) => g.id === groupId);
@@ -193,11 +195,11 @@ export const ItemCustomizerPanel: React.FC<ItemCustomizerPanelProps> = ({
           ))}
           <div className="flex justify-between text-stone-800 font-semibold border-t border-stone-200 pt-1.5">
             <dt>Per item</dt>
-            <dd className="font-mono">{formatCurrency(unitPrice)}</dd>
+            <dd className="font-mono">{awaitingPortion ? 'Choose a portion' : formatCurrency(unitPrice)}</dd>
           </div>
           <div className="flex justify-between text-stone-900 font-bold text-base">
-            <dt>Total ({quantity} × {formatCurrency(unitPrice)})</dt>
-            <dd className="font-mono" data-testid="customizer-total">{formatCurrency(unitPrice * quantity)}</dd>
+            <dt>{awaitingPortion ? 'Total' : `Total (${quantity} × ${formatCurrency(unitPrice)})`}</dt>
+            <dd className="font-mono" data-testid="customizer-total">{awaitingPortion ? '—' : formatCurrency(unitPrice * quantity)}</dd>
           </div>
         </dl>
       </div>
@@ -211,7 +213,7 @@ export const ItemCustomizerPanel: React.FC<ItemCustomizerPanelProps> = ({
           disabled={!item.available}
           className="lux-btn lux-btn-wine w-full min-h-12 justify-center disabled:opacity-50"
         >
-          {confirmLabel} · {formatCurrency(unitPrice * quantity)}
+          {awaitingPortion ? `${confirmLabel} · Choose a portion` : `${confirmLabel} · ${formatCurrency(unitPrice * quantity)}`}
         </button>
       )}
     </div>

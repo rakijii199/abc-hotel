@@ -2,6 +2,7 @@
  * Common UI Components (Footer, Badges, Modals, Spinners, Empty States)
  */
 import React from 'react';
+import { createPortal } from 'react-dom';
 import {
   MapPin,
   Phone,
@@ -180,8 +181,16 @@ export const Modal: React.FC<{
 }> = ({ isOpen, onClose, title, children, maxWidth = 'max-w-xl' }) => {
   if (!isOpen) return null;
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-stone-900/60 backdrop-blur-xs animate-in fade-in">
+  // Rendered into the app's themed root (.lux / .lux-ops) rather than in place:
+  // an animated (transformed) ancestor would otherwise trap `position: fixed`
+  // inside a card. The themed root keeps the design tokens applied.
+  const portalTarget =
+    typeof document !== 'undefined'
+      ? (document.querySelector('.lux-ops, .lux') as HTMLElement | null) || document.body
+      : null;
+
+  const dialog = (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-stone-900/60 backdrop-blur-xs animate-in fade-in" role="dialog" aria-modal="true" aria-label={title}>
       <div
         className={`bg-white rounded-2xl shadow-2xl border border-stone-200 w-full ${maxWidth} overflow-hidden max-h-[90vh] flex flex-col animate-in zoom-in-95`}
       >
@@ -199,6 +208,8 @@ export const Modal: React.FC<{
       </div>
     </div>
   );
+
+  return portalTarget ? createPortal(dialog, portalTarget) : dialog;
 };
 
 export const Spinner: React.FC<{ size?: 'sm' | 'md' | 'lg'; text?: string }> = ({
