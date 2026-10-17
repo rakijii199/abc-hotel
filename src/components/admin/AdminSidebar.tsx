@@ -54,7 +54,7 @@ interface AdminSidebarProps {
 interface NavItem {
   id: AdminTab;
   label: string;
-  icon: React.ComponentType<{ className?: string }>;
+  icon: React.ComponentType<{ className?: string; strokeWidth?: number }>;
   badge?: number;
   badgeColor?: string;
 }
@@ -171,30 +171,31 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
     user?.role === 'MANAGER' ? 'Hotel Manager' : user?.role === 'ADMIN' ? 'Administrator' : 'Floor Staff';
 
   return (
-    <aside className="w-full h-full bg-ink text-ivory/70 flex flex-col justify-between shrink-0 border-r border-white/[0.06] select-none relative overflow-hidden">
-      <div className="absolute -top-24 -left-24 w-72 h-72 rounded-full bg-wine/25 blur-[90px] pointer-events-none" />
+    <aside className="w-full h-full bg-gradient-to-b from-[#fffdf9] to-[#faf6ef] text-stone-600 flex flex-col justify-between shrink-0 border-r border-stone-200/80 select-none relative overflow-hidden">
+      {/* Soft warm glow behind the brand */}
+      <div className="absolute -top-28 -left-20 w-72 h-72 rounded-full bg-amber-200/30 blur-[90px] pointer-events-none" aria-hidden="true" />
 
       <div className="relative flex-1 overflow-y-auto min-h-0 scrollbar-none">
         {/* Brand Header */}
-        <div className="px-5 pt-6 pb-5 flex items-center gap-3">
-          <span className="relative w-10 h-10 shrink-0 flex items-center justify-center border border-gold/60 text-champagne">
-            <span className="absolute inset-[3px] border border-gold/25" />
+        <div className="px-5 pt-5 pb-4 flex items-center gap-3">
+          <span className="relative w-10 h-10 shrink-0 flex items-center justify-center border border-amber-600/50 text-amber-800 bg-white shadow-[0_6px_16px_-10px_rgba(120,80,30,0.45)]">
+            <span className="absolute inset-[3px] border border-amber-600/20" />
             <span className="font-display text-[13px] font-semibold tracking-[0.06em]">ABC</span>
           </span>
           <div className="min-w-0 leading-none">
-            <span className="font-display font-semibold text-ivory text-lg tracking-[0.16em] block">ABC HOTEL</span>
-            <span className="text-[9px] uppercase tracking-[0.3em] text-gold font-semibold block mt-1.5">
+            <span className="font-display font-semibold text-stone-900 text-lg tracking-[0.16em] block">ABC HOTEL</span>
+            <span className="text-[9px] uppercase tracking-[0.3em] text-amber-700 font-semibold block mt-1.5">
               Staff Portal
             </span>
           </div>
         </div>
-        <div className="mx-5 lux-hairline opacity-60" />
+        <div className="mx-5 h-px bg-gradient-to-r from-transparent via-stone-300/80 to-transparent" />
 
         {/* Navigation Items */}
-        <nav className="px-3 py-4 space-y-5" aria-label="Operations">
+        <nav className="px-3 py-4 space-y-4" aria-label="Operations">
           {navSections.map((sec, secIdx) => (
             <div key={sec.title || secIdx} className="space-y-0.5">
-              <p className="px-3 pb-1.5 text-[9.5px] font-bold uppercase tracking-[0.24em] text-ivory/30">{sec.title}</p>
+              <p className="px-3 pb-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-stone-400">{sec.title}</p>
               {sec.items.map((item) => {
                 const Icon = item.icon;
                 const isActive = activeTab === item.id;
@@ -203,26 +204,36 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
                     key={item.id}
                     onClick={() => setActiveTab(item.id as AdminTab)}
                     aria-current={isActive ? 'page' : undefined}
-                    className={`relative w-full text-left px-3 py-2.5 rounded-lg text-[13px] transition-all duration-300 flex items-center justify-between cursor-pointer group ${
+                    className={`relative w-full text-left pl-3 pr-3 py-1.5 rounded-xl text-[13px] transition-all duration-200 flex items-center justify-between gap-2 cursor-pointer group outline-none focus-visible:ring-2 focus-visible:ring-amber-500/40 ${
                       isActive
-                        ? 'bg-gradient-to-r from-wine to-wine/60 text-ivory font-semibold shadow-[0_10px_24px_-14px_rgba(91,26,38,0.9)]'
-                        : 'text-ivory/60 hover:text-ivory hover:bg-white/[0.05]'
+                        ? 'bg-amber-50 text-amber-950 font-semibold ring-1 ring-amber-200/90 shadow-[0_8px_20px_-16px_rgba(120,80,30,0.55)]'
+                        : 'text-stone-600 font-medium hover:text-stone-900 hover:bg-stone-900/[0.04]'
                     }`}
                   >
-                    {isActive && <span className="absolute left-0 top-2 bottom-2 w-[3px] rounded-full bg-gold" />}
-                    <div className="flex items-center gap-3 min-w-0">
-                      <Icon
-                        className={`w-4 h-4 shrink-0 transition-colors ${
-                          isActive ? 'text-champagne' : 'text-ivory/35 group-hover:text-gold'
+                    {/* Active indicator */}
+                    <span
+                      className={`absolute left-0 top-2 bottom-2 w-[3px] rounded-full bg-gradient-to-b from-amber-500 to-amber-700 transition-opacity duration-200 ${
+                        isActive ? 'opacity-100' : 'opacity-0'
+                      }`}
+                      aria-hidden="true"
+                    />
+                    <span className="flex items-center gap-3 min-w-0">
+                      <span
+                        className={`w-7 h-7 rounded-lg shrink-0 flex items-center justify-center transition-colors duration-200 ${
+                          isActive
+                            ? 'bg-white text-amber-700 shadow-[0_2px_8px_-4px_rgba(120,80,30,0.5)]'
+                            : 'text-stone-400 group-hover:text-amber-700 group-hover:bg-white'
                         }`}
-                      />
+                      >
+                        <Icon className="w-4 h-4" strokeWidth={1.75} />
+                      </span>
                       <span className="truncate">{item.label}</span>
-                    </div>
+                    </span>
 
                     {item.badge !== undefined && (
                       <span
-                        className={`text-[10px] font-bold min-w-5 h-5 px-1.5 rounded-full shrink-0 flex items-center justify-center ${
-                          isActive ? 'bg-ivory/15 text-ivory' : 'bg-gold/15 text-champagne'
+                        className={`text-[10px] font-bold min-w-5 h-5 px-1.5 rounded-full shrink-0 flex items-center justify-center border ${
+                          isActive ? 'bg-white text-amber-900 border-amber-200' : 'bg-amber-100/70 text-amber-900 border-amber-200/70'
                         }`}
                       >
                         {item.badge}
@@ -238,24 +249,24 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
 
       {/* Signed-in staff card */}
       {user && (
-        <div className="relative p-3 border-t border-white/[0.06]">
-          <div className="flex items-center gap-3 p-2.5 rounded-xl bg-white/[0.04]">
-            <span className="w-9 h-9 rounded-full bg-gradient-to-br from-champagne to-gold text-ink flex items-center justify-center text-sm font-bold shrink-0">
+        <div className="relative p-3 border-t border-stone-200/80 bg-white/40">
+          <div className="flex items-center gap-3 p-2.5 rounded-xl bg-white border border-stone-200/80 shadow-[0_8px_20px_-18px_rgba(26,23,21,0.5)]">
+            <span className="w-9 h-9 rounded-full bg-gradient-to-br from-amber-300 to-amber-600 text-white flex items-center justify-center text-sm font-bold shrink-0 ring-2 ring-white shadow-sm">
               {user.firstName?.[0] || 'S'}
             </span>
             <div className="min-w-0 flex-1">
-              <p className="text-xs font-semibold text-ivory truncate">
+              <p className="text-xs font-semibold text-stone-900 truncate">
                 {user.firstName} {user.lastName}
               </p>
-              <p className="text-[10px] uppercase tracking-[0.16em] text-gold/80 truncate">{roleLabel}</p>
+              <p className="text-[10px] uppercase tracking-[0.16em] text-amber-700 font-semibold truncate">{roleLabel}</p>
             </div>
             <button
               onClick={onLogout}
-              className="w-8 h-8 rounded-lg flex items-center justify-center text-ivory/40 hover:text-rose-300 hover:bg-rose-500/10 transition-colors cursor-pointer shrink-0"
+              className="w-9 h-9 rounded-lg flex items-center justify-center text-stone-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer shrink-0 outline-none focus-visible:ring-2 focus-visible:ring-rose-400/40"
               aria-label="Log out"
               title="Log out"
             >
-              <LogOut className="w-4 h-4" />
+              <LogOut className="w-4 h-4" strokeWidth={1.75} />
             </button>
           </div>
         </div>
