@@ -22,6 +22,7 @@ import { ItemCustomizerModal } from '../menu/ItemCustomizer.tsx';
 import { ItemSelection, describeSelection, hasCustomization, resolveItemConfiguration, selectionKey, startingPrice } from '../../../shared/menuConfig.ts';
 import { useToast } from '../../context/ToastContext.tsx';
 import { formatCurrency } from '../../utils/formatters.ts';
+import { Portal } from '../common/Portal.tsx';
 
 interface AddonItemsModalProps {
   isOpen: boolean;
@@ -182,6 +183,7 @@ export const AddonItemsModal: React.FC<AddonItemsModalProps> = ({
   };
 
   return (
+    <Portal>
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-stone-900/45 backdrop-blur-sm animate-in fade-in duration-200">
       <div className="surface-raised !rounded-2xl !shadow-[var(--shadow-float)] max-w-2xl w-full overflow-hidden flex flex-col max-h-[90vh] animate-in zoom-in-95 duration-200">
         {/* Header */}
@@ -421,5 +423,6 @@ export const AddonItemsModal: React.FC<AddonItemsModalProps> = ({
         />
       )}
     </div>
+    </Portal>
   );
 };

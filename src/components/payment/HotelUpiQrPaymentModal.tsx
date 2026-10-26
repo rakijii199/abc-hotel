@@ -23,6 +23,7 @@ import {
 import { PaymentApi } from '../../api/index.ts';
 import { useToast } from '../../context/ToastContext.tsx';
 import { formatCurrency, formatOrderDateTime } from '../../utils/formatters.ts';
+import { Portal } from '../common/Portal.tsx';
 
 export type PaymentFlowStatus =
   | 'IDLE'
@@ -400,6 +401,7 @@ export const HotelUpiQrPaymentModal: React.FC<HotelUpiQrPaymentModalProps> = ({
     `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(genericUpiIntent)}&margin=10`;
 
   return (
+    <Portal>
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-stone-900/45 backdrop-blur-sm animate-in fade-in duration-200">
       <div className="surface-raised !rounded-2xl !shadow-[var(--shadow-float)] max-w-md w-full overflow-hidden flex flex-col max-h-[92vh] animate-in zoom-in-95 duration-200">
         
@@ -740,5 +742,6 @@ export const HotelUpiQrPaymentModal: React.FC<HotelUpiQrPaymentModalProps> = ({
         </div>
       </div>
     </div>
+    </Portal>
   );
 };

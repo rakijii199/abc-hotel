@@ -20,6 +20,7 @@ import { formatCurrency, formatDate } from '../../utils/formatters.ts';
 import { useToast } from '../../context/ToastContext.tsx';
 import { BillingApi } from '../../api/billingApi.ts';
 import { OrderLineChoices } from '../orders/OrderLineChoices.tsx';
+import { Portal } from '../common/Portal.tsx';
 
 interface InvoiceViewModalProps {
   invoice: Invoice;
@@ -111,6 +112,7 @@ export const InvoiceViewModal: React.FC<InvoiceViewModalProps> = ({
   };
 
   return (
+    <Portal>
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-stone-900/40 backdrop-blur-sm animate-in fade-in duration-200">
       <div className="bg-white rounded-3xl max-w-2xl w-full max-h-[94vh] flex flex-col shadow-[var(--shadow-float)] border border-stone-200 overflow-hidden print:max-w-none print:max-h-none print:border-0 print:shadow-none print:rounded-none">
         
@@ -492,5 +494,6 @@ export const InvoiceViewModal: React.FC<InvoiceViewModalProps> = ({
 
       </div>
     </div>
+    </Portal>
   );
 };

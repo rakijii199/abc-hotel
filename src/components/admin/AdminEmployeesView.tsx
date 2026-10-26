@@ -37,6 +37,7 @@ import {
   effectivePrivilege,
   roleDisplayName
 } from '../../../shared/accessControl.ts';
+import { Portal } from '../common/Portal.tsx';
 
 const filterSelect =
   'w-full h-9 px-2.5 bg-white border border-stone-200 rounded-lg text-xs text-stone-800 focus:outline-hidden focus:border-[var(--brand)] cursor-pointer';
@@ -470,6 +471,7 @@ export const AdminEmployeesView: React.FC<AdminEmployeesViewProps> = ({ onRefres
       {/* MODAL 1: ADD NEW EMPLOYEE */}
       {/* ========================================================================= */}
       {showAddModal && (
+        <Portal>
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/35 backdrop-blur-sm animate-in fade-in">
           <div className="bg-white rounded-2xl max-w-xl w-full p-4 sm:p-6 shadow-[var(--shadow-float)] border border-[var(--border-subtle)] space-y-4 max-h-[90vh] animate-in fade-in zoom-in-95 overflow-y-auto">
             <div className="flex items-center justify-between border-b border-stone-100 pb-3">
@@ -715,12 +717,14 @@ export const AdminEmployeesView: React.FC<AdminEmployeesViewProps> = ({ onRefres
             </form>
           </div>
         </div>
+        </Portal>
       )}
 
       {/* ========================================================================= */}
       {/* MODAL 2: EDIT EMPLOYEE DETAILS */}
       {/* ========================================================================= */}
       {editingEmployee && (
+        <Portal>
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/35 backdrop-blur-sm animate-in fade-in">
           <div className="bg-white rounded-2xl max-w-xl w-full p-4 sm:p-6 shadow-[var(--shadow-float)] border border-[var(--border-subtle)] space-y-4 max-h-[90vh] animate-in fade-in zoom-in-95 overflow-y-auto">
             <div className="flex items-center justify-between border-b border-stone-100 pb-3">
@@ -837,12 +841,14 @@ export const AdminEmployeesView: React.FC<AdminEmployeesViewProps> = ({ onRefres
             </form>
           </div>
         </div>
+        </Portal>
       )}
 
       {/* ========================================================================= */}
       {/* MODAL 3: RESET PASSWORD */}
       {/* ========================================================================= */}
       {resetPasswordEmployee && (
+        <Portal>
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/35 backdrop-blur-sm animate-in fade-in">
           <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-stone-200 space-y-4">
             <div className="flex items-center justify-between border-b border-stone-100 pb-3">
@@ -925,12 +931,14 @@ export const AdminEmployeesView: React.FC<AdminEmployeesViewProps> = ({ onRefres
             </form>
           </div>
         </div>
+        </Portal>
       )}
 
       {/* ========================================================================= */}
       {/* MODAL 4: DELETE EMPLOYEE CONFIRMATION */}
       {/* ========================================================================= */}
       {deletingEmployee && (
+        <Portal>
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/35 backdrop-blur-sm animate-in fade-in">
           <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-rose-200 space-y-4">
             <div className="flex items-center gap-3 text-rose-600">
@@ -973,6 +981,7 @@ export const AdminEmployeesView: React.FC<AdminEmployeesViewProps> = ({ onRefres
             </div>
           </div>
         </div>
+        </Portal>
       )}
     </div>
   );

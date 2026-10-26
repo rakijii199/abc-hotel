@@ -66,6 +66,7 @@ import { InvoiceViewModal } from '../billing/InvoiceViewModal.tsx';
 import { OrderLineChoices } from '../orders/OrderLineChoices.tsx';
 import { ItemCustomizerPanel } from '../menu/ItemCustomizer.tsx';
 import { ItemSelection, hasCustomization, resolveItemConfiguration, selectionKey, startingPrice } from '../../../shared/menuConfig.ts';
+import { Portal } from '../common/Portal.tsx';
 
 const AVAILABLE_RIDERS = [
   { id: 'rider-staff-01', name: 'Delivery Staff Rider', phone: '+91 98765 43210', status: 'Active', vehicle: 'ABC Hotel Delivery Partner' }
@@ -1807,6 +1808,7 @@ export const AdminOrdersView: React.FC<AdminOrdersViewProps> = ({
 
       {/* 9. MODAL: Assign Delivery Rider Popup */}
       {assigningRiderOrder && (
+        <Portal>
         <div className="fixed inset-0 z-50 bg-stone-900/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-150">
           <div className="bg-white rounded-3xl border border-stone-200 shadow-[var(--shadow-float)] max-w-lg w-full overflow-hidden animate-in zoom-in-95 duration-150">
             {/* Modal Header */}
@@ -1902,6 +1904,7 @@ export const AdminOrdersView: React.FC<AdminOrdersViewProps> = ({
             </div>
           </div>
         </div>
+        </Portal>
       )}
 
       {/* Historical Archive Lookup Modal */}

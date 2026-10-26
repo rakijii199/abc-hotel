@@ -18,6 +18,7 @@ import {
   Loader2
 } from 'lucide-react';
 import { useToast } from '../../context/ToastContext.tsx';
+import { Portal } from '../common/Portal.tsx';
 
 export interface StructuredDeliveryAddress {
   id: string;
@@ -269,6 +270,7 @@ export const DeliveryAddressModal: React.FC<DeliveryAddressModalProps> = ({
   if (!isOpen) return null;
 
   return (
+    <Portal>
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-stone-900/40 backdrop-blur-sm animate-in fade-in">
       <div className="surface-raised !rounded-2xl !shadow-[var(--shadow-float)] w-full max-w-xl overflow-hidden max-h-[92vh] flex flex-col animate-in zoom-in-95">
         {/* Clean Header */}
@@ -464,5 +466,6 @@ export const DeliveryAddressModal: React.FC<DeliveryAddressModalProps> = ({
         </div>
       </div>
     </div>
+    </Portal>
   );
 };

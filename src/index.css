@@ -1052,3 +1052,41 @@ textarea.field {
 :is(.lux-ops, .theme-staff) :is(th, td) :is(span, p, div, a, button, strong, b, label, time, small, code) {
   font-size: 12px;
 }
+
+/* Printing a receipt: only the open invoice prints, full length, from the top
+   of the first page. Everything that is neither the invoice nor one of its
+   ancestors is removed; the ancestors (app shell, overlay, dialog) lose their
+   layout, scrolling and chrome. */
+@media print {
+  body:has(#printable-invoice) *:not(:has(#printable-invoice)):not(#printable-invoice):not(#printable-invoice *) {
+    display: none !important;
+  }
+  body:has(#printable-invoice) :has(#printable-invoice) {
+    position: static !important;
+    display: block !important;
+    width: auto !important;
+    height: auto !important;
+    max-width: none !important;
+    max-height: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+    transform: none !important;
+    animation: none !important;
+    backdrop-filter: none !important;
+    background: none !important;
+    box-shadow: none !important;
+    border: 0 !important;
+  }
+  body:has(#printable-invoice) #printable-invoice {
+    max-height: none !important;
+    overflow: visible !important;
+  }
+  body:has(#printable-invoice),
+  body:has(#printable-invoice) html {
+    background: #fff !important;
+  }
+  body:has(#printable-invoice) .ambient-staff::after {
+    display: none !important;
+  }
+}
