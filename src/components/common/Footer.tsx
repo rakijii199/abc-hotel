@@ -34,18 +34,19 @@ export const Footer: React.FC<{ navigate: (route: string, state?: any) => void }
     }
   };
 
-  const linkClass = 'lux-link min-h-10 lg:min-h-0 text-ivory/65 hover:text-ivory transition-colors cursor-pointer text-left';
+  const linkClass = 'lux-link min-h-10 lg:min-h-0 text-stone-600 hover:text-[var(--brand-text)] transition-colors cursor-pointer text-left';
 
   return (
-    <footer className="relative bg-ink text-ivory/70 mt-20 overflow-hidden lux-grain">
+    <footer className="relative bg-cream text-stone-600 mt-20 overflow-hidden border-t border-[var(--border-subtle)]">
+      <div className="absolute -top-40 right-[-10%] w-[560px] h-[560px] rounded-full bg-champagne/40 blur-[140px] pointer-events-none" aria-hidden="true" />
       <div className="absolute inset-x-0 top-0 lux-hairline" />
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Signature line */}
-        <div className="py-16 sm:py-20 flex flex-col lg:flex-row lg:items-end justify-between gap-8 border-b border-white/[0.08]">
-          <h2 className="lux-display text-[clamp(2.5rem,6vw,5rem)] text-ivory max-w-3xl">
-            Dine with us, <em className="font-normal text-champagne">stay a while.</em>
+        <div className="py-16 sm:py-20 flex flex-col lg:flex-row lg:items-end justify-between gap-8 border-b border-stone-300/60">
+          <h2 className="lux-display text-[clamp(2.5rem,6vw,5rem)] text-stone-900 max-w-3xl">
+            Dine with us, <em className="font-normal text-[var(--brand)]">stay a while.</em>
           </h2>
-          <button onClick={handleBookTable} className="lux-btn lux-btn-gold self-start lg:self-auto">
+          <button onClick={handleBookTable} className="lux-btn lux-btn-wine self-start lg:self-auto">
             <span>Reserve a Table</span>
             <ArrowRight className="w-4 h-4" />
           </button>
@@ -55,18 +56,18 @@ export const Footer: React.FC<{ navigate: (route: string, state?: any) => void }
           {/* Brand & Story */}
           <div className="lg:col-span-4 space-y-5">
             <div className="flex items-center gap-3">
-              <span className="relative w-11 h-11 flex items-center justify-center border border-gold/60 text-champagne">
-                <span className="absolute inset-[3px] border border-gold/25" />
+              <span className="relative w-11 h-11 flex items-center justify-center border border-gold/70 bg-white/60 text-[var(--brand-text)]">
+                <span className="absolute inset-[3px] border border-gold/35" />
                 <span className="font-display text-[15px] font-semibold tracking-[0.06em]">ABC</span>
               </span>
               <div className="leading-none">
-                <span className="font-display text-xl font-semibold tracking-[0.18em] text-ivory block">ABC HOTEL</span>
-                <span className="text-[9px] tracking-[0.32em] uppercase font-semibold text-gold block mt-1">
+                <span className="font-display text-xl font-semibold tracking-[0.18em] text-stone-900 block">ABC HOTEL</span>
+                <span className="text-[9px] tracking-[0.32em] uppercase font-semibold text-amber-700 block mt-1">
                   Luxury Dining & Suites
                 </span>
               </div>
             </div>
-            <p className="text-sm text-ivory/55 leading-relaxed max-w-sm">
+            <p className="text-sm text-stone-600 leading-relaxed max-w-sm">
               A gastronomic sanctuary where heritage recipes meet contemporary culinary mastery, dedicated to memorable
               dining moments and gracious hospitality.
             </p>
@@ -74,7 +75,7 @@ export const Footer: React.FC<{ navigate: (route: string, state?: any) => void }
 
           {/* Quick Links */}
           <div className="lg:col-span-2">
-            <h4 className="text-[10px] font-bold uppercase tracking-[0.28em] text-gold mb-5">Explore</h4>
+            <h4 className="text-[10px] font-bold uppercase tracking-[0.28em] text-amber-700 mb-5">Explore</h4>
             <ul className="space-y-0 lg:space-y-3 text-sm">
               <li><button onClick={() => navigate('home')} className={linkClass}>Home</button></li>
               <li><button onClick={() => navigate('menu')} className={linkClass}>The Menu</button></li>
@@ -85,12 +86,12 @@ export const Footer: React.FC<{ navigate: (route: string, state?: any) => void }
 
           {/* Account */}
           <div className="lg:col-span-2">
-            <h4 className="text-[10px] font-bold uppercase tracking-[0.28em] text-gold mb-5">Account</h4>
+            <h4 className="text-[10px] font-bold uppercase tracking-[0.28em] text-amber-700 mb-5">Account</h4>
             <ul className="space-y-0 lg:space-y-3 text-sm">
               <li><button onClick={() => navigate('customer-auth')} className={linkClass}>Customer Login</button></li>
               <li><button onClick={() => navigate('customer-register')} className={linkClass}>Register</button></li>
               <li>
-                <button onClick={() => navigate('staff-login')} className="min-h-10 lg:min-h-0 text-ivory/40 hover:text-purple-200 transition-colors cursor-pointer text-xs">
+                <button onClick={() => navigate('staff-login')} className="min-h-10 lg:min-h-0 text-stone-500 hover:text-[var(--brand-text)] transition-colors cursor-pointer text-xs">
                   Staff Operations Portal
                 </button>
               </li>
@@ -99,38 +100,38 @@ export const Footer: React.FC<{ navigate: (route: string, state?: any) => void }
 
           {/* Contact & Hours */}
           <div className="lg:col-span-4">
-            <h4 className="text-[10px] font-bold uppercase tracking-[0.28em] text-gold mb-5">Hours & Location</h4>
-            <ul className="space-y-4 text-sm text-ivory/60">
+            <h4 className="text-[10px] font-bold uppercase tracking-[0.28em] text-amber-700 mb-5">Hours & Location</h4>
+            <ul className="space-y-4 text-sm text-stone-600">
               <li className="flex items-start gap-3">
-                <Clock className="w-4 h-4 text-gold shrink-0 mt-0.5" strokeWidth={1.5} />
+                <Clock className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" strokeWidth={1.5} />
                 <div>
-                  <p className="text-ivory font-medium">Daily Dining</p>
+                  <p className="text-stone-900 font-medium">Daily Dining</p>
                   <p className="text-xs mt-0.5">09:00 AM – 11:00 PM</p>
                 </div>
               </li>
               <li className="flex items-start gap-3">
-                <MapPin className="w-4 h-4 text-gold shrink-0 mt-0.5" strokeWidth={1.5} />
+                <MapPin className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" strokeWidth={1.5} />
                 <span>742 Heritage Promenade, Royal Gardens, Sector 4</span>
               </li>
               <li className="flex items-center gap-3">
-                <Phone className="w-4 h-4 text-gold shrink-0" strokeWidth={1.5} />
+                <Phone className="w-4 h-4 text-amber-700 shrink-0" strokeWidth={1.5} />
                 <a href="tel:+912249876543" className={linkClass}>+91 22 4987 6543</a>
               </li>
               <li className="flex items-center gap-3">
-                <Mail className="w-4 h-4 text-gold shrink-0" strokeWidth={1.5} />
+                <Mail className="w-4 h-4 text-amber-700 shrink-0" strokeWidth={1.5} />
                 <a href="mailto:concierge@abchotel.com" className={linkClass}>concierge@abchotel.com</a>
               </li>
             </ul>
-            <p className="text-xs text-ivory/45 leading-relaxed mt-6 max-w-xs">
+            <p className="text-xs text-stone-500 leading-relaxed mt-6 max-w-xs">
               Hosting a private banquet, corporate meeting or celebration? Contact our event team.
             </p>
           </div>
         </div>
 
-        <div className="py-8 border-t border-white/[0.08] text-xs text-ivory/40 flex flex-col sm:flex-row justify-between items-center gap-3">
+        <div className="py-8 border-t border-stone-300/60 text-xs text-stone-500 flex flex-col sm:flex-row justify-between items-center gap-3">
           <p>© {new Date().getFullYear()} ABC Hotel & Luxury Suites. All rights reserved.</p>
           <p className="flex items-center gap-2">
-            <ShieldCheck className="w-3.5 h-3.5 text-gold/70" />
+            <ShieldCheck className="w-3.5 h-3.5 text-amber-700" />
             Instantly confirmed table reservations
           </p>
         </div>
@@ -190,16 +191,16 @@ export const Modal: React.FC<{
       : null;
 
   const dialog = (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-stone-900/60 backdrop-blur-xs animate-in fade-in" role="dialog" aria-modal="true" aria-label={title}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-stone-900/35 backdrop-blur-sm animate-in fade-in" role="dialog" aria-modal="true" aria-label={title}>
       <div
-        className={`bg-white rounded-2xl shadow-2xl border border-stone-200 w-full ${maxWidth} overflow-hidden max-h-[90vh] flex flex-col animate-in zoom-in-95`}
+        className={`bg-white rounded-2xl shadow-[var(--shadow-float)] border border-[var(--border-subtle)] ring-1 ring-white/60 w-full ${maxWidth} overflow-hidden max-h-[90vh] flex flex-col animate-in fade-in zoom-in-95`}
       >
-        <div className="flex items-center justify-between gap-3 px-4 sm:px-6 py-3 sm:py-4 border-b border-stone-100 bg-[#faf8f5]">
-          <h3 className="font-serif font-bold text-lg text-stone-900">{title}</h3>
+        <div className="flex items-center justify-between gap-3 px-4 sm:px-6 py-3 sm:py-4 border-b border-[var(--border-subtle)] bg-gradient-to-b from-[var(--surface-muted)] to-white">
+          <h3 className="section-title">{title}</h3>
           <button
             onClick={onClose}
             aria-label="Close dialog"
-            className="-mr-2 w-10 h-10 flex items-center justify-center rounded-lg text-stone-400 hover:text-stone-700 hover:bg-stone-200/50 transition-colors cursor-pointer shrink-0"
+            className="-mr-2 w-10 h-10 flex items-center justify-center rounded-full text-stone-400 hover:text-[var(--brand-text)] hover:bg-[var(--brand-soft)] transition-colors cursor-pointer shrink-0"
           >
             <X className="w-5 h-5" />
           </button>

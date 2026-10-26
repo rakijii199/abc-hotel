@@ -119,7 +119,7 @@ export const AdminPaymentSettingsView: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="bg-white p-12 rounded-3xl border border-stone-200 shadow-xs flex flex-col items-center justify-center gap-3">
+      <div className="bg-white p-12 rounded-2xl border border-stone-200 shadow-[var(--shadow-card)] flex flex-col items-center justify-center gap-3">
         <Spinner size="lg" />
         <p className="text-xs font-semibold text-stone-500">Loading hotel payment configurations...</p>
       </div>
@@ -129,14 +129,14 @@ export const AdminPaymentSettingsView: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Header Banner */}
-      <div className="bg-white p-5 sm:p-6 rounded-3xl border border-stone-200 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="bg-white p-5 sm:p-6 rounded-2xl border border-stone-200 shadow-[var(--shadow-card)] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3.5">
           <div className="w-12 h-12 rounded-2xl bg-amber-800 text-amber-200 flex items-center justify-center shadow-xs shrink-0">
             <QrCode className="w-6 h-6" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h2 className="font-serif font-bold text-xl text-stone-900">Hotel Payment & UPI QR Settings</h2>
+              <h2 className="page-title">Hotel Payment & UPI QR Settings</h2>
             </div>
             <p className="text-xs text-stone-500 mt-0.5">
               Configure hotel bank VPA, receiving accounts, and official QR code image
@@ -150,8 +150,8 @@ export const AdminPaymentSettingsView: React.FC = () => {
         {/* Left 2 Cols: Form Inputs */}
         <div className="lg:col-span-2 space-y-6">
           {/* Section 1: Hotel UPI VPA & Mobile */}
-          <div className="bg-white p-5 sm:p-6 rounded-3xl border border-stone-200 shadow-xs space-y-4">
-            <h3 className="font-serif font-bold text-base text-stone-900 flex items-center gap-2">
+          <div className="bg-white p-5 sm:p-6 rounded-2xl border border-stone-200 shadow-[var(--shadow-card)] space-y-4">
+            <h3 className="section-title text-base flex items-center gap-2">
               <Building2 className="w-4 h-4 text-amber-800" />
               1. Hotel UPI Identity & Receiving Account
             </h3>
@@ -164,10 +164,10 @@ export const AdminPaymentSettingsView: React.FC = () => {
                   value={hotelName}
                   onChange={(e) => setHotelName(e.target.value)}
                   placeholder="E.g. ABC HOTEL"
-                  className="w-full px-3.5 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-xs font-medium text-stone-900 focus:bg-white transition-all"
+                  className="w-full px-3.5 py-2.5 bg-white border border-stone-200 rounded-xl text-xs font-medium text-stone-900 focus:bg-white transition-all"
                   required
                 />
-                <p className="text-[10px] text-stone-400">Shown to guests on UPI payment screen and bank receipts</p>
+                <p className="text-[10px] text-stone-500">Shown to guests on UPI payment screen and bank receipts</p>
               </div>
 
               <div className="space-y-1.5">
@@ -177,10 +177,10 @@ export const AdminPaymentSettingsView: React.FC = () => {
                   value={hotelUpiId}
                   onChange={(e) => setHotelUpiId(e.target.value)}
                   placeholder="E.g. abchotel@upi or abchotel@icici"
-                  className="w-full px-3.5 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-xs font-mono font-bold text-stone-900 focus:bg-white transition-all"
+                  className="w-full px-3.5 py-2.5 bg-white border border-stone-200 rounded-xl text-xs font-mono font-bold text-stone-900 focus:bg-white transition-all"
                   required
                 />
-                <p className="text-[10px] text-stone-400">Destination VPA where guest funds are deposited</p>
+                <p className="text-[10px] text-stone-500">Destination VPA where guest funds are deposited</p>
               </div>
 
               <div className="space-y-1.5">
@@ -190,10 +190,10 @@ export const AdminPaymentSettingsView: React.FC = () => {
                   value={hotelMobileNumber}
                   onChange={(e) => setHotelMobileNumber(e.target.value)}
                   placeholder="E.g. +91 98765 43210"
-                  className="w-full px-3.5 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-xs font-mono text-stone-900 focus:bg-white transition-all"
+                  className="w-full px-3.5 py-2.5 bg-white border border-stone-200 rounded-xl text-xs font-mono text-stone-900 focus:bg-white transition-all"
                   required
                 />
-                <p className="text-[10px] text-stone-400">Associated UPI mobile for verification reference</p>
+                <p className="text-[10px] text-stone-500">Associated UPI mobile for verification reference</p>
               </div>
 
               <div className="space-y-1.5">
@@ -203,17 +203,17 @@ export const AdminPaymentSettingsView: React.FC = () => {
                   value={supportContactNumber}
                   onChange={(e) => setSupportContactNumber(e.target.value)}
                   placeholder="E.g. +91 22 4987 6543"
-                  className="w-full px-3.5 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-xs font-mono text-stone-900 focus:bg-white transition-all"
+                  className="w-full px-3.5 py-2.5 bg-white border border-stone-200 rounded-xl text-xs font-mono text-stone-900 focus:bg-white transition-all"
                   required
                 />
-                <p className="text-[10px] text-stone-400">Helpdesk number for payment inquiries</p>
+                <p className="text-[10px] text-stone-500">Helpdesk number for payment inquiries</p>
               </div>
             </div>
           </div>
 
           {/* Section 2: Hotel QR Code Image Asset */}
-          <div className="bg-white p-5 sm:p-6 rounded-3xl border border-stone-200 shadow-xs space-y-4">
-            <h3 className="font-serif font-bold text-base text-stone-900 flex items-center gap-2">
+          <div className="bg-white p-5 sm:p-6 rounded-2xl border border-stone-200 shadow-[var(--shadow-card)] space-y-4">
+            <h3 className="section-title text-base flex items-center gap-2">
               <QrCode className="w-4 h-4 text-amber-800" />
               2. Hotel UPI QR Code Image
             </h3>
@@ -260,7 +260,7 @@ export const AdminPaymentSettingsView: React.FC = () => {
                       </button>
                     )}
                   </div>
-                  <p className="text-[10px] text-stone-400">
+                  <p className="text-[10px] text-stone-500">
                     Max size: 3MB. If no custom image is uploaded, high-resolution dynamic UPI QR will be generated automatically.
                   </p>
                 </div>
@@ -272,7 +272,7 @@ export const AdminPaymentSettingsView: React.FC = () => {
                     value={hotelQrCodeUrl}
                     onChange={(e) => setHotelQrCodeUrl(e.target.value)}
                     placeholder="https://.../hotel-qr.png"
-                    className="w-full px-3.5 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs font-mono text-stone-700"
+                    className="w-full px-3.5 py-2 bg-white border border-stone-200 rounded-xl text-xs font-mono text-stone-700"
                   />
                 </div>
               </div>
@@ -294,9 +294,9 @@ export const AdminPaymentSettingsView: React.FC = () => {
 
         {/* Right Col: Live Guest Preview Card */}
         <div className="lg:col-span-1 space-y-4">
-          <div className="bg-white p-5 rounded-3xl border border-stone-200 shadow-xs space-y-4 sticky top-6">
+          <div className="bg-white p-5 rounded-2xl border border-stone-200 shadow-[var(--shadow-card)] space-y-4 sticky top-6">
             <div className="flex items-center justify-between border-b border-stone-100 pb-3">
-              <h4 className="font-serif font-bold text-sm text-stone-900 flex items-center gap-2">
+              <h4 className="section-title text-base flex items-center gap-2">
                 <Smartphone className="w-4 h-4 text-amber-800" />
                 Live Customer Preview
               </h4>
@@ -326,7 +326,7 @@ export const AdminPaymentSettingsView: React.FC = () => {
               </div>
 
               <div className="p-2.5 bg-white rounded-xl border border-stone-200 text-left text-[11px] space-y-1">
-                <p className="text-[9px] uppercase font-bold text-stone-400">UPI ID</p>
+                <p className="text-[9px] uppercase font-bold text-stone-500">UPI ID</p>
                 <p className="font-mono font-bold text-stone-900 truncate">{hotelUpiId}</p>
               </div>
 

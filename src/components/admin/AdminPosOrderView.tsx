@@ -357,13 +357,13 @@ export const AdminPosOrderView: React.FC<AdminPosOrderViewProps> = ({
       {posViewMode === 'VIEW_ORDERS' ? (
         <div className="space-y-3">
           {/* Header Card for Day's Orders */}
-          <div className="bg-white p-3 rounded-xl border border-stone-200/80 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div className="bg-white p-3 rounded-2xl border border-stone-200/80 shadow-[var(--shadow-card)] flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <div className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-lg bg-amber-800 text-amber-100 flex items-center justify-center font-bold text-xs shadow-2xs shrink-0">
+              <div className="w-7 h-7 rounded-lg bg-[var(--brand-soft)] text-amber-800 border border-[var(--brand-border)] flex items-center justify-center font-bold text-xs shrink-0">
                 POS
               </div>
               <div>
-                <h1 className="font-serif font-bold text-base text-stone-900 leading-tight">
+                <h1 className="section-title text-lg leading-tight">
                   Staff Order Terminal — Orders List
                 </h1>
                 <p className="text-[11px] text-stone-500">
@@ -380,14 +380,14 @@ export const AdminPosOrderView: React.FC<AdminPosOrderViewProps> = ({
                   placeholder="Search order #, guest..."
                   value={orderSearchQuery}
                   onChange={(e) => setOrderSearchQuery(e.target.value)}
-                  className="pl-8 pr-2.5 py-1 bg-stone-50 border border-stone-200 rounded-lg text-xs w-48 focus:outline-hidden focus:border-amber-700"
+                  className="pl-8 pr-2.5 py-1 bg-white border border-stone-200 rounded-lg text-xs w-48 focus:outline-hidden focus:border-amber-700"
                 />
               </div>
 
               <button
                 onClick={() => fetchDayOrders(selectedDate)}
                 disabled={loadingDayOrders}
-                className="p-1.5 rounded-lg border border-stone-200 bg-stone-50 hover:bg-stone-100 text-stone-700 cursor-pointer"
+                className="p-1.5 rounded-lg border border-stone-200 bg-white hover:bg-[var(--brand-soft)] hover:text-[var(--brand-text)] text-stone-700 cursor-pointer transition-colors"
                 title="Refresh orders list"
               >
                 <RotateCcw className={`w-3.5 h-3.5 ${loadingDayOrders ? 'animate-spin text-amber-800' : ''}`} />
@@ -420,12 +420,12 @@ export const AdminPosOrderView: React.FC<AdminPosOrderViewProps> = ({
               Loading orders for {formatDisplayDate(selectedDate)}...
             </div>
           ) : filteredDayOrders.length === 0 ? (
-            <div className="bg-white rounded-2xl border border-stone-200/80 p-12 text-center space-y-3 shadow-2xs">
+            <div className="bg-white rounded-2xl border border-stone-200/80 p-12 text-center space-y-3 shadow-[var(--shadow-card)]">
               <div className="w-12 h-12 rounded-2xl bg-amber-50 text-amber-800 flex items-center justify-center mx-auto">
                 <ShoppingBag className="w-6 h-6" />
               </div>
               <div>
-                <h3 className="font-serif font-bold text-base text-stone-900">
+                <h3 className="section-title text-base">
                   No Orders Found for {formatDisplayDate(selectedDate)}
                 </h3>
                 <p className="text-xs text-stone-500 max-w-sm mx-auto mt-0.5">
@@ -449,7 +449,7 @@ export const AdminPosOrderView: React.FC<AdminPosOrderViewProps> = ({
                 return (
                   <div
                     key={order.id}
-                    className="bg-white rounded-2xl border border-stone-200/80 shadow-2xs hover:shadow-xs transition-all p-4 flex flex-col justify-between space-y-3"
+                    className="bg-white rounded-2xl border border-stone-200/80 shadow-[var(--shadow-card)] lift p-4 flex flex-col justify-between space-y-3"
                   >
                     <div>
                       {/* Top: Order # & Status */}
@@ -464,7 +464,7 @@ export const AdminPosOrderView: React.FC<AdminPosOrderViewProps> = ({
                           </p>
                         </div>
 
-                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${badge.color}`}>
+                        <span className={`badge ${badge.color}`}>
                           {badge.label}
                         </span>
                       </div>
@@ -473,7 +473,7 @@ export const AdminPosOrderView: React.FC<AdminPosOrderViewProps> = ({
                       <div className="flex items-center justify-between mt-2.5 text-xs">
                         <div>
                           <p className="font-bold text-stone-900">{order.customerName}</p>
-                          <p className="text-[10px] text-stone-400 font-mono">{order.customerPhone}</p>
+                          <p className="text-[10px] text-stone-500 font-mono">{order.customerPhone}</p>
                         </div>
 
                         <span className="px-2.5 py-1 rounded-xl bg-stone-100 text-stone-800 font-semibold text-xs flex items-center gap-1">
@@ -498,7 +498,7 @@ export const AdminPosOrderView: React.FC<AdminPosOrderViewProps> = ({
 
                       {/* Dishes summary */}
                       <div className="mt-3 p-2 rounded-xl bg-stone-50 border border-stone-100 text-[11px] space-y-1">
-                        <span className="text-[10px] uppercase font-bold text-stone-400 block">
+                        <span className="text-[10px] uppercase font-bold text-stone-500 block">
                           Dishes ({order.items.length} items):
                         </span>
                         <div className="space-y-0.5 max-h-20 overflow-y-auto">
@@ -515,15 +515,15 @@ export const AdminPosOrderView: React.FC<AdminPosOrderViewProps> = ({
                     {/* Footer: Total & Actions */}
                     <div className="pt-2 border-t border-stone-100 flex items-center justify-between gap-2">
                       <div>
-                        <span className="text-[10px] text-stone-400 block">Total Amount:</span>
-                        <span className="font-serif font-bold text-sm text-stone-900">
+                        <span className="text-[10px] text-stone-500 block">Total Amount:</span>
+                        <span className="font-serif font-bold text-sm text-stone-900 tabular-nums">
                           {formatCurrency(order.total)}
                         </span>
                         <span
-                          className={`inline-block ml-1.5 px-1.5 py-0.2 rounded-full text-[9px] font-bold ${
+                          className={`badge ml-1.5 !text-[9px] !px-1.5 !py-0 ${
                             isPaid
-                              ? 'bg-emerald-100 text-emerald-800'
-                              : 'bg-amber-100 text-amber-900'
+                              ? 'badge-success'
+                              : 'badge-warning'
                           }`}
                         >
                           {isPaid ? 'PAID' : 'DUE'}
@@ -560,14 +560,14 @@ export const AdminPosOrderView: React.FC<AdminPosOrderViewProps> = ({
         /* 3. MODE: TAKE NEW ORDER (POS STATION) */
         <div className="space-y-2.5">
           {/* Combined Staff Order Terminal & Service Parameters Card */}
-          <div className="bg-white p-3 rounded-xl border border-stone-200/80 shadow-2xs space-y-2">
+          <div className="bg-white p-3 rounded-2xl border border-stone-200/80 shadow-[var(--shadow-card)] space-y-2">
             {/* Header Row: POS Icon, Title, Inline Order Channel, & KDS Link */}
             <div className="flex flex-wrap items-center justify-between gap-2 pb-2 border-b border-stone-100">
               <div className="flex items-center gap-2 flex-wrap">
-                <div className="w-7 h-7 rounded-lg bg-amber-800 text-amber-100 flex items-center justify-center font-bold text-xs shadow-2xs shrink-0">
+                <div className="w-7 h-7 rounded-lg bg-[var(--brand-soft)] text-amber-800 border border-[var(--brand-border)] flex items-center justify-center font-bold text-xs shrink-0">
                   POS
                 </div>
-                <h1 className="font-serif font-bold text-base text-stone-900 leading-tight">
+                <h1 className="section-title text-lg leading-tight">
                   Staff Order Terminal
                 </h1>
 
@@ -635,14 +635,14 @@ export const AdminPosOrderView: React.FC<AdminPosOrderViewProps> = ({
             {/* Form Fields: Table / Room & Guest details */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
               <div>
-                <label className="text-[10px] font-bold uppercase tracking-wider text-stone-500 block mb-0.5">
+                <label className="label-caps block mb-0.5">
                   {orderType === 'Dine-in' ? 'Dining Table' : orderType === 'Room Service' ? 'Room / Suite #' : 'Order Mode'}
                 </label>
                 {orderType === 'Dine-in' ? (
                   <select
                     value={selectedTable}
                     onChange={(e) => setSelectedTable(e.target.value)}
-                    className="w-full px-2.5 py-1 bg-stone-50 border border-stone-200 rounded-lg text-xs font-bold text-stone-900 focus:outline-hidden focus:border-amber-600"
+                    className="w-full px-2.5 py-1 bg-white border border-stone-200 rounded-lg text-xs font-bold text-stone-900 focus:outline-hidden focus:border-amber-600"
                   >
                     {tables.map((t) => (
                       <option key={t.id} value={t.tableNumber}>
@@ -656,7 +656,7 @@ export const AdminPosOrderView: React.FC<AdminPosOrderViewProps> = ({
                     value={roomNumber}
                     onChange={(e) => setRoomNumber(e.target.value)}
                     placeholder="e.g. Suite 305"
-                    className="w-full px-2.5 py-1 bg-stone-50 border border-stone-200 rounded-lg text-xs font-bold text-stone-900 focus:outline-hidden focus:border-amber-600"
+                    className="w-full px-2.5 py-1 bg-white border border-stone-200 rounded-lg text-xs font-bold text-stone-900 focus:outline-hidden focus:border-amber-600"
                   />
                 ) : (
                   <div className="px-2.5 py-1 bg-amber-50/70 border border-amber-200 rounded-lg text-xs font-bold text-amber-900">
@@ -666,7 +666,7 @@ export const AdminPosOrderView: React.FC<AdminPosOrderViewProps> = ({
               </div>
 
               <div>
-                <label className="text-[10px] font-bold uppercase tracking-wider text-stone-500 block mb-0.5">
+                <label className="label-caps block mb-0.5">
                   Guest Name
                 </label>
                 <input
@@ -674,12 +674,12 @@ export const AdminPosOrderView: React.FC<AdminPosOrderViewProps> = ({
                   value={customerName}
                   onChange={(e) => setCustomerName(e.target.value)}
                   placeholder="Guest Name"
-                  className="w-full px-2.5 py-1 bg-stone-50 border border-stone-200 rounded-lg text-xs text-stone-900 font-semibold focus:outline-hidden focus:border-amber-600"
+                  className="w-full px-2.5 py-1 bg-white border border-stone-200 rounded-lg text-xs text-stone-900 font-semibold focus:outline-hidden focus:border-amber-600"
                 />
               </div>
 
               <div>
-                <label className="text-[10px] font-bold uppercase tracking-wider text-stone-500 block mb-0.5">
+                <label className="label-caps block mb-0.5">
                   Guest Mobile #
                 </label>
                 <input
@@ -687,7 +687,7 @@ export const AdminPosOrderView: React.FC<AdminPosOrderViewProps> = ({
                   value={customerPhone}
                   onChange={(e) => setCustomerPhone(e.target.value)}
                   placeholder="Enter phone number"
-                  className="w-full px-2.5 py-1 bg-stone-50 border border-stone-200 rounded-lg text-xs text-stone-900 font-semibold focus:outline-hidden focus:border-amber-600"
+                  className="w-full px-2.5 py-1 bg-white border border-stone-200 rounded-lg text-xs text-stone-900 font-semibold focus:outline-hidden focus:border-amber-600"
                 />
               </div>
             </div>
@@ -698,7 +698,7 @@ export const AdminPosOrderView: React.FC<AdminPosOrderViewProps> = ({
             {/* Left Column: Dish Catalog (7-8 cols) */}
             <div className="lg:col-span-7 xl:col-span-8 space-y-3">
               {/* Category Pills & Search Bar */}
-              <div className="bg-white p-3.5 rounded-2xl border border-stone-200/80 shadow-2xs space-y-2.5">
+              <div className="bg-white p-3.5 rounded-2xl border border-stone-200/80 shadow-[var(--shadow-card)] space-y-2.5">
                 <div className="flex items-center gap-2">
                   <div className="relative flex-1">
                     <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-stone-400" />
@@ -707,7 +707,7 @@ export const AdminPosOrderView: React.FC<AdminPosOrderViewProps> = ({
                       placeholder="Search dish by name, ingredient, or spice..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="w-full pl-9 pr-3 py-1.5 bg-stone-50 border border-stone-200 rounded-xl text-xs text-stone-900 focus:outline-hidden focus:border-amber-600"
+                      className="w-full pl-9 pr-3 py-1.5 bg-white border border-stone-200 rounded-xl text-xs text-stone-900 focus:outline-hidden focus:border-amber-600"
                     />
                     {searchQuery && (
                       <button
@@ -725,7 +725,7 @@ export const AdminPosOrderView: React.FC<AdminPosOrderViewProps> = ({
                     className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer shrink-0 border ${
                       vegFilter
                         ? 'bg-emerald-50 text-emerald-800 border-emerald-300 shadow-2xs'
-                        : 'bg-stone-50 text-stone-600 hover:bg-stone-100 border-stone-200'
+                        : 'bg-white text-stone-600 hover:bg-stone-50 border-stone-200'
                     }`}
                   >
                     <span className="w-2 h-2 rounded-full bg-emerald-600"></span>
@@ -738,10 +738,10 @@ export const AdminPosOrderView: React.FC<AdminPosOrderViewProps> = ({
                   <button
                     type="button"
                     onClick={() => setSelectedCatId('all')}
-                    className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap shrink-0 ${
+                    className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer whitespace-nowrap shrink-0 ${
                       selectedCatId === 'all'
-                        ? 'bg-amber-800 text-white shadow-2xs'
-                        : 'bg-stone-50 hover:bg-stone-100 text-stone-700 border border-stone-200/80'
+                        ? 'bg-amber-800 text-white shadow-2xs border border-amber-800'
+                        : 'bg-white hover:bg-[var(--brand-soft)] hover:text-[var(--brand-text)] text-stone-700 border border-stone-200'
                     }`}
                   >
                     All Dishes ({menuItems.length})
@@ -753,10 +753,10 @@ export const AdminPosOrderView: React.FC<AdminPosOrderViewProps> = ({
                         key={c.id}
                         type="button"
                         onClick={() => setSelectedCatId(c.id)}
-                        className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap shrink-0 ${
+                        className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer whitespace-nowrap shrink-0 ${
                           selectedCatId === c.id
-                            ? 'bg-amber-800 text-white shadow-2xs'
-                            : 'bg-stone-50 hover:bg-stone-100 text-stone-700 border border-stone-200/80'
+                            ? 'bg-amber-800 text-white shadow-2xs border border-amber-800'
+                            : 'bg-white hover:bg-[var(--brand-soft)] hover:text-[var(--brand-text)] text-stone-700 border border-stone-200'
                         }`}
                       >
                         {c.name} ({count})
@@ -779,7 +779,7 @@ export const AdminPosOrderView: React.FC<AdminPosOrderViewProps> = ({
                       className={`bg-white rounded-2xl border p-2.5 flex flex-col justify-between transition-all group ${
                         inCart
                           ? 'border-amber-400 ring-2 ring-amber-500/10 shadow-xs'
-                          : 'border-stone-200/80 hover:border-stone-300 shadow-2xs'
+                          : 'border-stone-200/80 hover:border-[var(--brand-border)] hover:shadow-[var(--shadow-raised)] shadow-[var(--shadow-xs)]'
                       } ${!isAvailable ? 'opacity-50 grayscale' : ''}`}
                     >
                       <div>
@@ -828,7 +828,7 @@ export const AdminPosOrderView: React.FC<AdminPosOrderViewProps> = ({
 
                       {/* Bottom Row: Price & Quantity Controller */}
                       <div className="flex items-center justify-between pt-2.5 mt-2 border-t border-stone-100">
-                        <span className="font-serif font-bold text-sm text-stone-900">
+                        <span className="font-serif font-bold text-sm text-stone-900 tabular-nums">
                           {hasCustomization(dish) ? `From ${formatCurrency(startingPrice(dish))}` : formatCurrency(dish.price)}
                         </span>
 
@@ -857,7 +857,7 @@ export const AdminPosOrderView: React.FC<AdminPosOrderViewProps> = ({
                             type="button"
                             disabled={!isAvailable}
                             onClick={() => handleAddItem(dish)}
-                            className="px-3 py-1 bg-stone-100 hover:bg-amber-800 hover:text-white text-stone-800 font-bold rounded-xl text-xs transition-all cursor-pointer flex items-center gap-1 shadow-2xs"
+                            className="px-3 py-1 bg-[var(--brand-soft)] border border-[var(--brand-border)] hover:bg-amber-800 hover:border-amber-800 hover:text-white text-[var(--brand-text)] font-bold rounded-xl text-xs transition-all cursor-pointer flex items-center gap-1"
                           >
                             <Plus className="w-3 h-3" /> Add
                           </button>
@@ -873,13 +873,13 @@ export const AdminPosOrderView: React.FC<AdminPosOrderViewProps> = ({
             <div className="lg:col-span-5 xl:col-span-4 lg:sticky lg:top-4">
               <div className="bg-white rounded-2xl border border-stone-200/80 shadow-xs flex flex-col max-h-[calc(100vh-5rem)]">
                 {/* Ticket Header with Formatted Date */}
-                <div className="p-4 border-b border-stone-100 bg-[#fdfcfb] rounded-t-2xl">
+                <div className="p-4 border-b border-stone-100 bg-stone-50 rounded-t-2xl">
                   <div className="flex items-center justify-between">
                     <div>
                       <span className="text-[10px] font-bold text-amber-800 uppercase tracking-wider block">
                         Kitchen Order Ticket (KOT)
                       </span>
-                      <h3 className="font-serif font-bold text-base text-stone-900">
+                      <h3 className="section-title text-base">
                         {orderType === 'Dine-in'
                           ? selectedTable
                           : orderType === 'Room Service'
@@ -1017,7 +1017,7 @@ export const AdminPosOrderView: React.FC<AdminPosOrderViewProps> = ({
                 )}
 
                 {/* Bill Summary & Dispatch Actions */}
-                <div className="p-4 border-t border-stone-100 bg-[#fdfcfb] rounded-b-2xl space-y-3">
+                <div className="p-4 border-t border-stone-100 bg-stone-50 rounded-b-2xl space-y-3">
                   <div className="space-y-1 text-xs">
                     <div className="flex justify-between text-stone-600">
                       <span>Subtotal</span>
@@ -1071,7 +1071,7 @@ export const AdminPosOrderView: React.FC<AdminPosOrderViewProps> = ({
       {/* Dispatched Confirmation Modal */}
       {dispatchedOrder && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-md w-full p-6 text-center space-y-4 shadow-2xl border border-stone-200 animate-in zoom-in-95">
+          <div className="bg-white rounded-3xl max-w-md w-full p-6 text-center space-y-4 shadow-[var(--shadow-float)] border border-stone-200 animate-in zoom-in-95">
             <div className="w-14 h-14 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center mx-auto shadow-xs">
               <CheckCircle2 className="w-7 h-7" />
             </div>
@@ -1080,7 +1080,7 @@ export const AdminPosOrderView: React.FC<AdminPosOrderViewProps> = ({
               <span className="text-xs font-bold uppercase tracking-widest text-emerald-700">
                 Dispatched to Kitchen
               </span>
-              <h3 className="font-serif font-bold text-2xl text-stone-900 mt-1">
+              <h3 className="page-title mt-1">
                 Order #{dispatchedOrder.orderNumber}
               </h3>
               <p className="text-xs text-stone-500 mt-1">
@@ -1089,7 +1089,7 @@ export const AdminPosOrderView: React.FC<AdminPosOrderViewProps> = ({
             </div>
 
             {/* Quick KOT Slip (Poppins font, 12px text size, premium layout) */}
-            <div className="bg-gradient-to-br from-amber-50/60 to-orange-50/40 border border-amber-200/90 rounded-2xl p-4 text-left font-['Poppins',sans-serif] text-[12px] space-y-2.5 shadow-xs">
+            <div className="bg-[var(--brand-soft)] border border-[var(--brand-border)] rounded-2xl p-4 text-left font-['Poppins',sans-serif] text-[12px] space-y-2.5 shadow-xs">
               <div className="flex justify-between border-b border-amber-200/80 pb-2 text-stone-900 font-bold text-[12px]">
                 <span className="tracking-wide">
                   {dispatchedOrder.orderType.toUpperCase()} - {dispatchedOrder.tableNumber || dispatchedOrder.roomNumber || 'Takeaway'}

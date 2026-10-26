@@ -206,7 +206,7 @@ export const OrderStatusPage: React.FC<{
       <div className="flex flex-wrap items-center justify-between gap-3">
         <button
           onClick={() => navigate('my-orders')}
-          className="flex items-center gap-2 text-xs font-bold text-stone-600 hover:text-stone-900 transition-colors cursor-pointer bg-white px-3 py-1.5 rounded-xl border border-stone-200"
+          className="btn btn-secondary"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Back to My Orders</span>
@@ -216,7 +216,7 @@ export const OrderStatusPage: React.FC<{
           {canAddMoreItems && (order.orderType === 'Dine-in' || order.orderType === 'Takeaway') && (
             <button
               onClick={() => setAddonModalOpen(true)}
-              className="px-3.5 py-1.5 bg-amber-800 hover:bg-amber-900 text-white rounded-xl text-xs font-bold shadow-2xs transition-all flex items-center gap-1.5 cursor-pointer"
+              className="btn btn-primary"
             >
               <Plus className="w-3.5 h-3.5" />
               <span>Add More Items</span>
@@ -225,8 +225,9 @@ export const OrderStatusPage: React.FC<{
 
           <button
             onClick={() => fetchOrder()}
-            className="p-1.5 text-stone-500 hover:text-stone-800 hover:bg-stone-100 rounded-xl transition-colors cursor-pointer border border-stone-200 bg-white"
+            className="btn btn-secondary !px-2.5"
             title="Refresh Order"
+            aria-label="Refresh order"
           >
             <RotateCcw className="w-4 h-4" />
           </button>
@@ -235,22 +236,22 @@ export const OrderStatusPage: React.FC<{
 
       {/* PAY AT EXIT / PAYMENT PENDING BANNER */}
       {isPaymentPending && order.status !== 'CANCELLED' && (
-        <div className="p-4 sm:p-5 rounded-3xl bg-gradient-to-r from-stone-900 via-stone-950 to-amber-950 text-white shadow-md border border-amber-800/80 space-y-3 animate-in fade-in duration-200">
+        <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-[var(--brand-soft)] via-white to-white border border-[var(--brand-border)] shadow-[var(--shadow-card)] space-y-3 animate-in fade-in duration-200">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl bg-amber-500/20 text-amber-300 flex items-center justify-center font-bold text-xl border border-amber-400/30 shrink-0">
-                <LogOut className="w-5 h-5 text-amber-300" />
+              <div className="w-10 h-10 rounded-2xl bg-white text-[var(--brand)] flex items-center justify-center font-bold text-xl border border-[var(--brand-border)] shadow-[var(--shadow-xs)] shrink-0">
+                <LogOut className="w-5 h-5" />
               </div>
               <div>
-                <div className="flex items-center gap-2">
-                  <span className="text-[10px] uppercase font-bold tracking-widest text-amber-300">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="text-[10px] uppercase font-bold tracking-widest text-[var(--brand-text)]">
                     {isPayAtExit ? 'Pay at Exit • Payment Pending' : 'Payment Pending'}
                   </span>
-                  <span className="px-2 py-0.2 bg-amber-400/20 border border-amber-300/40 text-amber-200 text-[9px] font-bold uppercase rounded-md">
+                  <span className="badge badge-warning !text-[9px] font-bold uppercase">
                     Bill Ready
                   </span>
                 </div>
-                <h3 className="font-serif font-bold text-base sm:text-lg text-white">
+                <h3 className="section-title !text-lg sm:!text-xl">
                   Payable Amount: {formatCurrency(order.total)}
                 </h3>
               </div>
@@ -260,9 +261,9 @@ export const OrderStatusPage: React.FC<{
               {canAddMoreItems && (
                 <button
                   onClick={() => setAddonModalOpen(true)}
-                  className="py-2.5 px-3.5 bg-white/10 hover:bg-white/20 text-white font-bold text-xs rounded-xl border border-white/20 transition-all flex items-center gap-1.5 cursor-pointer"
+                  className="btn btn-secondary"
                 >
-                  <Plus className="w-3.5 h-3.5 text-amber-300" />
+                  <Plus className="w-3.5 h-3.5 text-[var(--brand)]" />
                   <span>Add More Items</span>
                 </button>
               )}
@@ -270,15 +271,15 @@ export const OrderStatusPage: React.FC<{
               <button
                 onClick={() => handleLaunchPayment('PHONEPE')}
                 disabled={retryingPayment}
-                className="py-2.5 px-4 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-amber-950 font-bold text-xs uppercase tracking-wider rounded-xl shadow-md transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+                className="lux-btn lux-btn-wine !min-h-10 !px-5 !tracking-[0.1em] disabled:opacity-50"
               >
-                <CreditCard className="w-4 h-4 text-amber-950" />
+                <CreditCard className="w-4 h-4" />
                 <span>Pay Now ({formatCurrency(order.total)})</span>
               </button>
             </div>
           </div>
 
-          <p className="text-xs text-stone-300 leading-relaxed">
+          <p className="text-xs text-stone-600 leading-relaxed">
             {isPayAtExit
               ? 'Your order is being prepared by the kitchen. You can order additional dishes anytime and settle your bill online or at exit.'
               : 'Payment is pending for this order. Please complete payment to confirm settlement.'}
@@ -287,23 +288,23 @@ export const OrderStatusPage: React.FC<{
       )}
 
       {/* Main Status Header Card */}
-      <div className="bg-white rounded-3xl border border-stone-200/80 p-5 sm:p-7 shadow-xs space-y-6">
+      <div className="surface !rounded-2xl p-5 sm:p-7 space-y-6">
         <div className="flex flex-wrap items-start justify-between gap-3 border-b border-stone-100 pb-4">
           <div>
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-bold uppercase tracking-widest text-amber-800">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="label-caps !text-[var(--brand-text)]">
                 Order Details & Tracking
               </span>
               {isPayAtExit && (
-                <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-800 border border-emerald-200">
+                <span className="badge badge-success !text-[10px] font-bold uppercase tracking-wider">
                   Pay at Exit
                 </span>
               )}
             </div>
-            <h1 className="font-serif font-bold text-2xl sm:text-3xl text-stone-900 mt-0.5">
+            <h1 className="lux-display text-[clamp(1.9rem,4vw,2.6rem)] text-stone-900 mt-1.5">
               Order #{order.orderNumber}
             </h1>
-            <div className="flex flex-wrap items-center gap-2 text-xs text-stone-500 mt-1">
+            <div className="flex flex-wrap items-center gap-2 text-xs text-stone-600 mt-1.5">
               <span>Placed on {formatOrderDateTime(order.createdAt)}</span>
               <span>•</span>
               <span className="font-semibold text-stone-800 flex items-center gap-1">
@@ -341,10 +342,10 @@ export const OrderStatusPage: React.FC<{
             </span>
 
             <span
-              className={`px-3 py-1 rounded-full text-xs font-bold border ${
+              className={`badge !px-3 !py-1 !text-xs font-bold ${
                 order.paymentStatus === 'PAID'
-                  ? 'bg-emerald-50 text-emerald-800 border-emerald-300'
-                  : 'bg-amber-50 text-amber-900 border-amber-300'
+                  ? 'badge-success'
+                  : 'badge-warning'
               }`}
             >
               {order.paymentStatus === 'PAID' ? '✓ Paid' : 'Payment Pending'}
@@ -357,17 +358,17 @@ export const OrderStatusPage: React.FC<{
 
         {/* Delivery Partner Tracking (Only for Home Delivery orders, never for Table orders) */}
         {order.orderType === 'Delivery' && !order.tableNumber && (
-          <div className="p-4 sm:p-5 rounded-3xl bg-gradient-to-r from-stone-900 via-stone-950 to-rose-950 text-white shadow-xs border border-rose-900/60 space-y-3">
+          <div className="p-4 sm:p-5 rounded-2xl bg-[var(--surface-muted)] border border-[var(--border-subtle)] space-y-3">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-2xl bg-rose-500/20 border border-rose-400/30 flex items-center justify-center text-white shrink-0">
-                  <Truck className="w-5 h-5 text-rose-300" />
+                <div className="w-10 h-10 rounded-2xl bg-white border border-[var(--brand-border)] flex items-center justify-center shadow-[var(--shadow-xs)] shrink-0">
+                  <Truck className="w-5 h-5 text-[var(--brand)]" />
                 </div>
                 <div>
-                  <span className="text-[10px] font-bold uppercase tracking-widest text-rose-300 block">
+                  <span className="label-caps !text-[10px] !text-[var(--brand-text)] block">
                     Dedicated Delivery Partner
                   </span>
-                  <h3 className="font-bold text-base text-white">
+                  <h3 className="font-bold text-base text-stone-900">
                     {order.deliveryRiderName ? `🚴 ${order.deliveryRiderName}` : 'Assigning Delivery Partner...'}
                   </h3>
                 </div>
@@ -376,7 +377,7 @@ export const OrderStatusPage: React.FC<{
               {order.deliveryRiderPhone && (
                 <a
                   href={`tel:${order.deliveryRiderPhone}`}
-                  className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-all shadow-sm flex items-center gap-1.5 shrink-0 cursor-pointer"
+                  className="btn btn-primary shrink-0"
                 >
                   <PhoneCall className="w-3.5 h-3.5" />
                   <span>Call Rider</span>
@@ -385,12 +386,12 @@ export const OrderStatusPage: React.FC<{
             </div>
 
             {order.deliveryAddress && (
-              <div className="p-3 rounded-2xl bg-white/10 border border-white/10 text-xs space-y-0.5">
-                <span className="text-[10px] uppercase font-bold text-amber-300 flex items-center gap-1">
-                  <MapPin className="w-3 h-3 text-rose-400" />
+              <div className="p-3 rounded-xl bg-white border border-[var(--border-subtle)] text-xs space-y-0.5">
+                <span className="text-[10px] uppercase font-bold text-[var(--brand-text)] flex items-center gap-1">
+                  <MapPin className="w-3 h-3 text-[var(--brand)]" />
                   <span>Delivery Address:</span>
                 </span>
-                <p className="text-stone-200 font-medium leading-tight">{order.deliveryAddress}</p>
+                <p className="text-stone-700 font-medium leading-tight">{order.deliveryAddress}</p>
               </div>
             )}
           </div>
@@ -401,7 +402,7 @@ export const OrderStatusPage: React.FC<{
           <div className="flex justify-end pt-1">
             <button
               onClick={handleCancelOrder}
-              className="px-4 py-2 text-xs font-semibold text-rose-600 hover:bg-rose-50 border border-rose-200 rounded-xl transition-colors cursor-pointer flex items-center gap-1.5"
+              className="btn btn-secondary !text-rose-700 hover:!bg-rose-50 hover:!border-rose-200"
             >
               <XCircle className="w-4 h-4" />
               <span>Cancel Order</span>
@@ -413,9 +414,9 @@ export const OrderStatusPage: React.FC<{
       {/* Order Items & Financial Breakdown Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Left 2 Cols: Items Breakdown */}
-        <div className="md:col-span-2 bg-white rounded-3xl border border-stone-200/80 p-5 sm:p-6 shadow-xs space-y-5">
-          <div className="flex items-center justify-between border-b border-stone-100 pb-3">
-            <h3 className="font-serif font-bold text-base text-stone-900 flex items-center gap-2">
+        <div className="md:col-span-2 surface !rounded-2xl p-5 sm:p-6 space-y-5">
+          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-stone-100 pb-3">
+            <h3 className="section-title flex items-center gap-2">
               <Utensils className="w-4 h-4 text-amber-700" />
               <span>Items Ordered ({order.items.length})</span>
             </h3>
@@ -424,7 +425,7 @@ export const OrderStatusPage: React.FC<{
               <button
                 type="button"
                 onClick={() => setAddonModalOpen(true)}
-                className="text-xs font-bold text-amber-800 hover:text-amber-900 bg-amber-50 hover:bg-amber-100 px-3 py-1 rounded-xl border border-amber-300 transition-all flex items-center gap-1 cursor-pointer"
+                className="text-xs font-bold text-[var(--brand-text)] bg-[var(--brand-soft)] hover:bg-[var(--brand-soft-hover)] px-3 py-1.5 rounded-full border border-[var(--brand-border)] transition-all flex items-center gap-1 cursor-pointer"
               >
                 <Plus className="w-3.5 h-3.5" />
                 <span>Add More Dishes</span>
@@ -434,22 +435,22 @@ export const OrderStatusPage: React.FC<{
 
           {/* Original Items */}
           <div className="space-y-2.5">
-            <p className="text-[11px] font-bold uppercase tracking-wider text-stone-400">
+            <p className="label-caps">
               Initial Order Dishes
             </p>
             {originalItems.map((item) => (
               <div
                 key={item.id}
-                className="flex items-center justify-between text-xs py-2 border-b border-stone-100 last:border-0"
+                className="flex items-center justify-between gap-3 text-xs py-2 border-b border-stone-100 last:border-0"
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-stone-100 text-stone-800 flex items-center justify-center font-bold font-mono shrink-0">
+                  <div className="w-8 h-8 rounded-lg bg-[var(--brand-soft)] text-[var(--brand-text)] border border-[var(--brand-border)] flex items-center justify-center font-bold font-mono shrink-0">
                     {item.quantity}×
                   </div>
                   <div>
                     <p className="font-bold text-stone-900 text-sm">{item.name}<OrderLineChoices item={item} /></p>
                     {item.specialInstructions && (
-                      <p className="text-[11px] text-amber-800">
+                      <p className="text-[11px] text-[var(--brand-text)]">
                         Note: {item.specialInstructions}
                       </p>
                     )}
@@ -460,7 +461,7 @@ export const OrderStatusPage: React.FC<{
                   <p className="font-mono font-bold text-stone-900 text-sm">
                     {formatCurrency(item.totalPrice)}
                   </p>
-                  <p className="text-[10px] text-stone-400 font-mono">
+                  <p className="text-[10px] text-stone-500 font-mono">
                     {formatCurrency(item.unitPrice)} each
                   </p>
                 </div>
@@ -471,12 +472,12 @@ export const OrderStatusPage: React.FC<{
           {/* Add-on Items Section (if any) */}
           {addonItems.length > 0 && (
             <div className="space-y-2.5 pt-3 border-t border-stone-100">
-              <div className="flex items-center justify-between">
-                <p className="text-[11px] font-bold uppercase tracking-wider text-amber-800 flex items-center gap-1">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <p className="label-caps !text-[var(--brand-text)] flex items-center gap-1">
                   <Sparkles className="w-3.5 h-3.5 text-amber-600" />
                   <span>Add-on Dishes Added During Dining ({addonItems.length})</span>
                 </p>
-                <span className="text-[9px] font-bold uppercase bg-amber-100 text-amber-900 px-2 py-0.2 rounded-md">
+                <span className="badge badge-warning !text-[9px] font-bold uppercase">
                   Active in Kitchen
                 </span>
               </div>
@@ -484,21 +485,21 @@ export const OrderStatusPage: React.FC<{
               {addonItems.map((item) => (
                 <div
                   key={item.id}
-                  className="flex items-center justify-between text-xs py-2.5 px-3 bg-amber-50/50 rounded-xl border border-amber-200/70"
+                  className="flex items-center justify-between gap-3 text-xs py-2.5 px-3 bg-[var(--brand-soft)] rounded-xl border border-[var(--brand-border)]"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-amber-800 text-white flex items-center justify-center font-bold font-mono shrink-0">
+                    <div className="w-8 h-8 rounded-lg bg-[var(--brand)] text-white flex items-center justify-center font-bold font-mono shrink-0">
                       {item.quantity}×
                     </div>
                     <div>
                       <div className="flex items-center gap-1.5">
                         <p className="font-bold text-stone-900 text-sm">{item.name}<OrderLineChoices item={item} /></p>
-                        <span className="text-[9px] font-bold bg-amber-200 text-amber-900 px-1.5 py-0.2 rounded-sm">
+                        <span className="badge badge-brand !text-[9px] font-bold">
                           + Add-on
                         </span>
                       </div>
                       {item.specialInstructions && (
-                        <p className="text-[11px] text-amber-800">
+                        <p className="text-[11px] text-[var(--brand-text)]">
                           Note: {item.specialInstructions}
                         </p>
                       )}
@@ -506,7 +507,7 @@ export const OrderStatusPage: React.FC<{
                   </div>
 
                   <div className="text-right">
-                    <p className="font-mono font-bold text-amber-950 text-sm">
+                    <p className="font-mono font-bold text-[var(--brand-text)] text-sm">
                       {formatCurrency(item.totalPrice)}
                     </p>
                     <p className="text-[10px] text-stone-500 font-mono">
@@ -520,7 +521,7 @@ export const OrderStatusPage: React.FC<{
 
           {/* Kitchen Notes */}
           {order.notes && (
-            <div className="p-3 rounded-2xl bg-stone-50 border border-stone-200 text-xs">
+            <div className="p-3 rounded-xl bg-[var(--surface-muted)] border border-[var(--border-subtle)] text-xs">
               <span className="font-bold text-stone-700 block mb-0.5">Kitchen Note:</span>
               <p className="text-stone-600 italic">{order.notes}</p>
             </div>
@@ -528,10 +529,10 @@ export const OrderStatusPage: React.FC<{
         </div>
 
         {/* Right Col: Bill Summary & Settle Actions */}
-        <div className="bg-white rounded-3xl border border-stone-200/80 p-5 sm:p-6 shadow-xs space-y-5 h-fit">
-          <h3 className="font-serif font-bold text-base text-stone-900 border-b border-stone-100 pb-3 flex items-center justify-between">
+        <div className="surface-raised !rounded-2xl p-5 sm:p-6 space-y-5 h-fit">
+          <h3 className="section-title border-b border-stone-100 pb-3 flex items-center justify-between gap-2">
             <span>Bill Summary</span>
-            <span className="text-xs font-mono font-normal text-stone-500">
+            <span className="badge font-mono !font-medium">
               {order.paymentMethod}
             </span>
           </h3>
@@ -559,9 +560,9 @@ export const OrderStatusPage: React.FC<{
               <span className="font-mono">{formatCurrency(order.serviceCharge)}</span>
             </div>
 
-            <div className="flex justify-between text-base font-bold text-stone-900 pt-3 border-t border-stone-200">
-              <span className="font-serif">Grand Total</span>
-              <span className="font-serif text-xl font-bold text-amber-950">
+            <div className="flex justify-between items-baseline text-base font-bold text-stone-900 pt-3 border-t border-dashed border-[var(--brand-border)]">
+              <span className="font-display text-lg">Grand Total</span>
+              <span className="font-display text-2xl font-bold text-[var(--brand-text)]">
                 {formatCurrency(order.total)}
               </span>
             </div>
@@ -574,13 +575,13 @@ export const OrderStatusPage: React.FC<{
                 type="button"
                 onClick={() => handleLaunchPayment('PHONEPE')}
                 disabled={retryingPayment}
-                className="w-full py-3 px-4 bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs uppercase tracking-wider rounded-2xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                className="lux-btn lux-btn-wine w-full disabled:opacity-50"
               >
                 <CreditCard className="w-4 h-4" />
                 <span>Pay {formatCurrency(order.total)} Now</span>
               </button>
             ) : (
-              <div className="p-3 bg-emerald-50 rounded-2xl border border-emerald-200 text-center text-xs space-y-0.5">
+              <div className="p-3 bg-[var(--success-soft)] rounded-xl border border-[var(--success-border)] text-center text-xs space-y-0.5">
                 <span className="font-bold text-emerald-900 flex items-center justify-center gap-1">
                   <CheckCircle2 className="w-4 h-4 text-emerald-600" />
                   <span>Payment Complete</span>
@@ -592,7 +593,7 @@ export const OrderStatusPage: React.FC<{
             {/* Dine-in guests ask staff for the bill when they are done */}
             {order.orderType === 'Dine-in' && isPaymentPending && order.status !== 'CANCELLED' && order.status !== 'COMPLETED' && (
               billAlreadyRequested ? (
-                <div className="w-full py-2.5 px-3 bg-amber-50 text-amber-900 font-bold text-xs rounded-2xl border border-amber-200 flex items-center justify-center gap-1.5">
+                <div className="w-full py-2.5 px-3 bg-[var(--warning-soft)] text-amber-900 font-bold text-xs rounded-xl border border-[var(--warning-border)] flex items-center justify-center gap-1.5">
                   <Receipt className="w-3.5 h-3.5" />
                   <span>Bill requested — staff notified</span>
                 </div>
@@ -601,7 +602,7 @@ export const OrderStatusPage: React.FC<{
                   type="button"
                   onClick={handleRequestBill}
                   disabled={requestingBill}
-                  className="w-full py-2.5 px-3 bg-stone-900 hover:bg-stone-800 text-white font-bold text-xs uppercase tracking-wider rounded-2xl transition-all flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
+                  className="btn btn-primary w-full"
                 >
                   <Receipt className="w-3.5 h-3.5" />
                   <span>{requestingBill ? 'Requesting Bill…' : 'Request Bill'}</span>
@@ -612,7 +613,7 @@ export const OrderStatusPage: React.FC<{
             <button
               type="button"
               onClick={handleViewInvoice}
-              className="w-full py-2.5 px-3 bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold text-xs rounded-2xl transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+              className="btn btn-secondary w-full"
             >
               <Receipt className="w-3.5 h-3.5" />
               <span>View Itemized Bill / Invoice</span>

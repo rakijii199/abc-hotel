@@ -131,13 +131,13 @@ export const StaffBillingDashboard: React.FC<{
   return (
     <div className="space-y-6">
       {/* Top Banner & Refresh */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 sm:p-6 rounded-3xl border border-stone-200/90 shadow-sm">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 sm:p-6 rounded-2xl border border-stone-200/90 shadow-[var(--shadow-card)]">
         <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-2xl bg-amber-900 text-amber-300 flex items-center justify-center font-bold shadow-xs">
+          <div className="w-12 h-12 rounded-2xl bg-[var(--brand-soft)] text-amber-800 border border-[var(--brand-border)] flex items-center justify-center font-bold">
             <Receipt className="w-6 h-6" />
           </div>
           <div>
-            <h1 className="font-serif font-bold text-2xl text-stone-900">
+            <h1 className="page-title">
               Staff Billing Dashboard
             </h1>
             <p className="text-xs text-stone-500">
@@ -148,7 +148,7 @@ export const StaffBillingDashboard: React.FC<{
 
         <button
           onClick={fetchData}
-          className="px-4 py-2.5 bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold text-xs rounded-xl flex items-center gap-2 cursor-pointer transition-colors self-start sm:self-auto"
+          className="px-4 py-2.5 bg-white border border-stone-200 hover:bg-[var(--brand-soft)] hover:border-[var(--brand-border)] hover:text-[var(--brand-text)] text-stone-700 font-bold text-xs rounded-xl flex items-center gap-2 cursor-pointer transition-colors self-start sm:self-auto"
         >
           <RotateCcw className="w-4 h-4 text-stone-500" />
           <span>Refresh Requests</span>
@@ -158,19 +158,19 @@ export const StaffBillingDashboard: React.FC<{
       {/* Tabs & Search Bar */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         {/* Navigation Tabs */}
-        <div className="flex items-center gap-1.5 p-1 bg-stone-200/80 rounded-2xl overflow-x-auto text-xs font-bold">
+        <div className="flex items-center gap-1.5 p-1 bg-stone-100/80 border border-stone-200 rounded-2xl overflow-x-auto text-xs font-bold">
           <button
             onClick={() => setActiveTab('REQUESTS')}
             className={`px-4 py-2.5 rounded-xl transition-all cursor-pointer whitespace-nowrap flex items-center gap-2 ${
               activeTab === 'REQUESTS'
-                ? 'bg-amber-900 text-white shadow-sm'
-                : 'text-stone-700 hover:text-stone-900'
+                ? 'bg-amber-800 text-white shadow-sm'
+                : 'text-stone-700 hover:text-[var(--brand-text)] hover:bg-white'
             }`}
           >
             <Clock className="w-4 h-4" />
             <span>Billing Requests</span>
             {requests.length > 0 && (
-              <span className="ml-1 px-2 py-0.5 bg-amber-500 text-amber-950 font-mono text-[10px] rounded-full">
+              <span className="ml-1 px-2 py-0.5 bg-[var(--warning-soft)] text-[var(--warning)] border border-[var(--warning-border)] font-mono text-[10px] rounded-full">
                 {requests.length}
               </span>
             )}
@@ -180,11 +180,11 @@ export const StaffBillingDashboard: React.FC<{
             onClick={() => setActiveTab('PENDING')}
             className={`px-4 py-2.5 rounded-xl transition-all cursor-pointer whitespace-nowrap flex items-center gap-2 ${
               activeTab === 'PENDING'
-                ? 'bg-amber-900 text-white shadow-sm'
-                : 'text-stone-700 hover:text-stone-900'
+                ? 'bg-amber-800 text-white shadow-sm'
+                : 'text-stone-700 hover:text-[var(--brand-text)] hover:bg-white'
             }`}
           >
-            <AlertCircle className="w-4 h-4 text-amber-400" />
+            <AlertCircle className="w-4 h-4 text-[var(--warning)]" />
             <span>Pending Payments</span>
           </button>
 
@@ -192,11 +192,11 @@ export const StaffBillingDashboard: React.FC<{
             onClick={() => setActiveTab('PAID')}
             className={`px-4 py-2.5 rounded-xl transition-all cursor-pointer whitespace-nowrap flex items-center gap-2 ${
               activeTab === 'PAID'
-                ? 'bg-amber-900 text-white shadow-sm'
-                : 'text-stone-700 hover:text-stone-900'
+                ? 'bg-amber-800 text-white shadow-sm'
+                : 'text-stone-700 hover:text-[var(--brand-text)] hover:bg-white'
             }`}
           >
-            <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+            <CheckCircle2 className="w-4 h-4 text-emerald-600" />
             <span>Paid Bills</span>
           </button>
 
@@ -204,8 +204,8 @@ export const StaffBillingDashboard: React.FC<{
             onClick={() => setActiveTab('HISTORY')}
             className={`px-4 py-2.5 rounded-xl transition-all cursor-pointer whitespace-nowrap flex items-center gap-2 ${
               activeTab === 'HISTORY'
-                ? 'bg-amber-900 text-white shadow-sm'
-                : 'text-stone-700 hover:text-stone-900'
+                ? 'bg-amber-800 text-white shadow-sm'
+                : 'text-stone-700 hover:text-[var(--brand-text)] hover:bg-white'
             }`}
           >
             <FileText className="w-4 h-4" />
@@ -221,14 +221,14 @@ export const StaffBillingDashboard: React.FC<{
             placeholder="Search Order #, Invoice #, Table..."
             value={searchTerm}
             onChange={(e) => setSearchText(e.target.value)}
-            className="w-full pl-9 pr-4 py-2.5 bg-white border border-stone-200 rounded-2xl text-xs font-mono focus:outline-hidden focus:border-amber-800 shadow-2xs"
+            className="w-full pl-9 pr-4 py-2.5 bg-white border border-stone-200 rounded-xl text-xs font-mono focus:outline-hidden focus:border-amber-800 shadow-2xs"
           />
         </div>
       </div>
 
       {/* Main Content Body */}
       {loading ? (
-        <div className="py-12 bg-white rounded-3xl border border-stone-200 flex items-center justify-center">
+        <div className="py-12 bg-white rounded-2xl border border-stone-200 shadow-[var(--shadow-card)] flex items-center justify-center">
           <Spinner size="lg" text="Loading billing pipeline..." />
         </div>
       ) : activeTab === 'REQUESTS' ? (
@@ -244,15 +244,15 @@ export const StaffBillingDashboard: React.FC<{
             {filteredRequests.map((order) => (
               <div
                 key={order.id}
-                className="bg-white rounded-3xl border-2 border-amber-200/90 p-5 shadow-sm space-y-4 hover:shadow-md transition-all flex flex-col justify-between"
+                className="bg-white rounded-2xl border border-[var(--brand-border)] border-t-4 border-t-amber-700 p-5 shadow-[var(--shadow-card)] space-y-4 lift flex flex-col justify-between"
               >
                 <div className="space-y-3">
                   <div className="flex items-start justify-between gap-2 border-b border-stone-100 pb-3">
                     <div>
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-amber-800 bg-amber-50 px-2.5 py-0.5 rounded-md border border-amber-200">
+                      <span className="badge badge-brand uppercase tracking-wider">
                         {order.tableNumber || order.orderType}
                       </span>
-                      <h3 className="font-serif font-bold text-lg text-stone-900 mt-1">
+                      <h3 className="section-title text-lg mt-1">
                         Order #{order.orderNumber}
                       </h3>
                     </div>
@@ -273,14 +273,14 @@ export const StaffBillingDashboard: React.FC<{
                     <p className="flex items-center gap-1.5 font-medium text-stone-900">
                       <User className="w-3.5 h-3.5 text-stone-400" />
                       <span>{order.customerName}</span>
-                      <span className="text-stone-400 font-mono text-[11px]">({order.customerPhone})</span>
+                      <span className="text-stone-500 font-mono text-[11px]">({order.customerPhone})</span>
                     </p>
 
                     <p className="text-[11px] text-stone-500">
                       Placed at {formatDate(order.createdAt)} • {order.items.length} Items
                     </p>
 
-                    <div className="p-2.5 bg-stone-50 rounded-xl space-y-1 border border-stone-200/60 text-[11px]">
+                    <div className="p-2.5 bg-[var(--surface-muted)] rounded-xl space-y-1 border border-stone-200/60 text-[11px]">
                       {order.items.slice(0, 3).map((item) => (
                         <div key={item.id} className="flex justify-between">
                           <span className="truncate max-w-[180px] font-medium text-stone-800">
@@ -302,7 +302,7 @@ export const StaffBillingDashboard: React.FC<{
                   <button
                     onClick={() => handleProceedToBilling(order.id)}
                     disabled={generatingId === order.id}
-                    className="w-full py-3 px-4 bg-gradient-to-r from-amber-800 to-amber-950 hover:from-amber-900 hover:to-black text-white font-bold rounded-xl text-xs flex items-center justify-center gap-2 shadow-sm transition-all cursor-pointer disabled:opacity-50"
+                    className="w-full py-3 px-4 bg-amber-800 hover:bg-amber-900 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-2 shadow-sm transition-all cursor-pointer disabled:opacity-50"
                   >
                     <Receipt className="w-4 h-4 text-amber-300" />
                     <span>
@@ -323,11 +323,11 @@ export const StaffBillingDashboard: React.FC<{
             icon="receipt"
           />
         ) : (
-          <div className="bg-white rounded-3xl border border-stone-200 shadow-sm overflow-hidden">
+          <div className="bg-white rounded-2xl border border-stone-200 shadow-[var(--shadow-card)] overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse text-xs">
                 <thead>
-                  <tr className="bg-stone-50 border-b border-stone-200 text-stone-500 uppercase text-[10px] font-bold">
+                  <tr className="bg-[var(--brand-soft)] border-b border-[var(--brand-border)] text-stone-600 uppercase text-[10px] tracking-wider font-semibold">
                     <th className="py-3.5 px-4">Invoice #</th>
                     <th className="py-3.5 px-4">Order # / Table</th>
                     <th className="py-3.5 px-4">Customer</th>
@@ -340,7 +340,7 @@ export const StaffBillingDashboard: React.FC<{
                 </thead>
                 <tbody className="divide-y divide-stone-100 font-medium">
                   {filteredInvoices.map((inv) => (
-                    <tr key={inv.id} className="hover:bg-amber-50/30 transition-colors">
+                    <tr key={inv.id} className="hover:bg-[var(--brand-soft)]/60 transition-colors">
                       <td className="py-3.5 px-4 font-mono font-bold text-stone-900">
                         {inv.invoiceNumber}
                       </td>
@@ -363,10 +363,10 @@ export const StaffBillingDashboard: React.FC<{
                       </td>
                       <td className="py-3.5 px-4 text-center">
                         <span
-                          className={`px-2.5 py-1 rounded-full text-[10px] font-bold border ${
+                          className={`badge ${
                             inv.paymentStatus === 'PAID'
-                              ? 'bg-emerald-50 text-emerald-800 border-emerald-300'
-                              : 'bg-amber-50 text-amber-800 border-amber-300'
+                              ? 'badge-success'
+                              : 'badge-warning'
                           }`}
                         >
                           {inv.paymentStatus}
@@ -375,7 +375,7 @@ export const StaffBillingDashboard: React.FC<{
                       <td className="py-3.5 px-4 text-right">
                         <button
                           onClick={() => handleOpenExistingInvoice(inv)}
-                          className="px-3 py-1.5 bg-stone-900 hover:bg-stone-800 text-white font-bold rounded-xl text-[11px] inline-flex items-center gap-1.5 cursor-pointer shadow-2xs"
+                          className="px-3 py-1.5 bg-white border border-stone-300 hover:bg-[var(--brand-soft)] hover:border-[var(--brand-border)] hover:text-[var(--brand-text)] text-stone-800 font-bold rounded-xl text-[11px] inline-flex items-center gap-1.5 cursor-pointer shadow-2xs"
                         >
                           <FileText className="w-3.5 h-3.5" />
                           <span>View & Print</span>

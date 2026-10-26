@@ -180,15 +180,15 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
     `${roleDisplayName(user?.role)} · ${user?.effectivePrivilege === 'SUPER_ADMIN' ? 'Super Admin' : 'User'}`;
 
   return (
-    <aside className="w-full h-full bg-gradient-to-b from-[#fffdf9] to-[#faf6ef] text-stone-600 flex flex-col justify-between shrink-0 border-r border-stone-200/80 select-none relative overflow-hidden">
+    <aside className="w-full h-full bg-gradient-to-b from-[var(--surface)] to-[var(--surface-muted)] text-stone-600 flex flex-col justify-between shrink-0 border-r border-stone-200/80 select-none relative overflow-hidden">
       {/* Soft warm glow behind the brand */}
       <div className="absolute -top-28 -left-20 w-72 h-72 rounded-full bg-amber-200/30 blur-[90px] pointer-events-none" aria-hidden="true" />
 
       <div className="relative flex-1 overflow-y-auto min-h-0 scrollbar-none">
         {/* Brand Header */}
         <div className="px-5 pt-5 pb-4 flex items-center gap-3">
-          <span className="relative w-10 h-10 shrink-0 flex items-center justify-center border border-amber-600/50 text-amber-800 bg-white shadow-[0_6px_16px_-10px_rgba(120,80,30,0.45)]">
-            <span className="absolute inset-[3px] border border-amber-600/20" />
+          <span className="relative w-10 h-10 shrink-0 flex items-center justify-center border border-[var(--brand)] text-[var(--brand-text)] bg-white shadow-[0_6px_16px_-10px_var(--brand-ring)]">
+            <span className="absolute inset-[3px] border border-[var(--brand-border)]" />
             <span className="font-display text-[13px] font-semibold tracking-[0.06em]">ABC</span>
           </span>
           <div className="min-w-0 leading-none">
@@ -215,7 +215,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
                     aria-current={isActive ? 'page' : undefined}
                     className={`relative w-full text-left pl-3 pr-3 py-1.5 rounded-xl text-[13px] transition-all duration-200 flex items-center justify-between gap-2 cursor-pointer group outline-none focus-visible:ring-2 focus-visible:ring-amber-500/40 ${
                       isActive
-                        ? 'bg-amber-50 text-amber-950 font-semibold ring-1 ring-amber-200/90 shadow-[0_8px_20px_-16px_rgba(120,80,30,0.55)]'
+                        ? 'bg-amber-50 text-amber-950 font-semibold ring-1 ring-amber-200/90 shadow-[0_8px_20px_-16px_var(--brand-ring)]'
                         : 'text-stone-600 font-medium hover:text-stone-900 hover:bg-stone-900/[0.04]'
                     }`}
                   >
@@ -230,7 +230,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
                       <span
                         className={`w-7 h-7 rounded-lg shrink-0 flex items-center justify-center transition-colors duration-200 ${
                           isActive
-                            ? 'bg-white text-amber-700 shadow-[0_2px_8px_-4px_rgba(120,80,30,0.5)]'
+                            ? 'bg-white text-amber-700 shadow-[0_2px_8px_-4px_var(--brand-ring)]'
                             : 'text-stone-400 group-hover:text-amber-700 group-hover:bg-white'
                         }`}
                       >

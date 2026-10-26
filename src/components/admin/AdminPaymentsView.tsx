@@ -169,10 +169,10 @@ export const AdminPaymentsView: React.FC<AdminPaymentsViewProps> = ({ onRefreshO
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-stone-200 pb-4">
         <div>
-          <span className="text-xs font-bold uppercase tracking-widest text-amber-800">
+          <span className="lux-eyebrow text-amber-800">
             Financial Operations
           </span>
-          <h2 className="font-serif text-2xl font-bold text-stone-900">
+          <h2 className="page-title">
             Payment Transactions & Gateway Reconciliation
           </h2>
           <p className="text-xs text-stone-500 mt-0.5">
@@ -189,7 +189,7 @@ export const AdminPaymentsView: React.FC<AdminPaymentsViewProps> = ({ onRefreshO
           </button>
           <button
             onClick={fetchPayments}
-            className="px-3.5 py-2 rounded-xl bg-white border border-stone-200 hover:bg-stone-50 font-bold text-xs text-stone-700 flex items-center gap-1.5 shadow-2xs cursor-pointer"
+            className="px-3.5 py-2 rounded-xl bg-white border border-stone-200 hover:bg-[var(--brand-soft)] hover:border-[var(--brand-border)] hover:text-[var(--brand-text)] font-bold text-xs text-stone-700 flex items-center gap-1.5 shadow-2xs cursor-pointer"
           >
             <RotateCcw className="w-3.5 h-3.5 text-stone-500" /> Refresh Audit
           </button>
@@ -198,34 +198,34 @@ export const AdminPaymentsView: React.FC<AdminPaymentsViewProps> = ({ onRefreshO
 
       {/* Metrics Row */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-        <div className="bg-white p-4 rounded-2xl border border-stone-200/80 shadow-2xs space-y-1">
-          <span className="text-[10px] uppercase font-bold text-stone-400 block">Captured Revenue</span>
-          <p className="font-serif font-bold text-xl sm:text-2xl text-emerald-800">{formatCurrency(totalRevenue)}</p>
-          <span className="text-[10px] text-emerald-700 font-semibold">{capturedCount} successful payments</span>
+        <div className="stat-card p-4 space-y-1">
+          <span className="label-caps block">Captured Revenue</span>
+          <p className="font-serif font-bold text-2xl sm:text-[1.7rem] leading-tight tabular-nums text-[var(--brand-text)]">{formatCurrency(totalRevenue)}</p>
+          <span className="text-[10px] text-[var(--success)] font-semibold">{capturedCount} successful payments</span>
         </div>
 
-        <div className="bg-white p-4 rounded-2xl border border-stone-200/80 shadow-2xs space-y-1">
-          <span className="text-[10px] uppercase font-bold text-stone-400 block">Pending Payments</span>
-          <p className="font-serif font-bold text-xl sm:text-2xl text-amber-800">{pendingCount}</p>
+        <div className="stat-card p-4 space-y-1">
+          <span className="label-caps block">Pending Payments</span>
+          <p className="font-serif font-bold text-2xl sm:text-[1.7rem] leading-tight tabular-nums text-[var(--warning)]">{pendingCount}</p>
           <span className="text-[10px] text-stone-500">Awaiting guest or staff payment</span>
         </div>
 
-        <div className="bg-white p-4 rounded-2xl border border-stone-200/80 shadow-2xs space-y-1">
-          <span className="text-[10px] uppercase font-bold text-stone-400 block">Total Refunded</span>
-          <p className="font-serif font-bold text-xl sm:text-2xl text-rose-800">{formatCurrency(totalRefunded)}</p>
+        <div className="stat-card p-4 space-y-1">
+          <span className="label-caps block">Total Refunded</span>
+          <p className="font-serif font-bold text-2xl sm:text-[1.7rem] leading-tight tabular-nums text-[var(--danger)]">{formatCurrency(totalRefunded)}</p>
           <span className="text-[10px] text-stone-500">Processed refunds</span>
         </div>
 
-        <div className="bg-white p-4 rounded-2xl border border-stone-200/80 shadow-2xs space-y-1">
-          <span className="text-[10px] uppercase font-bold text-stone-400 block">Verification Engine</span>
-          <p className="font-serif font-bold text-xl sm:text-2xl text-stone-900">Hotel QR + RZP</p>
+        <div className="stat-card p-4 space-y-1">
+          <span className="label-caps block">Verification Engine</span>
+          <p className="font-serif font-bold text-2xl sm:text-[1.7rem] leading-tight text-stone-900">Hotel QR + RZP</p>
           <span className="text-[10px] text-emerald-700 font-bold">HMAC Signature Verified</span>
         </div>
       </div>
 
       {/* Filter and Search Bar */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-        <div className="sm:col-span-2 flex items-center gap-3 bg-white p-3 rounded-2xl border border-stone-200/80 shadow-2xs">
+        <div className="sm:col-span-2 flex items-center gap-3 bg-white p-3 rounded-2xl border border-stone-200/80 shadow-[var(--shadow-xs)] focus-within:border-amber-700 focus-within:ring-3 focus-within:ring-[var(--brand-ring-soft)] transition-shadow">
           <Search className="w-4 h-4 text-stone-400" />
           <input
             type="text"
@@ -263,10 +263,10 @@ export const AdminPaymentsView: React.FC<AdminPaymentsViewProps> = ({ onRefreshO
       </div>
 
       {/* Transactions Table */}
-      <div className="bg-white rounded-2xl border border-stone-200/80 shadow-xs overflow-hidden">
+      <div className="bg-white rounded-2xl border border-stone-200/80 shadow-[var(--shadow-card)] overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-xs text-left">
-            <thead className="bg-stone-50 text-stone-500 uppercase font-semibold border-b border-stone-200">
+            <thead className="bg-[var(--brand-soft)] text-stone-600 uppercase font-semibold tracking-wide border-b border-[var(--brand-border)]">
               <tr>
                 <th className="p-4">Payment ID</th>
                 <th className="p-4">Order Ref</th>
@@ -281,13 +281,13 @@ export const AdminPaymentsView: React.FC<AdminPaymentsViewProps> = ({ onRefreshO
             <tbody className="divide-y divide-stone-100">
               {filteredPayments.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="p-8 text-center text-stone-400">
+                  <td colSpan={8} className="p-8 text-center text-stone-500">
                     No payment records found matching the current search criteria.
                   </td>
                 </tr>
               ) : (
                 filteredPayments.map((p) => (
-                  <tr key={p.id} className="hover:bg-stone-50/70 transition-colors">
+                  <tr key={p.id} className="hover:bg-[var(--brand-soft)]/60 transition-colors">
                     <td className="p-4 font-mono font-bold text-stone-900">
                       {p.id}
                     </td>
@@ -298,7 +298,7 @@ export const AdminPaymentsView: React.FC<AdminPaymentsViewProps> = ({ onRefreshO
 
                     <td className="p-4">
                       <p className="font-bold text-stone-900">{p.customerName || 'Guest'}</p>
-                      <p className="text-[11px] text-stone-400 font-mono">{p.customerEmail || ''}</p>
+                      <p className="text-[11px] text-stone-500 font-mono">{p.customerEmail || ''}</p>
                     </td>
 
                     <td className="p-4 font-mono font-bold text-stone-900 text-sm">
@@ -307,7 +307,7 @@ export const AdminPaymentsView: React.FC<AdminPaymentsViewProps> = ({ onRefreshO
 
                     <td className="p-4">
                       <span className="font-semibold text-stone-800">{p.paymentMethod}</span>
-                      <span className="block text-[10px] text-stone-400 uppercase font-bold">{p.provider || 'razorpay'}</span>
+                      <span className="block text-[10px] text-stone-500 uppercase font-bold">{p.provider || 'razorpay'}</span>
                     </td>
 
                     <td className="p-4 font-mono text-[11px] text-stone-600 max-w-[150px] truncate">
@@ -316,14 +316,14 @@ export const AdminPaymentsView: React.FC<AdminPaymentsViewProps> = ({ onRefreshO
 
                     <td className="p-4">
                       <span
-                        className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${
+                        className={`badge ${
                           p.status === 'CAPTURED'
-                            ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
+                            ? 'badge-success'
                             : p.status === 'REFUNDED'
-                            ? 'bg-amber-50 text-amber-800 border-amber-200'
+                            ? 'badge-warning'
                             : p.status === 'FAILED'
-                            ? 'bg-rose-50 text-rose-800 border-rose-200'
-                            : 'bg-stone-100 text-stone-700 border-stone-200'
+                            ? 'badge-danger'
+                            : ''
                         }`}
                       >
                         {p.status}
@@ -334,7 +334,7 @@ export const AdminPaymentsView: React.FC<AdminPaymentsViewProps> = ({ onRefreshO
                       <div className="flex items-center justify-end gap-1.5">
                         <button
                           onClick={() => setInspectPayment(p)}
-                          className="px-2.5 py-1 bg-stone-50 hover:bg-stone-100 text-stone-700 border border-stone-200 font-bold rounded-lg text-[11px] cursor-pointer shadow-2xs"
+                          className="px-2.5 py-1 bg-white hover:bg-[var(--brand-soft)] hover:border-[var(--brand-border)] hover:text-[var(--brand-text)] text-stone-700 border border-stone-200 font-bold rounded-lg text-[11px] cursor-pointer shadow-2xs transition-colors"
                           title="View Details"
                         >
                           <Eye className="w-3.5 h-3.5 inline mr-1" />
@@ -379,7 +379,7 @@ export const AdminPaymentsView: React.FC<AdminPaymentsViewProps> = ({ onRefreshO
           maxWidth="max-w-lg"
         >
           <div className="space-y-4 text-xs text-stone-700">
-            <div className="p-4 bg-stone-50 rounded-2xl border border-stone-200 space-y-2.5">
+            <div className="p-4 bg-[var(--surface-muted)] rounded-2xl border border-stone-200 space-y-2.5">
               <div className="flex justify-between">
                 <span className="text-stone-500">Order Number:</span>
                 <span className="font-mono font-bold text-amber-900">#{inspectPayment.orderNumber || inspectPayment.orderId}</span>
@@ -418,7 +418,7 @@ export const AdminPaymentsView: React.FC<AdminPaymentsViewProps> = ({ onRefreshO
               <button
                 type="button"
                 onClick={() => setInspectPayment(null)}
-                className="px-4 py-2 bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold rounded-xl cursor-pointer"
+                className="px-4 py-2 bg-white border border-stone-300 hover:bg-stone-50 text-stone-700 font-bold rounded-xl cursor-pointer"
               >
                 Close
               </button>
@@ -436,7 +436,7 @@ export const AdminPaymentsView: React.FC<AdminPaymentsViewProps> = ({ onRefreshO
           maxWidth="max-w-lg"
         >
           <div className="space-y-4 text-xs text-stone-700">
-            <div className="p-3 bg-amber-50 rounded-xl border border-amber-200 text-amber-950 space-y-1">
+            <div className="p-3 bg-[var(--brand-soft)] rounded-xl border border-[var(--brand-border)] text-stone-900 space-y-1">
               <span className="font-bold block">Active Automated UPI ID</span>
               <p className="text-[11px] text-amber-800">
                 All checkout QR codes dynamically generate using this VPA and exact payable amounts.
@@ -450,7 +450,7 @@ export const AdminPaymentsView: React.FC<AdminPaymentsViewProps> = ({ onRefreshO
                 value={hotelUpiId}
                 onChange={(e) => setHotelUpiId(e.target.value)}
                 placeholder="e.g. 9620369291@ybl"
-                className="w-full p-2.5 bg-stone-50 border border-stone-200 rounded-xl text-xs font-mono font-bold text-stone-900"
+                className="w-full p-2.5 bg-white border border-stone-200 rounded-xl text-xs font-mono font-bold text-stone-900"
               />
             </div>
 
@@ -461,7 +461,7 @@ export const AdminPaymentsView: React.FC<AdminPaymentsViewProps> = ({ onRefreshO
                   type="text"
                   value={hotelName}
                   onChange={(e) => setHotelName(e.target.value)}
-                  className="w-full p-2.5 bg-stone-50 border border-stone-200 rounded-xl text-xs"
+                  className="w-full p-2.5 bg-white border border-stone-200 rounded-xl text-xs"
                 />
               </div>
 
@@ -471,7 +471,7 @@ export const AdminPaymentsView: React.FC<AdminPaymentsViewProps> = ({ onRefreshO
                   type="text"
                   value={hotelMobile}
                   onChange={(e) => setHotelMobile(e.target.value)}
-                  className="w-full p-2.5 bg-stone-50 border border-stone-200 rounded-xl text-xs"
+                  className="w-full p-2.5 bg-white border border-stone-200 rounded-xl text-xs"
                 />
               </div>
             </div>
@@ -482,7 +482,7 @@ export const AdminPaymentsView: React.FC<AdminPaymentsViewProps> = ({ onRefreshO
                 rows={3}
                 value={instructions}
                 onChange={(e) => setInstructions(e.target.value)}
-                className="w-full p-2.5 bg-stone-50 border border-stone-200 rounded-xl text-xs resize-none"
+                className="w-full p-2.5 bg-white border border-stone-200 rounded-xl text-xs resize-none"
               />
             </div>
 
@@ -490,7 +490,7 @@ export const AdminPaymentsView: React.FC<AdminPaymentsViewProps> = ({ onRefreshO
               <button
                 type="button"
                 onClick={() => setSettingsModalOpen(false)}
-                className="px-4 py-2 bg-stone-200 hover:bg-stone-300 text-stone-800 font-bold rounded-xl cursor-pointer"
+                className="px-4 py-2 bg-white border border-stone-300 hover:bg-stone-50 text-stone-800 font-bold rounded-xl cursor-pointer"
               >
                 Cancel
               </button>
@@ -527,7 +527,7 @@ export const AdminPaymentsView: React.FC<AdminPaymentsViewProps> = ({ onRefreshO
                 max={refundModalPayment.amount}
                 value={refundAmount}
                 onChange={(e) => setRefundAmount(Number(e.target.value))}
-                className="w-full p-2.5 bg-stone-50 border border-stone-200 rounded-xl text-xs font-mono font-bold"
+                className="w-full p-2.5 bg-white border border-stone-200 rounded-xl text-xs font-mono font-bold"
               />
             </div>
 
@@ -537,7 +537,7 @@ export const AdminPaymentsView: React.FC<AdminPaymentsViewProps> = ({ onRefreshO
                 rows={2}
                 value={refundReason}
                 onChange={(e) => setRefundReason(e.target.value)}
-                className="w-full p-2.5 bg-stone-50 border border-stone-200 rounded-xl text-xs resize-none"
+                className="w-full p-2.5 bg-white border border-stone-200 rounded-xl text-xs resize-none"
               />
             </div>
 
@@ -545,7 +545,7 @@ export const AdminPaymentsView: React.FC<AdminPaymentsViewProps> = ({ onRefreshO
               <button
                 type="button"
                 onClick={() => setRefundModalPayment(null)}
-                className="px-4 py-2 bg-stone-200 hover:bg-stone-300 text-stone-800 font-bold rounded-xl cursor-pointer"
+                className="px-4 py-2 bg-white border border-stone-300 hover:bg-stone-50 text-stone-800 font-bold rounded-xl cursor-pointer"
               >
                 Cancel
               </button>

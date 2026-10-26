@@ -319,12 +319,12 @@ export const KitchenKdsView: React.FC<KitchenKdsViewProps> = ({ onBackToAdmin, o
   return (
     <div className="space-y-4 max-w-7xl mx-auto">
       {/* 1. Header & Controls */}
-      <div className="bg-white p-4 sm:p-5 rounded-2xl border border-stone-200/80 shadow-2xs space-y-4">
+      <div className="bg-white p-4 sm:p-5 rounded-2xl border border-stone-200/80 shadow-[var(--shadow-card)] space-y-4">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
           {/* Title Area */}
           <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-2xl bg-amber-800 text-amber-100 flex items-center justify-center font-bold text-sm shadow-2xs shrink-0">
-              <ChefHat className="w-6 h-6 text-amber-200" />
+            <div className="w-11 h-11 rounded-2xl bg-[var(--brand-soft)] border border-[var(--brand-border)] flex items-center justify-center font-bold text-sm shrink-0">
+              <ChefHat className="w-6 h-6 text-amber-800" />
             </div>
             <div>
               <div className="flex items-center gap-2">
@@ -343,7 +343,7 @@ export const KitchenKdsView: React.FC<KitchenKdsViewProps> = ({ onBackToAdmin, o
                   </span>
                 )}
               </div>
-              <h1 className="font-serif font-bold text-xl sm:text-2xl text-stone-900 mt-0.5">
+              <h1 className="page-title mt-0.5">
                 Kitchen Order Board
               </h1>
             </div>
@@ -369,14 +369,14 @@ export const KitchenKdsView: React.FC<KitchenKdsViewProps> = ({ onBackToAdmin, o
             <button
               onClick={() => fetchKitchenData()}
               disabled={refreshing}
-              className="px-3 py-2 rounded-xl bg-stone-50 hover:bg-stone-100 text-stone-700 border border-stone-200 text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer"
+              className="px-3 py-2 rounded-xl bg-white hover:bg-[var(--brand-soft)] hover:text-[var(--brand-text)] hover:border-[var(--brand-border)] text-stone-700 border border-stone-200 text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer"
             >
               <RotateCcw className={`w-3.5 h-3.5 ${refreshing ? 'animate-spin text-amber-800' : ''}`} />
               <span className="hidden sm:inline">Refresh</span>
             </button>
 
             {/* Period Badge Display */}
-            <div className="flex items-center gap-1.5 text-xs text-stone-700 bg-stone-50 px-3 py-2 rounded-xl border border-stone-200 whitespace-nowrap shrink-0">
+            <div className="flex items-center gap-1.5 text-xs text-stone-700 bg-[var(--surface-muted)] px-3 py-2 rounded-xl border border-stone-200 whitespace-nowrap shrink-0">
               <Calendar className="w-3.5 h-3.5 text-amber-700 shrink-0" />
               <span className="hidden sm:inline font-medium text-stone-500">Period:</span>
               <span className="font-semibold text-stone-900">
@@ -408,7 +408,7 @@ export const KitchenKdsView: React.FC<KitchenKdsViewProps> = ({ onBackToAdmin, o
 
               {/* Filter Popover Dropdown */}
               {filterOpen && (
-                <div className="absolute right-0 top-full mt-2 w-72 sm:w-80 bg-white rounded-2xl shadow-xl border border-stone-200 z-50 p-3.5 space-y-2.5 animate-in fade-in zoom-in-95 duration-150">
+                <div className="absolute right-0 top-full mt-2 w-72 sm:w-80 bg-white rounded-2xl shadow-[var(--shadow-float)] border border-stone-200 z-50 p-3.5 space-y-2.5 animate-in fade-in zoom-in-95 duration-150">
                   {/* Header */}
                   <div className="flex items-center justify-between pb-2 border-b border-stone-100">
                     <span className="font-semibold text-xs text-stone-900 flex items-center gap-1.5">
@@ -455,7 +455,7 @@ export const KitchenKdsView: React.FC<KitchenKdsViewProps> = ({ onBackToAdmin, o
                                 const fromVal = e.target.value;
                                 handleCustomDateChange(fromVal, customEndDate || fromVal);
                               }}
-                              className="w-full px-2 py-1 text-xs border border-stone-200 rounded-lg bg-stone-50 text-stone-800 focus:outline-hidden focus:border-amber-700 font-mono"
+                              className="w-full px-2 py-1 text-xs border border-stone-200 rounded-lg bg-white text-stone-800 focus:outline-hidden focus:border-amber-700 font-mono"
                             />
                           </div>
 
@@ -472,7 +472,7 @@ export const KitchenKdsView: React.FC<KitchenKdsViewProps> = ({ onBackToAdmin, o
                                 const toVal = e.target.value;
                                 handleCustomDateChange(customStartDate || toVal, toVal);
                               }}
-                              className="w-full px-2 py-1 text-xs border border-stone-200 rounded-lg bg-stone-50 text-stone-800 focus:outline-hidden focus:border-amber-700 font-mono"
+                              className="w-full px-2 py-1 text-xs border border-stone-200 rounded-lg bg-white text-stone-800 focus:outline-hidden focus:border-amber-700 font-mono"
                             />
                           </div>
                         </div>
@@ -661,7 +661,7 @@ export const KitchenKdsView: React.FC<KitchenKdsViewProps> = ({ onBackToAdmin, o
       </div>
 
       {/* 2. Filter Status & Search Bar */}
-      <div className="bg-white p-2.5 rounded-xl border border-stone-200/80 shadow-2xs flex items-center justify-between gap-2">
+      <div className="bg-white p-2.5 rounded-2xl border border-stone-200/80 shadow-[var(--shadow-card)] flex items-center justify-between gap-2">
         <div className="flex items-center gap-1 text-xs text-stone-600 font-semibold">
           <span>
             {activeFilter === 'ALL'
@@ -675,12 +675,12 @@ export const KitchenKdsView: React.FC<KitchenKdsViewProps> = ({ onBackToAdmin, o
               : `Dispatched Orders (${dispatchedCount})`}
           </span>
           {searchQuery && (
-            <span className="text-[10px] text-stone-400 font-normal ml-1">• Filtered by search</span>
+            <span className="text-[10px] text-stone-500 font-normal ml-1">• Filtered by search</span>
           )}
         </div>
 
         {/* Search input */}
-        <div className="flex items-center gap-1.5 bg-stone-50 px-2.5 py-1 rounded-lg border border-stone-200 sm:w-64">
+        <div className="flex items-center gap-1.5 bg-white px-2.5 py-1.5 rounded-lg border border-stone-200 sm:w-64 focus-within:border-amber-700 focus-within:ring-3 focus-within:ring-[var(--brand-ring-soft)] transition-shadow">
           <Search className="w-3.5 h-3.5 text-stone-400 shrink-0" />
           <input
             type="text"
@@ -692,7 +692,7 @@ export const KitchenKdsView: React.FC<KitchenKdsViewProps> = ({ onBackToAdmin, o
           {searchQuery && (
             <button
               onClick={() => setSearchQuery('')}
-              className="text-[10px] text-stone-400 hover:text-stone-600 font-bold cursor-pointer"
+              className="text-[10px] text-stone-500 hover:text-stone-600 font-bold cursor-pointer"
             >
               ✕
             </button>
@@ -702,12 +702,12 @@ export const KitchenKdsView: React.FC<KitchenKdsViewProps> = ({ onBackToAdmin, o
 
       {/* 3. Live Tickets Grid */}
       {visibleOrders.length === 0 ? (
-        <div className="bg-white rounded-2xl border border-stone-200/80 p-12 text-center space-y-3 shadow-2xs">
+        <div className="bg-white rounded-2xl border border-stone-200/80 p-12 text-center space-y-3 shadow-[var(--shadow-card)]">
           <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-700 flex items-center justify-center mx-auto">
             <CheckCircle2 className="w-6 h-6" />
           </div>
           <div>
-            <h3 className="font-serif font-bold text-base text-stone-900">
+            <h3 className="section-title text-base">
               {activeFilter === 'ALL'
                 ? 'No Orders in Selected Period'
                 : activeFilter === 'NEW_ORDER'
@@ -763,16 +763,16 @@ export const KitchenKdsView: React.FC<KitchenKdsViewProps> = ({ onBackToAdmin, o
             return (
               <div
                 key={order.id}
-                className={`bg-white rounded-2xl border flex flex-col justify-between overflow-hidden shadow-2xs hover:shadow-xs transition-all ${
+                className={`bg-white rounded-2xl border border-t-4 flex flex-col justify-between overflow-hidden shadow-[var(--shadow-card)] hover:shadow-[var(--shadow-raised)] transition-shadow ${
                   isUrgent
-                    ? 'border-rose-400 ring-2 ring-rose-500/20'
+                    ? 'border-rose-300 border-t-rose-600 ring-2 ring-rose-500/15'
                     : isReady
-                    ? 'border-emerald-300 ring-1 ring-emerald-400/30'
+                    ? 'border-emerald-200 border-t-emerald-600'
                     : isAccepted
-                    ? 'border-orange-300 ring-1 ring-orange-400/30'
+                    ? 'border-orange-200 border-t-orange-500'
                     : isNew
-                    ? 'border-amber-300 ring-1 ring-amber-400/30'
-                    : 'border-stone-200'
+                    ? 'border-amber-200 border-t-amber-700'
+                    : 'border-stone-200 border-t-stone-300'
                 }`}
               >
                 {/* Ticket Top Header */}
@@ -789,24 +789,24 @@ export const KitchenKdsView: React.FC<KitchenKdsViewProps> = ({ onBackToAdmin, o
                 >
                   <div className="flex items-center justify-between gap-2">
                     <div className="flex items-center gap-1.5">
-                      <span className="font-mono font-bold text-xs text-stone-900">
+                      <span className="font-mono font-extrabold text-base text-stone-900 leading-none">
                         #{order.orderNumber}
                       </span>
                       {/* Channel Badge */}
                       {isOnline ? (
-                        <span className="inline-flex items-center gap-0.5 px-2 py-0.2 rounded-full bg-blue-100 text-blue-900 border border-blue-200 text-[9px] font-bold">
-                          <Globe className="w-2.5 h-2.5 text-blue-700" /> Online
+                        <span className="badge badge-info !text-[9px] !px-1.5 !py-0">
+                          <Globe className="w-2.5 h-2.5" /> Online
                         </span>
                       ) : (
-                        <span className="inline-flex items-center gap-0.5 px-2 py-0.2 rounded-full bg-amber-100 text-amber-950 border border-amber-200 text-[9px] font-bold">
-                          <Store className="w-2.5 h-2.5 text-amber-800" /> POS
+                        <span className="badge badge-brand !text-[9px] !px-1.5 !py-0">
+                          <Store className="w-2.5 h-2.5" /> POS
                         </span>
                       )}
                     </div>
 
                     {/* Exact Workflow Status Pill */}
                     <span
-                      className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border ${badge.color}`}
+                      className={`badge uppercase tracking-wider ${badge.color}`}
                     >
                       {badge.label}
                     </span>
@@ -846,7 +846,7 @@ export const KitchenKdsView: React.FC<KitchenKdsViewProps> = ({ onBackToAdmin, o
                           : 'bg-white text-stone-700 border border-stone-200'
                       }`}
                     >
-                      <Clock className="w-3 h-3 text-stone-400" />
+                      <Clock className="w-3 h-3 opacity-70" />
                       <span>{elapsed}m ago</span>
                     </div>
                   </div>
@@ -872,7 +872,7 @@ export const KitchenKdsView: React.FC<KitchenKdsViewProps> = ({ onBackToAdmin, o
                     <div key={item.id || idx} className="pt-2 first:pt-0 space-y-1">
                       <div className="flex items-start justify-between gap-2">
                         <div className="flex items-start gap-2">
-                          <span className="w-5 h-5 rounded-md bg-stone-900 text-white flex items-center justify-center font-mono font-bold text-xs shrink-0 mt-0.5">
+                          <span className="w-5 h-5 rounded-md bg-[var(--brand-soft)] text-[var(--brand-text)] border border-[var(--brand-border)] flex items-center justify-center font-mono font-bold text-xs shrink-0 mt-0.5">
                             {item.quantity}×
                           </span>
                           <span className="font-bold text-xs text-stone-900 leading-snug">
@@ -901,7 +901,7 @@ export const KitchenKdsView: React.FC<KitchenKdsViewProps> = ({ onBackToAdmin, o
                 </div>
 
                 {/* Kitchen Step-by-Step Action Workflow */}
-                <div className="p-3 bg-stone-50 border-t border-stone-200 space-y-2">
+                <div className="p-3 bg-[var(--surface-muted)] border-t border-stone-200 space-y-2">
                   {isReadOnly ? (
                     <div className="py-2.5 px-3 text-center text-xs font-semibold text-stone-600 bg-stone-100 rounded-xl border border-stone-200/80 flex items-center justify-center gap-1.5">
                       <Clock className="w-3.5 h-3.5 text-stone-400 shrink-0" />
@@ -916,7 +916,7 @@ export const KitchenKdsView: React.FC<KitchenKdsViewProps> = ({ onBackToAdmin, o
                             type="button"
                             disabled={updatingId === order.id}
                             onClick={() => handleUpdateStatus(order.id, 'CONFIRMED')}
-                            className="w-full py-2.5 px-3 rounded-xl bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 disabled:opacity-50 text-white font-bold text-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
+                            className="w-full py-2.5 px-3 rounded-xl bg-amber-800 hover:bg-amber-900 disabled:opacity-50 text-white font-bold text-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
                           >
                             <Flame className="w-4 h-4 text-amber-200" />
                             <span>Accept Order (Start Cooking 🍳)</span>
@@ -958,9 +958,9 @@ export const KitchenKdsView: React.FC<KitchenKdsViewProps> = ({ onBackToAdmin, o
                             type="button"
                             disabled={updatingId === order.id}
                             onClick={() => handleUpdateStatus(order.id, 'SERVED')}
-                            className="w-full py-2.5 px-3 rounded-xl bg-stone-900 hover:bg-stone-800 disabled:opacity-50 text-white font-bold text-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
+                            className="w-full py-2.5 px-3 rounded-xl bg-amber-800 hover:bg-amber-900 disabled:opacity-50 text-white font-bold text-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
                           >
-                            <PackageCheck className="w-4 h-4 text-stone-300" />
+                            <PackageCheck className="w-4 h-4 text-amber-200" />
                             <span>Mark as Dispatched 🚀</span>
                           </button>
                         </div>

@@ -102,12 +102,12 @@ export const MenuItemConfigEditor: React.FC<{
     <section className="space-y-4 pt-3 border-t border-stone-200" aria-labelledby="config-heading">
       <div className="flex items-center gap-2">
         <Layers className="w-4 h-4 text-amber-700" />
-        <h4 id="config-heading" className="text-sm font-bold text-stone-900">Portions & Add-ons</h4>
+        <h4 id="config-heading" className="section-title text-base">Portions & Add-ons</h4>
         <span className="text-[11px] text-stone-500">Optional — leave empty for a simple dish.</span>
       </div>
 
       {/* Portions */}
-      <div className="space-y-2 p-3 rounded-xl border border-stone-200 bg-stone-50/60">
+      <div className="space-y-2 p-3 rounded-xl border border-stone-200 bg-[var(--surface-muted)]">
         <p className="text-xs font-bold text-stone-700">Portion sizes</p>
         <p className="text-[11px] text-stone-500">When at least one portion is enabled, customers must pick one and its price replaces the base price.</p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -258,7 +258,7 @@ export const MenuItemConfigEditor: React.FC<{
 
       {/* Live customer preview */}
       {(value.portions.length > 0 || value.addonGroups.length > 0) && (
-        <details className="rounded-xl border border-stone-200 bg-[#faf8f5] p-3" open>
+        <details className="rounded-xl border border-stone-200 bg-[var(--surface-muted)] p-3" open>
           <summary className="text-xs font-bold text-stone-800 cursor-pointer flex items-center gap-1.5">
             <Eye className="w-3.5 h-3.5 text-amber-700" /> Customer preview
           </summary>

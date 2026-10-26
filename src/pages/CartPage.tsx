@@ -87,7 +87,7 @@ export const CartPage: React.FC<{ navigate: (route: string) => void }> = ({ navi
         </div>
         <p className="lux-eyebrow text-amber-700 justify-center">Your Dining Cart</p>
         <h2 className="lux-display text-[clamp(2.25rem,5vw,3.5rem)] text-stone-900 mt-4">Your Dining Cart is Empty</h2>
-        <p className="text-stone-500 text-sm max-w-md mx-auto mt-4 leading-relaxed">
+        <p className="text-stone-600 text-sm max-w-md mx-auto mt-4 leading-relaxed">
           You haven't selected any gourmet dishes yet. Explore our royal menu of artisanal appetizers, royal main courses, and handcrafted desserts.
         </p>
         <div className="mt-8">
@@ -109,7 +109,7 @@ export const CartPage: React.FC<{ navigate: (route: string) => void }> = ({ navi
       {/* 1. Header & Breadcrumb Tracker */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-stone-200 pb-5">
         <div>
-          <div className="flex items-center gap-2 text-[11px] font-extrabold uppercase tracking-widest text-amber-800">
+          <div className="flex items-center gap-2 text-[11px] font-extrabold uppercase tracking-widest text-[var(--brand-text)]">
             <Sparkles className="w-3.5 h-3.5 text-amber-600" />
             <span>Step 1 of 2 • Order Review</span>
           </div>
@@ -121,7 +121,7 @@ export const CartPage: React.FC<{ navigate: (route: string) => void }> = ({ navi
         <div className="flex items-center gap-2.5">
           <button
             onClick={() => navigate('menu')}
-            className="text-xs font-semibold text-stone-700 hover:text-stone-900 flex items-center gap-1.5 transition-all cursor-pointer px-4 py-2.5 rounded-xl bg-stone-100 hover:bg-stone-200/80 border border-stone-200/60 shadow-2xs"
+            className="btn btn-secondary"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
             <span>Continue Shopping</span>
@@ -129,7 +129,7 @@ export const CartPage: React.FC<{ navigate: (route: string) => void }> = ({ navi
 
           <button
             onClick={() => setClearCartModalOpen(true)}
-            className="text-xs font-semibold text-rose-600 hover:text-rose-700 flex items-center gap-1.5 transition-all cursor-pointer px-3.5 py-2.5 rounded-xl bg-rose-50 hover:bg-rose-100/80 border border-rose-200/80 shadow-2xs"
+            className="btn btn-ghost !text-rose-700 hover:!bg-rose-50"
             title="Remove all items from cart"
           >
             <Trash2 className="w-3.5 h-3.5" />
@@ -149,7 +149,7 @@ export const CartPage: React.FC<{ navigate: (route: string) => void }> = ({ navi
               return (
               <div
                 key={lineId}
-                className="bg-white rounded-3xl border border-stone-200/90 p-4 sm:p-5 shadow-xs hover:shadow-md transition-all flex flex-col sm:flex-row gap-4 sm:gap-5 justify-between items-start sm:items-center"
+                className="surface lift !rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row gap-4 sm:gap-5 justify-between items-start sm:items-center"
               >
                 {/* Item Thumbnail + Info */}
                 <div className="flex items-start gap-4 flex-1 w-full min-w-0">
@@ -177,7 +177,7 @@ export const CartPage: React.FC<{ navigate: (route: string) => void }> = ({ navi
 
                   <div className="space-y-1.5 flex-1 min-w-0">
                     <div className="flex items-start justify-between gap-2">
-                      <h3 className="font-serif font-bold text-base sm:text-lg text-stone-900 leading-snug truncate">
+                      <h3 className="section-title !text-base sm:!text-lg leading-snug truncate">
                         {menuItem.name}
                       </h3>
                     </div>
@@ -186,7 +186,7 @@ export const CartPage: React.FC<{ navigate: (route: string) => void }> = ({ navi
                       <p className="text-xs text-stone-600" data-testid="cart-line-choices">{choices}</p>
                     )}
                     {pricing.resolved && (pricing.resolved.portionId || pricing.resolved.addons.length > 0) && (
-                      <p className="text-[11px] text-stone-400 font-mono">
+                      <p className="text-[11px] text-stone-500 font-mono">
                         {formatCurrency(pricing.resolved.basePrice)}
                         {pricing.resolved.addons.map((a) => ` + ${formatCurrency(a.price)}`).join('')}
                       </p>
@@ -196,7 +196,7 @@ export const CartPage: React.FC<{ navigate: (route: string) => void }> = ({ navi
                     )}
 
                     <div className="flex items-center gap-2 text-xs text-stone-500">
-                      <span className="font-mono font-bold text-stone-900 text-sm">
+                      <span className="font-mono font-bold text-[var(--brand-text)] text-sm">
                         {formatCurrency(pricing.unitPrice)}
                       </span>
                       <span className="text-stone-400">each</span>
@@ -204,7 +204,7 @@ export const CartPage: React.FC<{ navigate: (route: string) => void }> = ({ navi
                         <button
                           type="button"
                           onClick={() => setEditingLine(line)}
-                          className="ml-1 text-[11px] font-bold text-amber-800 hover:underline cursor-pointer min-h-8 px-1"
+                          className="ml-1 text-[11px] font-bold text-[var(--brand-text)] hover:underline underline-offset-2 cursor-pointer min-h-8 px-1"
                         >
                           {pricing.error ? 'Update choices' : 'Edit choices'}
                         </button>
@@ -215,8 +215,8 @@ export const CartPage: React.FC<{ navigate: (route: string) => void }> = ({ navi
                     <div className="pt-1 w-full max-w-md">
                       <div className={`flex items-center gap-2 px-3 rounded-xl border transition-all ${
                         focusedNoteId === lineId
-                          ? 'bg-white border-amber-600 ring-2 ring-amber-600/20'
-                          : 'bg-stone-50/80 border-stone-200/90 hover:border-stone-300'
+                          ? 'bg-white border-[var(--brand)] ring-2 ring-[var(--brand-ring-soft)]'
+                          : 'bg-[var(--surface-muted)] border-[var(--border-subtle)] hover:border-[var(--brand-border)]'
                       }`}>
                         <MessageSquare className="w-3.5 h-3.5 text-stone-400 shrink-0" />
                         <input
@@ -236,7 +236,7 @@ export const CartPage: React.FC<{ navigate: (route: string) => void }> = ({ navi
                 {/* Quantity Stepper & Line Total */}
                 <div className="flex items-center justify-between sm:justify-end gap-6 w-full sm:w-auto border-t sm:border-t-0 pt-3 sm:pt-0 border-stone-100">
                   {/* Stepper */}
-                  <div className="flex items-center bg-amber-50/90 border border-amber-200/90 rounded-2xl overflow-hidden shadow-2xs">
+                  <div className="flex items-center bg-[var(--brand-soft)] border border-[var(--brand-border)] rounded-full overflow-hidden shadow-[var(--shadow-xs)]">
                     <button
                       onClick={() => updateQuantity(lineId, quantity - 1)}
                       className="w-10 h-10 flex items-center justify-center text-amber-900 hover:bg-amber-100/80 transition-colors cursor-pointer"
@@ -258,12 +258,12 @@ export const CartPage: React.FC<{ navigate: (route: string) => void }> = ({ navi
 
                   {/* Line Total & Remove */}
                   <div className="text-right min-w-[90px]">
-                    <span className="font-serif font-bold text-lg text-stone-900 block leading-tight">
+                    <span className="font-display font-bold text-xl text-stone-900 block leading-tight">
                       {formatCurrency(pricing.lineTotal)}
                     </span>
                     <button
                       onClick={() => removeItem(lineId)}
-                      className="text-[11px] font-semibold text-stone-400 hover:text-rose-600 transition-colors cursor-pointer mt-0.5 inline-flex items-center min-h-8 px-1 -mr-1"
+                      className="text-[11px] font-semibold text-stone-500 hover:text-rose-700 transition-colors cursor-pointer mt-0.5 inline-flex items-center min-h-8 px-1 -mr-1"
                     >
                       Remove
                     </button>
@@ -294,7 +294,7 @@ export const CartPage: React.FC<{ navigate: (route: string) => void }> = ({ navi
           <div className="pt-2">
             <button
               onClick={() => navigate('menu')}
-              className="w-full sm:w-auto px-5 py-3 rounded-2xl border-2 border-dashed border-stone-300 hover:border-amber-600 text-xs font-bold text-stone-700 hover:text-amber-900 bg-stone-50/50 hover:bg-amber-50/40 flex items-center justify-center sm:justify-start gap-2.5 transition-all cursor-pointer shadow-2xs"
+              className="w-full sm:w-auto px-5 py-3 rounded-2xl border-2 border-dashed border-stone-300 hover:border-[var(--brand-border)] text-xs font-bold text-stone-700 hover:text-[var(--brand-text)] bg-white/60 hover:bg-[var(--brand-soft)] flex items-center justify-center sm:justify-start gap-2.5 transition-all cursor-pointer shadow-2xs"
             >
               <UtensilsCrossed className="w-4 h-4 text-amber-700" />
               <span>+ Add more gourmet dishes from menu</span>
@@ -302,8 +302,8 @@ export const CartPage: React.FC<{ navigate: (route: string) => void }> = ({ navi
           </div>
 
           {/* Luxury Dining Guarantee Card */}
-          <div className="p-4 bg-gradient-to-r from-amber-50/70 via-stone-50 to-amber-50/50 rounded-2xl border border-amber-200/70 flex items-center gap-3 text-xs text-stone-700 shadow-2xs">
-            <div className="w-9 h-9 rounded-xl bg-amber-100/80 border border-amber-300/60 text-amber-900 flex items-center justify-center shrink-0">
+          <div className="p-4 bg-gradient-to-r from-[var(--brand-soft)] via-white to-white rounded-2xl border border-[var(--brand-border)] flex items-center gap-3 text-xs text-stone-700 shadow-[var(--shadow-xs)]">
+            <div className="w-9 h-9 rounded-xl bg-white border border-[var(--brand-border)] text-[var(--brand)] flex items-center justify-center shrink-0">
               <ChefHat className="w-5 h-5 text-amber-800" />
             </div>
             <div>
@@ -317,12 +317,12 @@ export const CartPage: React.FC<{ navigate: (route: string) => void }> = ({ navi
 
         {/* Right Column (1 Col): Order Summary */}
         <div className="lg:col-span-1 space-y-4 sticky top-24">
-          <div className="bg-white p-5 sm:p-6 rounded-3xl border border-stone-200/90 shadow-sm space-y-5">
+          <div className="surface-raised !rounded-2xl p-5 sm:p-6 space-y-5">
             <div className="border-b border-stone-100 pb-3">
-              <span className="text-[10px] font-extrabold uppercase tracking-widest text-amber-800">
+              <span className="label-caps !text-[var(--brand-text)]">
                 Payment Breakdown
               </span>
-              <h2 className="font-serif font-bold text-xl text-stone-900">
+              <h2 className="section-title mt-1">
                 Order Summary
               </h2>
             </div>
@@ -340,11 +340,11 @@ export const CartPage: React.FC<{ navigate: (route: string) => void }> = ({ navi
                   placeholder="Enter WELCOME10"
                   value={promoInput}
                   onChange={(e) => setPromoInput(e.target.value)}
-                  className="flex-1 px-3.5 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-xs font-mono uppercase text-stone-900 focus:outline-hidden focus:border-amber-700 focus:bg-white transition-all placeholder:text-stone-400"
+                  className="field flex-1 min-w-0 !rounded-xl text-xs font-mono uppercase text-stone-900 placeholder:text-stone-400"
                 />
                 <button
                   type="submit"
-                  className="px-4 py-2.5 bg-stone-900 hover:bg-black text-amber-300 font-bold text-xs rounded-xl shadow-xs cursor-pointer transition-all shrink-0"
+                  className="btn btn-primary shrink-0"
                 >
                   Apply
                 </button>
@@ -352,18 +352,18 @@ export const CartPage: React.FC<{ navigate: (route: string) => void }> = ({ navi
 
               {/* Quick promo chips */}
               <div className="flex items-center gap-1.5 flex-wrap pt-0.5">
-                <span className="text-[10px] text-stone-400 font-medium">Offers:</span>
+                <span className="text-[10px] text-stone-500 font-medium">Offers:</span>
                 <button
                   type="button"
                   onClick={() => handleApplyPromo('WELCOME10')}
-                  className="px-2.5 min-h-8 rounded-md bg-stone-100 hover:bg-amber-100 text-[10px] font-mono font-semibold text-stone-700 border border-stone-200 transition-colors cursor-pointer"
+                  className="px-2.5 min-h-8 rounded-full bg-[var(--brand-soft)] hover:bg-[var(--brand-soft-hover)] text-[10px] font-mono font-semibold text-[var(--brand-text)] border border-dashed border-[var(--brand-border)] transition-colors cursor-pointer"
                 >
                   WELCOME10 (-10%)
                 </button>
                 <button
                   type="button"
                   onClick={() => handleApplyPromo('ROYAL15')}
-                  className="px-2.5 min-h-8 rounded-md bg-stone-100 hover:bg-amber-100 text-[10px] font-mono font-semibold text-stone-700 border border-stone-200 transition-colors cursor-pointer"
+                  className="px-2.5 min-h-8 rounded-full bg-[var(--brand-soft)] hover:bg-[var(--brand-soft-hover)] text-[10px] font-mono font-semibold text-[var(--brand-text)] border border-dashed border-[var(--brand-border)] transition-colors cursor-pointer"
                 >
                   ROYAL15 (-15%)
                 </button>
@@ -378,7 +378,7 @@ export const CartPage: React.FC<{ navigate: (route: string) => void }> = ({ navi
                   <button
                     type="button"
                     onClick={removeDiscount}
-                    className="text-stone-400 hover:text-rose-600 font-bold cursor-pointer transition-colors min-h-8 px-1 -mr-1"
+                    className="text-stone-500 hover:text-rose-700 font-bold cursor-pointer transition-colors min-h-8 px-1 -mr-1"
                   >
                     Remove
                   </button>
@@ -421,9 +421,9 @@ export const CartPage: React.FC<{ navigate: (route: string) => void }> = ({ navi
                 </span>
               </div>
 
-              <div className="flex justify-between items-baseline text-base font-bold text-stone-900 pt-3.5 border-t border-stone-200">
-                <span className="font-serif text-stone-900">Grand Total</span>
-                <span className="font-serif text-2xl font-bold text-amber-950">
+              <div className="flex justify-between items-baseline text-base font-bold text-stone-900 pt-3.5 mt-1 border-t border-dashed border-[var(--brand-border)]">
+                <span className="font-display text-lg text-stone-900">Grand Total</span>
+                <span className="font-display text-3xl font-bold text-[var(--brand-text)]">
                   {formatCurrency(total)}
                 </span>
               </div>
@@ -466,7 +466,7 @@ export const CartPage: React.FC<{ navigate: (route: string) => void }> = ({ navi
           <div className="flex justify-end gap-3 pt-3 border-t border-stone-100">
             <button
               onClick={() => setClearCartModalOpen(false)}
-              className="px-4 py-2 font-medium text-stone-600 hover:text-stone-900 cursor-pointer transition-colors"
+              className="btn btn-ghost"
             >
               Keep Items
             </button>
@@ -475,7 +475,7 @@ export const CartPage: React.FC<{ navigate: (route: string) => void }> = ({ navi
                 clearCart();
                 setClearCartModalOpen(false);
               }}
-              className="px-4 py-2 font-bold text-white bg-rose-600 hover:bg-rose-700 rounded-xl transition-colors cursor-pointer shadow-xs"
+              className="btn btn-danger"
             >
               Clear Entire Cart
             </button>

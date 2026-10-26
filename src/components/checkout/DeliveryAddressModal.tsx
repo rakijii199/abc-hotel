@@ -269,22 +269,23 @@ export const DeliveryAddressModal: React.FC<DeliveryAddressModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-stone-900/60 backdrop-blur-xs animate-in fade-in">
-      <div className="bg-white rounded-3xl shadow-2xl border border-stone-200/90 w-full max-w-xl overflow-hidden max-h-[92vh] flex flex-col animate-in zoom-in-95">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-stone-900/40 backdrop-blur-sm animate-in fade-in">
+      <div className="surface-raised !rounded-2xl !shadow-[var(--shadow-float)] w-full max-w-xl overflow-hidden max-h-[92vh] flex flex-col animate-in zoom-in-95">
         {/* Clean Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-stone-100 bg-[#fdfcfb]">
+        <div className="flex items-center justify-between gap-3 px-5 sm:px-6 py-4 border-b border-[var(--border-subtle)] bg-gradient-to-r from-[var(--brand-soft)] to-white">
           <div>
-            <h2 className="font-serif font-bold text-lg sm:text-xl text-stone-900">
+            <h2 className="section-title sm:!text-xl">
               {initialAddress ? 'Edit Delivery Address' : 'Add Delivery Address'}
             </h2>
-            <p className="text-xs text-stone-500 mt-0.5">
+            <p className="text-xs text-stone-600 mt-0.5">
               {initialAddress ? 'Modify address fields or click Use My Current Location.' : 'Enter door details or auto-detect your current location.'}
             </p>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="w-8 h-8 rounded-full bg-stone-100 hover:bg-stone-200 text-stone-600 flex items-center justify-center transition-colors cursor-pointer"
+            className="w-8 h-8 shrink-0 rounded-full bg-white border border-[var(--border-subtle)] hover:bg-[var(--brand-soft)] text-stone-600 hover:text-[var(--brand-text)] flex items-center justify-center transition-colors cursor-pointer"
+            aria-label="Close"
           >
             <X className="w-4 h-4" />
           </button>
@@ -293,17 +294,17 @@ export const DeliveryAddressModal: React.FC<DeliveryAddressModalProps> = ({
         {/* Modal Scrollable Body */}
         <div className="p-5 sm:p-6 overflow-y-auto space-y-5">
           {/* Real-Time Location Detection Button */}
-          <div className="p-4 rounded-2xl bg-stone-50 border border-stone-200/90">
+          <div className="p-4 rounded-2xl bg-[var(--brand-soft)] border border-dashed border-[var(--brand-border)]">
             <button
               type="button"
               onClick={handleUseMyLocation}
               disabled={isLocating}
-              className="w-full py-3 px-4 rounded-xl bg-amber-800 hover:bg-amber-900 active:bg-amber-950 text-white font-bold text-xs shadow-xs transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60"
+              className="btn btn-primary w-full !min-h-11"
             >
               {isLocating ? (
                 <Loader2 className="w-4 h-4 animate-spin text-white" />
               ) : (
-                <Crosshair className="w-4 h-4 text-amber-300" />
+                <Crosshair className="w-4 h-4" />
               )}
               <span>{isLocating ? 'Detecting Location...' : 'Use My Current Location'}</span>
             </button>
@@ -322,7 +323,7 @@ export const DeliveryAddressModal: React.FC<DeliveryAddressModalProps> = ({
                 placeholder="Enter Area / Street Name"
                 value={area}
                 onChange={(e) => setArea(e.target.value)}
-                className="w-full px-3.5 py-2.5 bg-stone-50 border border-stone-300 rounded-xl text-xs text-stone-900 focus:outline-hidden focus:ring-2 focus:ring-amber-700/20 focus:border-amber-700"
+                className="field !rounded-xl !min-h-10 text-xs text-stone-900"
               />
             </div>
 
@@ -337,21 +338,21 @@ export const DeliveryAddressModal: React.FC<DeliveryAddressModalProps> = ({
                 placeholder="Enter House / Flat No. & Floor"
                 value={houseNo}
                 onChange={(e) => setHouseNo(e.target.value)}
-                className="w-full px-3.5 py-2.5 bg-stone-50 border border-stone-300 rounded-xl text-xs text-stone-900 focus:outline-hidden focus:ring-2 focus:ring-amber-700/20 focus:border-amber-700"
+                className="field !rounded-xl !min-h-10 text-xs text-stone-900"
               />
             </div>
 
             {/* Field 3: Landmark */}
             <div className="space-y-1">
               <label className="text-xs font-bold text-stone-800">
-                Landmark <span className="text-stone-400 font-normal">(optional)</span>
+                Landmark <span className="text-stone-500 font-normal">(optional)</span>
               </label>
               <input
                 type="text"
                 placeholder="Enter Landmark"
                 value={landmark}
                 onChange={(e) => setLandmark(e.target.value)}
-                className="w-full px-3.5 py-2.5 bg-stone-50 border border-stone-300 rounded-xl text-xs text-stone-900 focus:outline-hidden focus:ring-2 focus:ring-amber-700/20 focus:border-amber-700"
+                className="field !rounded-xl !min-h-10 text-xs text-stone-900"
               />
             </div>
 
@@ -364,7 +365,7 @@ export const DeliveryAddressModal: React.FC<DeliveryAddressModalProps> = ({
                   placeholder="Enter City"
                   value={city}
                   onChange={(e) => setCity(e.target.value)}
-                  className="w-full px-3.5 py-2.5 bg-stone-50 border border-stone-300 rounded-xl text-xs text-stone-900 focus:outline-hidden focus:ring-2 focus:ring-amber-700/20 focus:border-amber-700"
+                  className="field !rounded-xl !min-h-10 text-xs text-stone-900"
                 />
               </div>
               <div className="space-y-1">
@@ -374,7 +375,7 @@ export const DeliveryAddressModal: React.FC<DeliveryAddressModalProps> = ({
                   placeholder="Enter Postal / PIN Code"
                   value={postalCode}
                   onChange={(e) => setPostalCode(e.target.value)}
-                  className="w-full px-3.5 py-2.5 bg-stone-50 border border-stone-300 rounded-xl text-xs text-stone-900 focus:outline-hidden focus:ring-2 focus:ring-amber-700/20 focus:border-amber-700"
+                  className="field !rounded-xl !min-h-10 text-xs text-stone-900"
                 />
               </div>
             </div>
@@ -382,7 +383,7 @@ export const DeliveryAddressModal: React.FC<DeliveryAddressModalProps> = ({
             {/* Address Tag Selection */}
             <div className="space-y-1.5 pt-1">
               <label className="text-xs font-bold text-stone-800">Save Address As</label>
-              <div className="grid grid-cols-4 gap-2">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                 {[
                   { label: 'Home', icon: Home },
                   { label: 'Work', icon: Briefcase },
@@ -398,8 +399,8 @@ export const DeliveryAddressModal: React.FC<DeliveryAddressModalProps> = ({
                       onClick={() => setTag(item.label as any)}
                       className={`py-2 px-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 border transition-all cursor-pointer ${
                         isSelected
-                          ? 'bg-amber-800 text-white border-amber-800 shadow-xs'
-                          : 'bg-stone-50 text-stone-700 border-stone-200 hover:bg-stone-100'
+                          ? 'bg-[var(--brand-soft)] text-[var(--brand-text)] border-[var(--brand)] ring-2 ring-[var(--brand-ring-soft)]'
+                          : 'bg-white text-stone-700 border-stone-200 hover:border-[var(--brand-border)] hover:bg-[var(--brand-soft)]/40'
                       }`}
                     >
                       <Icon className="w-3.5 h-3.5" />
@@ -412,7 +413,7 @@ export const DeliveryAddressModal: React.FC<DeliveryAddressModalProps> = ({
 
             {/* Recipient Contact Info */}
             <div className="pt-2 border-t border-stone-100 space-y-3">
-              <p className="text-xs font-bold text-stone-900">Recipient Contact Details</p>
+              <p className="section-title !text-base">Recipient Contact Details</p>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="space-y-1">
@@ -422,7 +423,7 @@ export const DeliveryAddressModal: React.FC<DeliveryAddressModalProps> = ({
                     placeholder="Enter Recipient Name"
                     value={recipientName}
                     onChange={(e) => setRecipientName(e.target.value)}
-                    className="w-full px-3.5 py-2.5 bg-stone-50 border border-stone-300 rounded-xl text-xs text-stone-900 focus:outline-hidden focus:ring-2 focus:ring-amber-700/20 focus:border-amber-700"
+                    className="field !rounded-xl !min-h-10 text-xs text-stone-900"
                   />
                 </div>
 
@@ -436,7 +437,7 @@ export const DeliveryAddressModal: React.FC<DeliveryAddressModalProps> = ({
                     placeholder="Enter Mobile Number"
                     value={recipientPhone}
                     onChange={(e) => setRecipientPhone(e.target.value)}
-                    className="w-full px-3.5 py-2.5 bg-stone-50 border border-stone-300 rounded-xl text-xs text-stone-900 focus:outline-hidden focus:ring-2 focus:ring-amber-700/20 focus:border-amber-700 font-mono"
+                    className="field !rounded-xl !min-h-10 text-xs text-stone-900 font-mono"
                   />
                 </div>
               </div>
@@ -447,13 +448,13 @@ export const DeliveryAddressModal: React.FC<DeliveryAddressModalProps> = ({
               <button
                 type="button"
                 onClick={onClose}
-                className="px-5 py-2.5 rounded-xl border border-stone-300 text-stone-700 hover:bg-stone-100 text-xs font-bold transition-colors cursor-pointer"
+                className="btn btn-secondary"
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                className="px-6 py-2.5 rounded-xl bg-amber-800 hover:bg-amber-900 active:bg-amber-950 text-white text-xs font-bold shadow-md transition-all cursor-pointer flex items-center gap-1.5"
+                className="btn btn-primary"
               >
                 <Check className="w-4 h-4" />
                 <span>Save & Select Address</span>

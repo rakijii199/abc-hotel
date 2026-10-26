@@ -1,7 +1,7 @@
 /**
  * Employee & Staff Management View
- * Clean Light UI: Header -> Filters -> Staff Table
- * Roles: Manager, Staff, Kitchen, Delivery
+ * Users table (search, filter, sort, export) + add / edit / reset / remove dialogs
+ * Roles: Owner, Manager, Staff, Kitchen Staff, Delivery Staff
  */
 import React, { useState, useEffect } from 'react';
 import {
@@ -18,8 +18,6 @@ import {
   AlertCircle,
   RefreshCw,
   Phone,
-  Mail,
-  UserX,
   Lock,
   Eye,
   EyeOff
@@ -28,15 +26,20 @@ import { SafeUser, UserRole, UserStatus } from '../../types/index.ts';
 import { ManagerApi } from '../../api/index.ts';
 import { useAuth } from '../../context/AuthContext.tsx';
 import { useToast } from '../../context/ToastContext.tsx';
-import { AccessEditor, PrivilegeChip, RoleTemplates } from './AccessEditor.tsx';
+import { AccessEditor, RoleTemplates } from './AccessEditor.tsx';
+import { Chip, DataTable, StatusPill, rowIconBtn } from './DataTable.tsx';
 import {
   AccessLevel,
   PrivilegeType,
   ROLE_DEFINITIONS,
   SectionId,
   StaffRoleCode,
-  effectivePrivilege
+  effectivePrivilege,
+  roleDisplayName
 } from '../../../shared/accessControl.ts';
+
+const filterSelect =
+  'w-full h-9 px-2.5 bg-white border border-stone-200 rounded-lg text-xs text-stone-800 focus:outline-hidden focus:border-[var(--brand)] cursor-pointer';
 
 const roleDefault = (role: string): PrivilegeType =>
   ROLE_DEFINITIONS.find((r) => r.code === role)?.defaultPrivilege || 'USER';
@@ -75,7 +78,6 @@ export const AdminEmployeesView: React.FC<AdminEmployeesViewProps> = ({ onRefres
   const [refreshing, setRefreshing] = useState<boolean>(false);
 
   // Filters
-  const [searchQuery, setSearchQuery] = useState('');
   const [roleFilter, setRoleFilter] = useState<string>('ALL');
   const [statusFilter, setStatusFilter] = useState<string>('ALL');
 
@@ -119,11 +121,7 @@ export const AdminEmployeesView: React.FC<AdminEmployeesViewProps> = ({ onRefres
   const fetchEmployeesData = async (isBackground = false) => {
     if (!isBackground) setRefreshing(true);
     try {
-      const list = await ManagerApi.getEmployees({
-        role: roleFilter !== 'ALL' ? roleFilter : undefined,
-        status: statusFilter !== 'ALL' ? statusFilter : undefined,
-        search: searchQuery.trim() || undefined
-      });
+      const list = await ManagerApi.getEmployees();
 
       setEmployees(list);
     } catch (err: any) {
@@ -136,15 +134,12 @@ export const AdminEmployeesView: React.FC<AdminEmployeesViewProps> = ({ onRefres
 
   useEffect(() => {
     fetchEmployeesData();
-  }, [roleFilter, statusFilter]);
+  }, []);
 
-  // Handle live search with debounce
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      fetchEmployeesData(true);
-    }, 300);
-    return () => clearTimeout(timer);
-  }, [searchQuery]);
+  const filteredEmployees = employees.filter(
+    (emp) => (roleFilter === 'ALL' || emp.role === roleFilter) && (statusFilter === 'ALL' || emp.status === statusFilter)
+  );
+  const activeFilterCount = (roleFilter !== 'ALL' ? 1 : 0) + (statusFilter !== 'ALL' ? 1 : 0);
 
   useEffect(() => {
     if (!newPrivilegeTouched) setNewPrivilege(roleDefault(newRole));
@@ -322,319 +317,161 @@ export const AdminEmployeesView: React.FC<AdminEmployeesViewProps> = ({ onRefres
     }
   };
 
-  // Role Badges
-  const getRoleBadge = (role: UserRole) => {
-    switch (role) {
-      case 'MANAGER':
-        return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-purple-100 text-purple-800 border border-purple-200">
-            <Shield className="w-3 h-3 text-purple-700" />
-            Manager
-          </span>
-        );
-      case 'ADMIN':
-        return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[var(--brand-soft-hover)] text-[var(--brand-text)] border border-[var(--brand-border)]">
-            <Shield className="w-3 h-3" />
-            Owner
-          </span>
-        );
-      case 'STAFF':
-        return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-100 text-blue-800 border border-blue-200">
-            <Briefcase className="w-3 h-3 text-blue-700" />
-            Staff
-          </span>
-        );
-      case 'KITCHEN':
-        return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-800 border border-amber-200">
-            <ChefHat className="w-3 h-3 text-amber-700" />
-            Kitchen Staff
-          </span>
-        );
-      case 'DELIVERY':
-        return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200">
-            <Truck className="w-3 h-3 text-emerald-700" />
-            Delivery Staff
-          </span>
-        );
-      default:
-        return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-stone-100 text-stone-700 border border-stone-200">
-            {role}
-          </span>
-        );
-    }
-  };
-
   return (
     <div className="space-y-4">
-      {/* Light Clean Header */}
-      <div className="bg-white rounded-2xl p-4 sm:p-5 border border-stone-200 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div>
-          <div className="flex items-center gap-2">
-            <Users className="w-5 h-5 text-amber-700" />
-            <h1 className="font-serif font-bold text-xl text-stone-900 tracking-tight">
-              Employee Management
-            </h1>
-          </div>
-          <p className="text-xs text-stone-500 mt-0.5">
-            Manage hotel staff accounts, department roles, and access credentials.
-          </p>
-        </div>
-
-        <div className="flex items-center gap-2 shrink-0">
-          <button
-            onClick={() => fetchEmployeesData()}
-            disabled={refreshing}
-            className="p-2 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-700 border border-stone-200 transition-all cursor-pointer"
-            title="Refresh List"
-          >
-            <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin text-amber-700' : ''}`} />
-          </button>
-
-          <button
-            onClick={() => setShowAddModal(true)}
-            disabled={!isSuperAdmin}
-            title={isSuperAdmin ? 'Add a new user' : 'Only a Super Admin can add users'}
-            className="px-4 py-2 rounded-xl bg-amber-700 hover:bg-amber-800 text-white text-xs font-bold shadow-xs flex items-center gap-1.5 transition-all cursor-pointer"
-          >
-            <UserPlus className="w-4 h-4" />
-            <span>Add Employee</span>
-          </button>
-        </div>
-      </div>
-
-      {/* Search & Filter Bar */}
-      <div className="bg-white p-3 rounded-2xl border border-stone-200 shadow-2xs flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5">
-        {/* Search */}
-        <div className="relative flex-1">
-          <Search className="w-4 h-4 text-stone-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search by name, username (@), email, or mobile..."
-            className="w-full pl-10 pr-4 py-1.5 bg-stone-50 border border-stone-200 rounded-xl text-xs text-stone-900 placeholder:text-stone-400 focus:outline-hidden focus:border-amber-600 focus:bg-white transition-all"
-          />
-        </div>
-
-        {/* Filters */}
-        <div className="flex items-center gap-2 shrink-0">
-          <div className="flex items-center gap-1.5">
-            <span className="text-xs font-semibold text-stone-500 shrink-0">Role:</span>
-            <select
-              value={roleFilter}
-              onChange={(e) => setRoleFilter(e.target.value)}
-              className="px-2.5 py-1.5 bg-stone-50 border border-stone-200 rounded-xl text-xs font-medium text-stone-700 focus:outline-hidden focus:border-amber-600 cursor-pointer"
-            >
-              <option value="ALL">All Roles</option>
-              <option value="ADMIN">Owner</option>
-              <option value="MANAGER">Manager</option>
-              <option value="STAFF">Staff</option>
-              <option value="KITCHEN">Kitchen Staff</option>
-              <option value="DELIVERY">Delivery Staff</option>
-            </select>
-          </div>
-
-          <div className="flex items-center gap-1.5 ml-1">
-            <span className="text-xs font-semibold text-stone-500 shrink-0">Status:</span>
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className="px-2.5 py-1.5 bg-stone-50 border border-stone-200 rounded-xl text-xs font-medium text-stone-700 focus:outline-hidden focus:border-amber-600 cursor-pointer"
-            >
-              <option value="ALL">All Statuses</option>
-              <option value="ACTIVE">Active</option>
-              <option value="INACTIVE">Inactive</option>
-            </select>
-          </div>
-        </div>
-      </div>
-
-      {/* Staff Directory Table */}
-      <div className="bg-white rounded-2xl border border-stone-200 shadow-2xs overflow-hidden">
-        <div className="p-3.5 sm:p-4 border-b border-stone-100 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <h3 className="font-serif font-bold text-base text-stone-900">
-              Staff Directory ({employees.length})
-            </h3>
-            {searchQuery && (
-              <span className="text-[11px] bg-amber-50 text-amber-800 border border-amber-200 px-2 py-0.2 rounded-full font-mono">
-                "{searchQuery}"
+      <DataTable<SafeUser>
+        title="Users"
+        rows={filteredEmployees}
+        rowKey={(emp) => emp.id}
+        loading={loading}
+        minWidth={920}
+        searchText={(emp) => [emp.firstName, emp.lastName, emp.username, emp.email, emp.phone, roleDisplayName(emp.role)].join(' ')}
+        searchPlaceholder="Search name, username, email, mobile"
+        filters={
+          <>
+            <label className="block space-y-1">
+              <span className="text-[11px] font-semibold text-stone-500">Role</span>
+              <select value={roleFilter} onChange={(e) => setRoleFilter(e.target.value)} className={filterSelect}>
+                <option value="ALL">All roles</option>
+                {ROLE_DEFINITIONS.map((r) => (
+                  <option key={r.code} value={r.code}>{r.name}</option>
+                ))}
+              </select>
+            </label>
+            <label className="block space-y-1">
+              <span className="text-[11px] font-semibold text-stone-500">Status</span>
+              <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className={filterSelect}>
+                <option value="ALL">All statuses</option>
+                <option value="ACTIVE">Active</option>
+                <option value="INACTIVE">Inactive</option>
+              </select>
+            </label>
+          </>
+        }
+        activeFilterCount={activeFilterCount}
+        onClearFilters={() => {
+          setRoleFilter('ALL');
+          setStatusFilter('ALL');
+        }}
+        onRefresh={() => fetchEmployeesData()}
+        refreshing={refreshing}
+        exportName="users"
+        exportRow={(emp) => ({
+          Name: `${emp.firstName} ${emp.lastName}`,
+          Username: emp.username || '',
+          Email: emp.email,
+          Mobile: emp.phone || '',
+          Role: roleDisplayName(emp.role),
+          Privilege: effectivePrivilege(emp) === 'SUPER_ADMIN' ? 'Super Admin' : 'User',
+          Status: emp.status === 'ACTIVE' ? 'Active' : 'Inactive'
+        })}
+        primaryAction={{
+          label: 'Add user',
+          onClick: () => setShowAddModal(true),
+          disabled: !isSuperAdmin,
+          title: isSuperAdmin ? 'Add a new user' : 'Only a Super Admin can add users'
+        }}
+        emptyText="No users match your search or filters."
+        rowClassName={(emp) => (emp.status === 'ACTIVE' ? '' : 'opacity-70')}
+        columns={[
+          {
+            key: 'name',
+            header: 'Name',
+            sortValue: (emp) => `${emp.firstName} ${emp.lastName}`.toLowerCase(),
+            render: (emp) => (
+              <span className="font-semibold text-[var(--brand-text)] whitespace-nowrap">
+                {emp.firstName} {emp.lastName}
+                {emp.id === currentUser?.id && <span className="ml-1 font-normal text-stone-400">(you)</span>}
               </span>
-            )}
-          </div>
-        </div>
-
-        {loading ? (
-          <div className="p-10 text-center text-stone-400 space-y-2">
-            <RefreshCw className="w-5 h-5 animate-spin mx-auto text-amber-700" />
-            <p className="text-xs">Loading employees...</p>
-          </div>
-        ) : employees.length === 0 ? (
-          <div className="p-10 text-center text-stone-400 space-y-2">
-            <UserX className="w-8 h-8 mx-auto text-stone-300" />
-            <p className="text-sm font-semibold text-stone-700">No employees found</p>
-            <p className="text-xs text-stone-400 max-w-sm mx-auto">
-              No staff members matched your filter criteria.
-            </p>
-            <button
-              onClick={() => {
-                setSearchQuery('');
-                setRoleFilter('ALL');
-                setStatusFilter('ALL');
-              }}
-              className="text-xs font-bold text-amber-800 hover:underline cursor-pointer"
-            >
-              Reset Filters
-            </button>
-          </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
-              <thead className="bg-stone-50 border-b border-stone-200 text-[10px] uppercase font-bold text-stone-500 tracking-wider">
-                <tr>
-                  <th className="py-3 px-4">Employee</th>
-                  <th className="py-3 px-4">Role</th>
-                  <th className="py-3 px-4">Username & Email</th>
-                  <th className="py-3 px-4">Phone</th>
-                  <th className="py-3 px-4">Status</th>
-                  <th className="py-3 px-4 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-stone-100">
-                {employees.map((emp) => {
-                  const isCurrent = emp.id === currentUser?.id;
-                  const isActive = emp.status === 'ACTIVE';
-
-                  return (
-                    <tr
-                      key={emp.id}
-                      className={`hover:bg-amber-50/20 transition-colors ${
-                        !isActive ? 'bg-stone-50/60 opacity-75' : ''
-                      }`}
-                    >
-                      {/* Name Only */}
-                      <td className="py-3 px-4">
-                        <span className="font-semibold text-stone-900 text-xs">
-                          {emp.firstName} {emp.lastName}
-                        </span>
-                      </td>
-
-                      {/* Role */}
-                      <td className="py-3 px-4">
-                        <div className="flex flex-wrap items-center gap-1.5">
-                          {getRoleBadge(emp.role)}
-                          <PrivilegeChip privilege={effectivePrivilege(emp)} />
-                          {emp.sectionAccess && Object.keys(emp.sectionAccess).length > 0 && effectivePrivilege(emp) === 'USER' && (
-                            <span className="text-[10px] font-semibold text-[var(--brand-text)]" title="Has custom section access">Custom access</span>
-                          )}
-                        </div>
-                      </td>
-
-                      {/* Username & Email */}
-                      <td className="py-3 px-4">
-                        <div className="space-y-0.5">
-                          <div className="font-mono text-[11px] font-semibold text-stone-900">
-                            <span className="text-amber-700">@</span>
-                            <span>{emp.username || emp.email.split('@')[0]}</span>
-                          </div>
-                          <div className="flex items-center gap-1 text-[11px] text-stone-500 font-mono">
-                            <Mail className="w-3 h-3 text-stone-400 shrink-0" />
-                            <span>{emp.email}</span>
-                          </div>
-                        </div>
-                      </td>
-
-                      {/* Phone */}
-                      <td className="py-3 px-4">
-                        <div className="flex items-center gap-1 text-[11px] text-stone-700 font-mono">
-                          <Phone className="w-3 h-3 text-stone-400 shrink-0" />
-                          <span>{emp.phone || '—'}</span>
-                        </div>
-                      </td>
-
-                      {/* Status Toggle Badge */}
-                      <td className="py-3 px-4">
-                        <button
-                          type="button"
-                          disabled={isCurrent}
-                          onClick={() => handleToggleStatus(emp)}
-                          className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-bold border transition-all cursor-pointer ${
-                            isActive
-                              ? 'bg-emerald-50 text-emerald-800 border-emerald-200 hover:bg-emerald-100'
-                              : 'bg-rose-50 text-rose-800 border-rose-200 hover:bg-rose-100'
-                          } ${isCurrent ? 'opacity-60 cursor-not-allowed' : ''}`}
-                          title={isCurrent ? 'Cannot change your own account' : 'Click to toggle status'}
-                        >
-                          <span
-                            className={`w-1.5 h-1.5 rounded-full ${
-                              isActive ? 'bg-emerald-600' : 'bg-rose-600'
-                            }`}
-                          />
-                          {isActive ? 'Active' : 'Inactive'}
-                        </button>
-                      </td>
-
-                      {/* Actions */}
-                      <td className="py-3 px-4 text-right">
-                        <div className="flex items-center justify-end gap-1">
-                          {!isSuperAdmin || (emp.role === 'ADMIN' && !isOwner) ? (
-                            <span className="text-[10.5px] text-stone-400">View only</span>
-                          ) : (<>
-                          {/* Edit Details */}
-                          <button
-                            onClick={() => openEditModal(emp)}
-                            className="p-1.5 rounded-lg text-stone-500 hover:text-stone-900 hover:bg-stone-100 transition-colors cursor-pointer"
-                            title="Edit Employee"
-                          >
-                            <Edit2 className="w-3.5 h-3.5" />
-                          </button>
-
-                          {/* Reset Password */}
-                          <button
-                            onClick={() => {
-                              setResetPasswordEmployee(emp);
-                              setNewResetPassword('');
-                              setConfirmResetPassword('');
-                            }}
-                            className="p-1.5 rounded-lg text-amber-700 hover:text-amber-900 hover:bg-amber-50 transition-colors cursor-pointer"
-                            title="Reset Password"
-                          >
-                            <Key className="w-3.5 h-3.5" />
-                          </button>
-
-                          {/* Delete / Remove */}
-                          {!isCurrent && (
-                            <button
-                              onClick={() => setDeletingEmployee(emp)}
-                              className="p-1.5 rounded-lg text-rose-600 hover:text-rose-800 hover:bg-rose-50 transition-colors cursor-pointer"
-                              title="Remove Employee"
-                            >
-                              <Trash2 className="w-3.5 h-3.5" />
-                            </button>
-                          )}
-                          </>)}
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </div>
+            )
+          },
+          {
+            key: 'username',
+            header: 'Username',
+            sortValue: (emp) => (emp.username || '').toLowerCase(),
+            render: (emp) => <span className="text-stone-600">@{emp.username || emp.email.split('@')[0]}</span>
+          },
+          { key: 'email', header: 'Email', sortValue: (emp) => emp.email.toLowerCase(), render: (emp) => emp.email },
+          { key: 'phone', header: 'Mobile', render: (emp) => <span className="whitespace-nowrap">{emp.phone || '—'}</span> },
+          {
+            key: 'role',
+            header: 'Role',
+            sortValue: (emp) => roleDisplayName(emp.role),
+            render: (emp) => <Chip>{roleDisplayName(emp.role)}</Chip>
+          },
+          {
+            key: 'privilege',
+            header: 'Privilege',
+            sortValue: (emp) => effectivePrivilege(emp) || '',
+            render: (emp) => (
+              <span className="inline-flex items-center gap-1.5">
+                <Chip tone={effectivePrivilege(emp) === 'SUPER_ADMIN' ? 'brand' : 'muted'}>
+                  {effectivePrivilege(emp) === 'SUPER_ADMIN' ? 'Super Admin' : 'User'}
+                </Chip>
+                {emp.sectionAccess && Object.keys(emp.sectionAccess).length > 0 && effectivePrivilege(emp) === 'USER' && (
+                  <span className="w-1.5 h-1.5 rounded-full bg-[var(--brand)]" title="Has custom section access" />
+                )}
+              </span>
+            )
+          },
+          {
+            key: 'status',
+            header: 'Status',
+            sortValue: (emp) => emp.status,
+            render: (emp) => {
+              const locked = emp.id === currentUser?.id || !isSuperAdmin || (emp.role === 'ADMIN' && !isOwner);
+              return (
+                <StatusPill
+                  active={emp.status === 'ACTIVE'}
+                  onClick={locked ? undefined : () => handleToggleStatus(emp)}
+                  title="Click to activate / deactivate"
+                />
+              );
+            }
+          }
+        ]}
+        rowActions={(emp) => {
+          if (!isSuperAdmin || (emp.role === 'ADMIN' && !isOwner)) return <span className="text-[11px] text-stone-400">View only</span>;
+          return (
+            <span className="inline-flex items-center gap-0.5">
+              <button type="button" onClick={() => openEditModal(emp)} className={rowIconBtn} title="Edit user" aria-label={`Edit ${emp.firstName}`}>
+                <Edit2 className="w-3.5 h-3.5" />
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setResetPasswordEmployee(emp);
+                  setNewResetPassword('');
+                  setConfirmResetPassword('');
+                }}
+                className={rowIconBtn}
+                title="Reset password"
+                aria-label={`Reset password for ${emp.firstName}`}
+              >
+                <Key className="w-3.5 h-3.5" />
+              </button>
+              {emp.id !== currentUser?.id && (
+                <button
+                  type="button"
+                  onClick={() => setDeletingEmployee(emp)}
+                  className={`${rowIconBtn} hover:!text-rose-700 hover:!bg-rose-50`}
+                  title="Remove user"
+                  aria-label={`Remove ${emp.firstName}`}
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                </button>
+              )}
+            </span>
+          );
+        }}
+      />
 
       {/* ========================================================================= */}
       {/* MODAL 1: ADD NEW EMPLOYEE */}
       {/* ========================================================================= */}
       {showAddModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs animate-in fade-in">
-          <div className="bg-white rounded-2xl max-w-xl w-full p-4 sm:p-6 shadow-2xl border border-stone-200 space-y-4 max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/35 backdrop-blur-sm animate-in fade-in">
+          <div className="bg-white rounded-2xl max-w-xl w-full p-4 sm:p-6 shadow-[var(--shadow-float)] border border-[var(--border-subtle)] space-y-4 max-h-[90vh] animate-in fade-in zoom-in-95 overflow-y-auto">
             <div className="flex items-center justify-between border-b border-stone-100 pb-3">
               <div>
                 <h3 className="font-serif font-bold text-xl text-stone-900">
@@ -884,8 +721,8 @@ export const AdminEmployeesView: React.FC<AdminEmployeesViewProps> = ({ onRefres
       {/* MODAL 2: EDIT EMPLOYEE DETAILS */}
       {/* ========================================================================= */}
       {editingEmployee && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs animate-in fade-in">
-          <div className="bg-white rounded-2xl max-w-xl w-full p-4 sm:p-6 shadow-2xl border border-stone-200 space-y-4 max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/35 backdrop-blur-sm animate-in fade-in">
+          <div className="bg-white rounded-2xl max-w-xl w-full p-4 sm:p-6 shadow-[var(--shadow-float)] border border-[var(--border-subtle)] space-y-4 max-h-[90vh] animate-in fade-in zoom-in-95 overflow-y-auto">
             <div className="flex items-center justify-between border-b border-stone-100 pb-3">
               <div>
                 <h3 className="font-serif font-bold text-xl text-stone-900">
@@ -1006,7 +843,7 @@ export const AdminEmployeesView: React.FC<AdminEmployeesViewProps> = ({ onRefres
       {/* MODAL 3: RESET PASSWORD */}
       {/* ========================================================================= */}
       {resetPasswordEmployee && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs animate-in fade-in">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/35 backdrop-blur-sm animate-in fade-in">
           <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-stone-200 space-y-4">
             <div className="flex items-center justify-between border-b border-stone-100 pb-3">
               <div className="flex items-center gap-2 text-amber-800">
@@ -1094,7 +931,7 @@ export const AdminEmployeesView: React.FC<AdminEmployeesViewProps> = ({ onRefres
       {/* MODAL 4: DELETE EMPLOYEE CONFIRMATION */}
       {/* ========================================================================= */}
       {deletingEmployee && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs animate-in fade-in">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/35 backdrop-blur-sm animate-in fade-in">
           <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-rose-200 space-y-4">
             <div className="flex items-center gap-3 text-rose-600">
               <div className="w-10 h-10 rounded-2xl bg-rose-100 flex items-center justify-center shrink-0">

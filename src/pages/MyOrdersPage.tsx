@@ -103,15 +103,15 @@ export const MyOrdersPage: React.FC<{
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
       {/* 1. Header */}
-      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-stone-200 pb-4">
+      <div className="flex flex-wrap items-end justify-between gap-4 border-b border-[var(--border-subtle)] pb-5">
         <div>
-          <span className="text-xs font-bold uppercase tracking-widest text-amber-800">
+          <span className="lux-eyebrow text-[var(--brand-text)]">
             Account Activity
           </span>
-          <h1 className="font-serif text-3xl font-bold text-stone-900 mt-0.5">
+          <h1 className="lux-display text-[clamp(2rem,4vw,2.75rem)] text-stone-900 mt-2">
             My Dining Orders ({orders.length})
           </h1>
-          <p className="text-xs text-stone-500 mt-1">
+          <p className="text-xs sm:text-sm text-stone-600 mt-1.5">
             Real-time kitchen preparation updates, delivery dispatch tracking, and dining history.
           </p>
         </div>
@@ -120,15 +120,15 @@ export const MyOrdersPage: React.FC<{
           <button
             onClick={() => loadOrders()}
             disabled={refreshing}
-            className="p-2.5 rounded-xl border border-stone-200 text-stone-600 hover:text-stone-900 hover:bg-stone-50 transition-all cursor-pointer"
+            className="btn btn-secondary !px-2.5"
             title="Refresh Orders"
           >
-            <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin text-amber-700' : ''}`} />
+            <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin text-[var(--brand)]' : ''}`} />
           </button>
 
           <button
             onClick={() => navigate('menu')}
-            className="px-4 py-2.5 bg-amber-700 hover:bg-amber-800 text-white rounded-xl text-xs font-bold shadow-xs flex items-center gap-1.5 cursor-pointer transition-all"
+            className="btn btn-primary"
           >
             <ShoppingBag className="w-4 h-4" />
             <span>Order New Meal</span>
@@ -137,24 +137,24 @@ export const MyOrdersPage: React.FC<{
       </div>
 
       {/* 2. Filter Tabs & Search Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-stone-200 pb-3">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         {/* Tabs with Counts */}
-        <div className="flex items-center gap-2 overflow-x-auto text-xs">
+        <div className="flex items-center gap-2 overflow-x-auto scrollbar-none text-xs -mx-4 px-4 sm:mx-0 sm:px-0 pb-1">
           {/* Tab 1: All */}
           <button
             onClick={() => setActiveTab('ALL')}
-            className={`px-4 py-2.5 text-xs font-bold rounded-xl transition-all cursor-pointer whitespace-nowrap flex items-center gap-2 ${
+            className={`min-h-10 px-4 py-2 text-xs font-bold rounded-full border transition-all cursor-pointer whitespace-nowrap flex items-center gap-2 ${
               activeTab === 'ALL'
-                ? 'bg-amber-700 text-white shadow-xs'
-                : 'text-stone-600 hover:bg-stone-100'
+                ? 'bg-[var(--brand)] border-[var(--brand)] text-white shadow-[var(--shadow-xs)]'
+                : 'bg-white border-stone-200 text-stone-600 hover:border-[var(--brand-border)] hover:bg-[var(--brand-soft)] hover:text-[var(--brand-text)]'
             }`}
           >
             <span>All Orders</span>
             <span
               className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold ${
                 activeTab === 'ALL'
-                  ? 'bg-amber-900/50 text-white'
-                  : 'bg-stone-200 text-stone-700'
+                  ? 'bg-white/20 text-white'
+                  : 'bg-stone-100 text-stone-700'
               }`}
             >
               {orders.length}
@@ -164,23 +164,23 @@ export const MyOrdersPage: React.FC<{
           {/* Tab 2: Active */}
           <button
             onClick={() => setActiveTab('ACTIVE')}
-            className={`px-4 py-2.5 text-xs font-bold rounded-xl transition-all cursor-pointer whitespace-nowrap flex items-center gap-2 ${
+            className={`min-h-10 px-4 py-2 text-xs font-bold rounded-full border transition-all cursor-pointer whitespace-nowrap flex items-center gap-2 ${
               activeTab === 'ACTIVE'
-                ? 'bg-amber-700 text-white shadow-xs'
-                : 'text-stone-600 hover:bg-stone-100'
+                ? 'bg-[var(--brand)] border-[var(--brand)] text-white shadow-[var(--shadow-xs)]'
+                : 'bg-white border-stone-200 text-stone-600 hover:border-[var(--brand-border)] hover:bg-[var(--brand-soft)] hover:text-[var(--brand-text)]'
             }`}
           >
             <span className="flex items-center gap-1">
-              <Flame className="w-3.5 h-3.5 text-amber-300" />
+              <Flame className={`w-3.5 h-3.5 ${activeTab === 'ACTIVE' ? 'text-white' : 'text-[var(--brand)]'}`} />
               <span>Active in Kitchen</span>
             </span>
             <span
               className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold ${
                 activeTab === 'ACTIVE'
-                  ? 'bg-amber-900/50 text-white'
+                  ? 'bg-white/20 text-white'
                   : activeOrders.length > 0
-                  ? 'bg-amber-100 text-amber-900'
-                  : 'bg-stone-200 text-stone-700'
+                  ? 'bg-[var(--brand-soft)] text-[var(--brand-text)]'
+                  : 'bg-stone-100 text-stone-700'
               }`}
             >
               {activeOrders.length}
@@ -190,18 +190,18 @@ export const MyOrdersPage: React.FC<{
           {/* Tab 3: Completed */}
           <button
             onClick={() => setActiveTab('COMPLETED')}
-            className={`px-4 py-2.5 text-xs font-bold rounded-xl transition-all cursor-pointer whitespace-nowrap flex items-center gap-2 ${
+            className={`min-h-10 px-4 py-2 text-xs font-bold rounded-full border transition-all cursor-pointer whitespace-nowrap flex items-center gap-2 ${
               activeTab === 'COMPLETED'
-                ? 'bg-amber-700 text-white shadow-xs'
-                : 'text-stone-600 hover:bg-stone-100'
+                ? 'bg-[var(--brand)] border-[var(--brand)] text-white shadow-[var(--shadow-xs)]'
+                : 'bg-white border-stone-200 text-stone-600 hover:border-[var(--brand-border)] hover:bg-[var(--brand-soft)] hover:text-[var(--brand-text)]'
             }`}
           >
             <span>Completed & Served</span>
             <span
               className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold ${
                 activeTab === 'COMPLETED'
-                  ? 'bg-amber-900/50 text-white'
-                  : 'bg-stone-200 text-stone-700'
+                  ? 'bg-white/20 text-white'
+                  : 'bg-stone-100 text-stone-700'
               }`}
             >
               {completedOrders.length}
@@ -211,18 +211,18 @@ export const MyOrdersPage: React.FC<{
           {/* Tab 4: Cancelled */}
           <button
             onClick={() => setActiveTab('CANCELLED')}
-            className={`px-4 py-2.5 text-xs font-bold rounded-xl transition-all cursor-pointer whitespace-nowrap flex items-center gap-2 ${
+            className={`min-h-10 px-4 py-2 text-xs font-bold rounded-full border transition-all cursor-pointer whitespace-nowrap flex items-center gap-2 ${
               activeTab === 'CANCELLED'
-                ? 'bg-amber-700 text-white shadow-xs'
-                : 'text-stone-600 hover:bg-stone-100'
+                ? 'bg-[var(--brand)] border-[var(--brand)] text-white shadow-[var(--shadow-xs)]'
+                : 'bg-white border-stone-200 text-stone-600 hover:border-[var(--brand-border)] hover:bg-[var(--brand-soft)] hover:text-[var(--brand-text)]'
             }`}
           >
             <span>Cancelled</span>
             <span
               className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold ${
                 activeTab === 'CANCELLED'
-                  ? 'bg-amber-900/50 text-white'
-                  : 'bg-stone-200 text-stone-700'
+                  ? 'bg-white/20 text-white'
+                  : 'bg-stone-100 text-stone-700'
               }`}
             >
               {cancelledOrders.length}
@@ -231,8 +231,8 @@ export const MyOrdersPage: React.FC<{
         </div>
 
         {/* Search Bar */}
-        <div className="flex items-center gap-2 bg-stone-50 px-3 py-1.5 rounded-xl border border-stone-200 text-xs sm:w-64">
-          <Search className="w-3.5 h-3.5 text-stone-400 shrink-0" />
+        <div className="flex items-center gap-2 bg-white px-3.5 min-h-10 rounded-full border border-[var(--border-subtle)] shadow-[var(--shadow-xs)] text-xs sm:w-64 focus-within:border-[var(--brand)] focus-within:ring-2 focus-within:ring-[var(--brand-ring-soft)]">
+          <Search className="w-3.5 h-3.5 text-stone-500 shrink-0" />
           <input
             type="text"
             placeholder="Search dish, order #..."
@@ -243,7 +243,8 @@ export const MyOrdersPage: React.FC<{
           {searchQuery && (
             <button
               onClick={() => setSearchQuery('')}
-              className="text-stone-400 hover:text-stone-600 font-bold"
+              className="text-stone-500 hover:text-stone-800 font-bold cursor-pointer"
+              aria-label="Clear search"
             >
               ✕
             </button>

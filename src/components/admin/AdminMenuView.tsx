@@ -327,14 +327,14 @@ export const AdminMenuView: React.FC<AdminMenuViewProps> = ({
       />
 
       {/* Header & Controls */}
-      <div className="bg-white p-3 sm:p-4 rounded-2xl border border-stone-200/80 shadow-2xs space-y-3">
+      <div className="bg-white p-3 sm:p-4 rounded-2xl border border-stone-200/80 shadow-[var(--shadow-card)] space-y-3">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
             <div className="flex items-center gap-2">
-              <span className="font-serif text-lg sm:text-xl font-bold text-stone-900">
+              <span className="page-title">
                 Menu Catalog
               </span>
-              <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-amber-50 text-amber-900 border border-amber-200">
+              <span className="badge badge-brand">
                 {filteredItems.length} {filteredItems.length === 1 ? 'Dish' : 'Dishes'}
               </span>
             </div>
@@ -358,7 +358,7 @@ export const AdminMenuView: React.FC<AdminMenuViewProps> = ({
         {/* Filter and Search Bar (Standard 8px gaps) */}
         <div className="grid grid-cols-1 sm:grid-cols-12 gap-2 pt-2 border-t border-stone-100">
           {/* Search Input (sm:col-span-5) */}
-          <div className="sm:col-span-5 flex items-center gap-2 bg-stone-50 px-3 py-1.5 rounded-xl border border-stone-200">
+          <div className="sm:col-span-5 flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-stone-200 focus-within:border-amber-700 focus-within:ring-3 focus-within:ring-[var(--brand-ring-soft)] transition-shadow">
             <Search className="w-3.5 h-3.5 text-stone-400 shrink-0" />
             <input
               type="text"
@@ -370,7 +370,7 @@ export const AdminMenuView: React.FC<AdminMenuViewProps> = ({
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery('')}
-                className="text-[10px] text-stone-400 hover:text-stone-600 font-bold cursor-pointer"
+                className="text-[10px] text-stone-500 hover:text-stone-600 font-bold cursor-pointer"
               >
                 ✕
               </button>
@@ -382,7 +382,7 @@ export const AdminMenuView: React.FC<AdminMenuViewProps> = ({
             <select
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
-              className="w-full px-3 py-1.5 bg-stone-50 border border-stone-200 rounded-xl text-xs font-semibold text-stone-700 focus:outline-hidden focus:border-amber-700"
+              className="w-full px-3 py-1.5 bg-white border border-stone-200 rounded-xl text-xs font-semibold text-stone-700 focus:outline-hidden focus:border-amber-700"
             >
               <option value="ALL">All Categories ({menuItems.length})</option>
               {categories.map((c) => {
@@ -401,7 +401,7 @@ export const AdminMenuView: React.FC<AdminMenuViewProps> = ({
             <select
               value={vegFilter}
               onChange={(e) => setVegFilter(e.target.value as any)}
-              className="w-full px-3 py-1.5 bg-stone-50 border border-stone-200 rounded-xl text-xs font-semibold text-stone-700 focus:outline-hidden focus:border-amber-700"
+              className="w-full px-3 py-1.5 bg-white border border-stone-200 rounded-xl text-xs font-semibold text-stone-700 focus:outline-hidden focus:border-amber-700"
             >
               <option value="ALL">All Types</option>
               <option value="VEG">Vegetarian Only</option>
@@ -414,7 +414,7 @@ export const AdminMenuView: React.FC<AdminMenuViewProps> = ({
             <select
               value={availFilter}
               onChange={(e) => setAvailFilter(e.target.value as any)}
-              className="w-full px-3 py-1.5 bg-stone-50 border border-stone-200 rounded-xl text-xs font-semibold text-stone-700 focus:outline-hidden focus:border-amber-700"
+              className="w-full px-3 py-1.5 bg-white border border-stone-200 rounded-xl text-xs font-semibold text-stone-700 focus:outline-hidden focus:border-amber-700"
             >
               <option value="ALL">All Availability</option>
               <option value="AVAILABLE">Available Only</option>
@@ -427,11 +427,11 @@ export const AdminMenuView: React.FC<AdminMenuViewProps> = ({
       {/* Menu Cards Catalog */}
       <div>
           {filteredItems.length === 0 ? (
-            <div className="bg-white rounded-2xl border border-stone-200/80 p-12 text-center space-y-3 shadow-2xs">
+            <div className="bg-white rounded-2xl border border-stone-200/80 p-12 text-center space-y-3 shadow-[var(--shadow-card)]">
               <div className="w-12 h-12 rounded-2xl bg-amber-50 text-amber-800 flex items-center justify-center mx-auto">
                 <ImageIcon className="w-6 h-6" />
               </div>
-              <h3 className="font-serif font-bold text-base text-stone-900">
+              <h3 className="section-title text-base">
                 No Menu Items Found
               </h3>
               <p className="text-xs text-stone-500 max-w-sm mx-auto">
@@ -444,7 +444,7 @@ export const AdminMenuView: React.FC<AdminMenuViewProps> = ({
                   setAvailFilter('ALL');
                   setSearchQuery('');
                 }}
-                className="px-3.5 py-1.5 bg-stone-100 hover:bg-stone-200 text-stone-800 font-bold text-xs rounded-xl transition-all cursor-pointer inline-flex items-center gap-1.5"
+                className="px-3.5 py-1.5 bg-white border border-stone-200 hover:bg-[var(--brand-soft)] hover:border-[var(--brand-border)] hover:text-[var(--brand-text)] text-stone-800 font-bold text-xs rounded-xl transition-all cursor-pointer inline-flex items-center gap-1.5"
               >
                 <RotateCcw className="w-3.5 h-3.5" />
                 Reset Filters
@@ -455,7 +455,7 @@ export const AdminMenuView: React.FC<AdminMenuViewProps> = ({
               {filteredItems.map((item) => (
                 <div
                   key={item.id}
-                  className="bg-white rounded-2xl border border-stone-200/80 shadow-2xs hover:shadow-md transition-all overflow-hidden flex flex-col justify-between group"
+                  className="bg-white rounded-2xl border border-stone-200/80 shadow-[var(--shadow-card)] lift overflow-hidden flex flex-col justify-between group"
                 >
                   <div>
                     {/* Top: Card Image with Overlays */}
@@ -483,7 +483,7 @@ export const AdminMenuView: React.FC<AdminMenuViewProps> = ({
 
                         <div className="flex items-center gap-1 pointer-events-auto">
                           {item.isChefSpecial && (
-                            <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-amber-500 text-white shadow-2xs flex items-center gap-1">
+                            <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-amber-800 text-white shadow-2xs flex items-center gap-1">
                               <Sparkles className="w-3 h-3 text-amber-200" /> Special
                             </span>
                           )}
@@ -522,7 +522,7 @@ export const AdminMenuView: React.FC<AdminMenuViewProps> = ({
                           {item.name}
                         </h3>
                         {item.sku && (
-                          <span className="font-mono text-[9px] text-stone-400 bg-stone-100 px-1 py-0.2 rounded shrink-0">
+                          <span className="font-mono text-[9px] text-stone-500 bg-stone-100 px-1 py-0.2 rounded shrink-0">
                             {item.sku}
                           </span>
                         )}
@@ -539,7 +539,7 @@ export const AdminMenuView: React.FC<AdminMenuViewProps> = ({
                           <span>{item.spiceLevel}</span>
                         </span>
                         <span className="text-stone-300">·</span>
-                        <span className="text-[10px] text-stone-400">
+                        <span className="text-[10px] text-stone-500">
                           {item.calories ? `${item.calories} kcal` : 'Chef Recipe'}
                         </span>
                       </div>
@@ -548,7 +548,7 @@ export const AdminMenuView: React.FC<AdminMenuViewProps> = ({
                       <div className="pt-2 border-t border-stone-100 flex items-center justify-between">
                         {/* Price with edit button */}
                         <div className="flex items-center gap-1.5">
-                          <span className="font-mono font-bold text-base text-amber-950">
+                          <span className="font-mono font-bold text-base text-[var(--brand-text)]">
                             {hasCustomization(item) ? `From ${formatCurrency(startingPrice(item))}` : formatCurrency(item.price)}
                           </span>
                           {hasCustomization(item) && (
@@ -573,10 +573,10 @@ export const AdminMenuView: React.FC<AdminMenuViewProps> = ({
                           data-locked={!canEdit || undefined}
                           title={canEdit ? undefined : 'View access — changes are disabled for your account'}
                           onClick={() => onToggleAvailability(item.id)}
-                          className={`px-2 py-0.5 rounded-lg text-[10px] font-bold border transition-all flex items-center gap-1 cursor-pointer ${
+                          className={`px-2 py-0.5 rounded-full text-[10px] font-bold border transition-all flex items-center gap-1 cursor-pointer ${
                             item.available
-                              ? 'bg-emerald-50 text-emerald-800 border-emerald-200 hover:bg-emerald-100'
-                              : 'bg-stone-100 text-stone-500 border-stone-200 hover:bg-stone-200'
+                              ? 'bg-[var(--success-soft)] text-[var(--success)] border-[var(--success-border)] hover:bg-emerald-100'
+                              : 'bg-stone-100 text-stone-600 border-stone-200 hover:bg-stone-200'
                           }`}
                         >
                           {item.available ? (
@@ -596,7 +596,7 @@ export const AdminMenuView: React.FC<AdminMenuViewProps> = ({
                   </div>
 
                   {/* Card Bottom Actions */}
-                  <div className="p-2.5 bg-stone-50/70 border-t border-stone-100 flex items-center justify-between text-xs">
+                  <div className="p-2.5 bg-[var(--surface-muted)] border-t border-stone-100 flex items-center justify-between text-xs">
                     <span className="text-[10px] font-bold text-emerald-700 flex items-center gap-1">
                       <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
                       Active
@@ -606,7 +606,7 @@ export const AdminMenuView: React.FC<AdminMenuViewProps> = ({
                       <button
                         type="button"
                         onClick={() => setViewingItem(item)}
-                        className="p-1.5 bg-white hover:bg-stone-100 text-stone-700 border border-stone-200 rounded-lg text-xs transition-colors cursor-pointer"
+                        className="p-1.5 bg-white hover:bg-[var(--brand-soft)] hover:border-[var(--brand-border)] hover:text-[var(--brand-text)] text-stone-700 border border-stone-200 rounded-lg text-xs transition-colors cursor-pointer"
                         title="View Full Dish Details"
                       >
                         <Eye className="w-3.5 h-3.5" />
@@ -675,7 +675,7 @@ export const AdminMenuView: React.FC<AdminMenuViewProps> = ({
 
             <div className="flex items-start justify-between">
               <div>
-                <h3 className="font-serif text-lg font-bold text-stone-900">{viewingItem.name}</h3>
+                <h3 className="section-title text-xl">{viewingItem.name}</h3>
                 <span className="text-[11px] text-stone-500 font-mono">
                   Category: {viewingItem.categoryName || 'General'} · SKU: {viewingItem.sku || 'N/A'}
                 </span>
@@ -685,36 +685,36 @@ export const AdminMenuView: React.FC<AdminMenuViewProps> = ({
               </span>
             </div>
 
-            <p className="text-stone-600 leading-relaxed bg-stone-50 p-3 rounded-xl border border-stone-100">
+            <p className="text-stone-600 leading-relaxed bg-[var(--surface-muted)] p-3 rounded-xl border border-stone-200/70">
               {viewingItem.description}
             </p>
 
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center">
-              <div className="p-2.5 bg-stone-50 rounded-xl border border-stone-100">
-                <span className="text-[10px] uppercase font-bold text-stone-400 block">Spice Level</span>
+              <div className="p-2.5 bg-[var(--surface-muted)] rounded-xl border border-stone-200/70">
+                <span className="label-caps block !text-[10px]">Spice Level</span>
                 <span className="font-bold text-stone-800 text-xs mt-0.5 flex items-center justify-center gap-1">
                   <Flame className="w-3.5 h-3.5 text-amber-700" />
                   {viewingItem.spiceLevel}
                 </span>
               </div>
 
-              <div className="p-2.5 bg-stone-50 rounded-xl border border-stone-100">
-                <span className="text-[10px] uppercase font-bold text-stone-400 block">Prep Time</span>
+              <div className="p-2.5 bg-[var(--surface-muted)] rounded-xl border border-stone-200/70">
+                <span className="label-caps block !text-[10px]">Prep Time</span>
                 <span className="font-bold text-stone-800 text-xs mt-0.5 flex items-center justify-center gap-1">
                   <Clock className="w-3.5 h-3.5 text-amber-700" />
                   {viewingItem.prepTimeMinutes} Mins
                 </span>
               </div>
 
-              <div className="p-2.5 bg-stone-50 rounded-xl border border-stone-100">
-                <span className="text-[10px] uppercase font-bold text-stone-400 block">Availability</span>
+              <div className="p-2.5 bg-[var(--surface-muted)] rounded-xl border border-stone-200/70">
+                <span className="label-caps block !text-[10px]">Availability</span>
                 <span className={`font-bold text-xs mt-0.5 block ${viewingItem.available ? 'text-emerald-700' : 'text-stone-400'}`}>
                   {viewingItem.available ? 'Available' : 'Disabled'}
                 </span>
               </div>
 
-              <div className="p-2.5 bg-stone-50 rounded-xl border border-stone-100">
-                <span className="text-[10px] uppercase font-bold text-stone-400 block">Special</span>
+              <div className="p-2.5 bg-[var(--surface-muted)] rounded-xl border border-stone-200/70">
+                <span className="label-caps block !text-[10px]">Special</span>
                 <span className="font-bold text-stone-800 text-xs mt-0.5 block">
                   {viewingItem.isChefSpecial ? "Chef's Special" : 'Regular Menu'}
                 </span>
@@ -759,7 +759,7 @@ export const AdminMenuView: React.FC<AdminMenuViewProps> = ({
                   step="1"
                   value={quickPrice}
                   onChange={(e) => setQuickPrice(Number(e.target.value))}
-                  className="w-full pl-8 pr-4 py-2.5 bg-stone-50 border border-stone-300 rounded-xl text-sm font-bold font-mono text-stone-900 focus:outline-hidden focus:border-amber-700"
+                  className="w-full pl-8 pr-4 py-2.5 bg-white border border-stone-300 rounded-xl text-sm font-bold font-mono text-stone-900 focus:outline-hidden focus:border-amber-700"
                   required
                 />
               </div>
@@ -810,7 +810,7 @@ export const AdminMenuView: React.FC<AdminMenuViewProps> = ({
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="e.g. Truffle Malai Paneer Tikka"
-                  className="w-full px-3.5 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs text-stone-900 focus:outline-hidden focus:border-amber-700"
+                  className="w-full px-3.5 py-2 bg-white border border-stone-200 rounded-xl text-xs text-stone-900 focus:outline-hidden focus:border-amber-700"
                   required
                 />
               </div>
@@ -820,7 +820,7 @@ export const AdminMenuView: React.FC<AdminMenuViewProps> = ({
                 <select
                   value={categoryId}
                   onChange={(e) => setCategoryId(e.target.value)}
-                  className="w-full px-3.5 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs text-stone-900 focus:outline-hidden focus:border-amber-700"
+                  className="w-full px-3.5 py-2 bg-white border border-stone-200 rounded-xl text-xs text-stone-900 focus:outline-hidden focus:border-amber-700"
                 >
                   {categories.map((c) => (
                     <option key={c.id} value={c.id}>
@@ -838,7 +838,7 @@ export const AdminMenuView: React.FC<AdminMenuViewProps> = ({
                 onChange={(e) => setDescription(e.target.value)}
                 rows={2}
                 placeholder="Gourmet description of ingredients, flavor profile and presentation..."
-                className="w-full px-3.5 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs text-stone-900 focus:outline-hidden focus:border-amber-700"
+                className="w-full px-3.5 py-2 bg-white border border-stone-200 rounded-xl text-xs text-stone-900 focus:outline-hidden focus:border-amber-700"
                 required
               />
             </div>
@@ -854,7 +854,7 @@ export const AdminMenuView: React.FC<AdminMenuViewProps> = ({
                   onChange={(e) => setPrice(Number(e.target.value))}
                   min="0"
                   step="1"
-                  className="w-full px-3.5 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs font-mono font-bold text-stone-900 focus:outline-hidden focus:border-amber-700"
+                  className="w-full px-3.5 py-2 bg-white border border-stone-200 rounded-xl text-xs font-mono font-bold text-stone-900 focus:outline-hidden focus:border-amber-700"
                   required
                 />
               </div>
@@ -866,7 +866,7 @@ export const AdminMenuView: React.FC<AdminMenuViewProps> = ({
                   value={prepTimeMinutes}
                   onChange={(e) => setPrepTimeMinutes(Number(e.target.value))}
                   min="1"
-                  className="w-full px-3.5 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs text-stone-900 focus:outline-hidden focus:border-amber-700"
+                  className="w-full px-3.5 py-2 bg-white border border-stone-200 rounded-xl text-xs text-stone-900 focus:outline-hidden focus:border-amber-700"
                   required
                 />
               </div>
@@ -876,7 +876,7 @@ export const AdminMenuView: React.FC<AdminMenuViewProps> = ({
                 <select
                   value={spiceLevel}
                   onChange={(e) => setSpiceLevel(e.target.value as any)}
-                  className="w-full px-3.5 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs text-stone-900 focus:outline-hidden focus:border-amber-700"
+                  className="w-full px-3.5 py-2 bg-white border border-stone-200 rounded-xl text-xs text-stone-900 focus:outline-hidden focus:border-amber-700"
                 >
                   <option value="None">None</option>
                   <option value="Mild">Mild</option>
@@ -890,7 +890,7 @@ export const AdminMenuView: React.FC<AdminMenuViewProps> = ({
             {/* =============================================================== */}
             {/* DISH PHOTO UPLOAD SECTION (LOCAL UPLOAD & WEB URL OPTIONS)        */}
             {/* =============================================================== */}
-            <div className="space-y-2 p-3 bg-stone-50/90 rounded-2xl border border-stone-200">
+            <div className="space-y-2 p-3 bg-[var(--surface-muted)] rounded-2xl border border-stone-200">
               <div className="flex items-center justify-between">
                 <label className="text-xs font-bold text-stone-800 flex items-center gap-1.5">
                   <ImageIcon className="w-3.5 h-3.5 text-amber-700" />
@@ -940,7 +940,7 @@ export const AdminMenuView: React.FC<AdminMenuViewProps> = ({
                       <p className="font-bold text-stone-800 text-xs">
                         {uploadingImage ? 'Processing image...' : 'Click to browse image from your computer'}
                       </p>
-                      <p className="text-[10px] text-stone-400 mt-0.5">
+                      <p className="text-[10px] text-stone-500 mt-0.5">
                         Supports PNG, JPG, WebP, GIF (auto-optimized)
                       </p>
                     </div>
@@ -958,7 +958,7 @@ export const AdminMenuView: React.FC<AdminMenuViewProps> = ({
                     placeholder="https://images.unsplash.com/..."
                     className="w-full px-3 py-2 bg-white border border-stone-200 rounded-xl text-xs text-stone-900 focus:outline-hidden focus:border-amber-700"
                   />
-                  <p className="text-[10px] text-stone-400">
+                  <p className="text-[10px] text-stone-500">
                     Paste any public image URL or Unsplash image link.
                   </p>
                 </div>
@@ -985,7 +985,7 @@ export const AdminMenuView: React.FC<AdminMenuViewProps> = ({
                   <button
                     type="button"
                     onClick={() => modalFileInputRef.current?.click()}
-                    className="px-2.5 py-1 text-xs font-semibold bg-stone-100 hover:bg-stone-200 text-stone-700 rounded-lg transition-colors cursor-pointer"
+                    className="px-2.5 py-1 text-xs font-semibold bg-white border border-stone-200 hover:bg-[var(--brand-soft)] hover:border-[var(--brand-border)] hover:text-[var(--brand-text)] text-stone-700 rounded-lg transition-colors cursor-pointer"
                   >
                     Change Photo
                   </button>
@@ -994,7 +994,7 @@ export const AdminMenuView: React.FC<AdminMenuViewProps> = ({
             </div>
 
             {/* Checkbox Toggles (Standard 8px gap) */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 p-3 bg-stone-50 rounded-xl border border-stone-200/80">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 p-3 bg-[var(--surface-muted)] rounded-xl border border-stone-200/80">
               <label className="flex items-center gap-2 text-xs font-bold cursor-pointer text-stone-800">
                 <input
                   type="checkbox"

@@ -6,13 +6,15 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { KeyRound, Layers, Loader2, RotateCcw, ShieldCheck, Users } from 'lucide-react';
 import { AdminEmployeesView } from './AdminEmployeesView.tsx';
-import { AccessLevelChip, PrivilegeChip } from './AccessEditor.tsx';
+import { AccessLevelChip } from './AccessEditor.tsx';
+import { Chip, DataTable, StatusPill, rowIconBtn } from './DataTable.tsx';
 import { AccessOverview, ManagerApi } from '../../api/index.ts';
 import { useAuth } from '../../context/AuthContext.tsx';
 import { useToast } from '../../context/ToastContext.tsx';
 import { Modal } from '../common/Footer.tsx';
 import {
   ACCESS_LABELS,
+  PRIVILEGE_LABELS,
   AccessLevel,
   PrivilegeType,
   SECTIONS,
@@ -65,13 +67,10 @@ export const UserManagementView: React.FC<{ onRefreshStats?: () => void }> = ({ 
 
   return (
     <div className="space-y-3">
-      <div className="bg-white rounded-2xl border border-[var(--border-subtle)] p-4 sm:p-5 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
-        <div>
-          <h2 className="lux-display text-2xl text-stone-900 flex items-center gap-2">
-            <Users className="w-5 h-5 text-amber-700" /> User Management
-          </h2>
-          <p className="text-xs text-stone-500 mt-0.5">Users, roles, privileges and section-level access in one place.</p>
-        </div>
+      <div className="bg-white rounded-2xl border border-[var(--border-subtle)] px-4 py-2.5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+        <h2 className="lux-display text-xl text-stone-900 flex items-center gap-2">
+          <Users className="w-[18px] h-[18px] text-[var(--brand)]" /> User Management
+        </h2>
         <div className="flex gap-1 p-1 rounded-xl bg-stone-100/80 overflow-x-auto" role="tablist" aria-label="User management sections">
           {visibleTabs.map((t) => {
             const Icon = t.icon;
@@ -82,7 +81,7 @@ export const UserManagementView: React.FC<{ onRefreshStats?: () => void }> = ({ 
                 role="tab"
                 aria-selected={tab === t.id}
                 onClick={() => setTab(t.id)}
-                className={`inline-flex items-center gap-1.5 px-3 min-h-9 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors cursor-pointer ${
+                className={`inline-flex items-center gap-1.5 px-3 min-h-8 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors cursor-pointer ${
                   tab === t.id ? 'bg-white text-[var(--brand-text)] shadow-sm' : 'text-stone-600 hover:text-[var(--brand-text)] hover:bg-white/60'
                 }`}
               >
@@ -96,15 +95,17 @@ export const UserManagementView: React.FC<{ onRefreshStats?: () => void }> = ({ 
       {tab === 'USERS' && <AdminEmployeesView onRefreshStats={onRefreshStats} />}
 
       {tab !== 'USERS' && !overview && !loadError && (
-        <div className="p-10 flex justify-center bg-white rounded-2xl border border-stone-200">
-          <Loader2 className="w-6 h-6 animate-spin text-amber-700" />
+        <div className="p-10 flex justify-center bg-white rounded-2xl border border-[var(--border-subtle)]">
+          <Loader2 className="w-6 h-6 animate-spin text-[var(--brand)]" />
         </div>
       )}
       {tab !== 'USERS' && loadError && (
         <p className="p-4 bg-rose-50 border border-rose-200 rounded-xl text-sm text-rose-800" role="alert">{loadError}</p>
       )}
 
-      {overview && tab === 'ROLES' && <RolesTab overview={overview} onEditAccess={() => setTab('ACCESS_CONTROL')} canEdit={isSuperAdmin && can('ACCESS_CONTROL', 'VIEW')} />}
+      {overview && tab === 'ROLES' && (
+        <RolesTab overview={overview} onEditAccess={() => setTab('ACCESS_CONTROL')} canEdit={isSuperAdmin && can('ACCESS_CONTROL', 'VIEW')} onRefresh={load} />
+      )}
       {overview && tab === 'PRIVILEGES' && <PrivilegesTab overview={overview} currentUserId={user?.id} currentRole={user?.role} canEdit={isSuperAdmin} onChanged={load} />}
       {overview && tab === 'ACCESS_CONTROL' && <AccessControlTab overview={overview} currentUserId={user?.id} currentRole={user?.role} canEdit={isSuperAdmin} onChanged={load} />}
     </div>
@@ -112,45 +113,84 @@ export const UserManagementView: React.FC<{ onRefreshStats?: () => void }> = ({ 
 };
 
 /* ------------------------------- Roles ---------------------------------- */
-const RolesTab: React.FC<{ overview: AccessOverview; canEdit: boolean; onEditAccess: () => void }> = ({ overview, canEdit, onEditAccess }) => (
-  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
-    {overview.roles.map((role) => {
-      const members = overview.users.filter((u) => u.role === role.code);
-      const full = SECTIONS.filter((s) => role.access[s.id] === 'FULL');
-      const view = SECTIONS.filter((s) => role.access[s.id] === 'VIEW');
-      return (
-        <article key={role.code} className="bg-white rounded-2xl border border-[var(--border-subtle)] p-4 space-y-3">
-          <div className="flex items-start justify-between gap-2">
-            <div>
-              <h3 className="lux-display text-xl text-stone-900">{role.name}</h3>
-              <p className="text-[11.5px] text-stone-500 leading-relaxed mt-0.5">{role.purpose}</p>
-            </div>
-            <span className="text-[10px] font-bold uppercase tracking-wider text-stone-400 whitespace-nowrap">{members.length} user{members.length === 1 ? '' : 's'}</span>
-          </div>
-          <div className="flex items-center gap-2 text-[11px] text-stone-600">
-            Default privilege: <PrivilegeChip privilege={role.defaultPrivilege} />
-          </div>
-          {role.defaultPrivilege === 'SUPER_ADMIN' ? (
-            <p className="text-[11px] text-stone-600">Full administrative access to every section.</p>
-          ) : (
-            <div className="space-y-1.5 text-[11px]">
-              <p><span className="font-semibold text-emerald-800">Full:</span> <span className="text-stone-600">{full.map((s) => s.label).join(', ') || '—'}</span></p>
-              <p><span className="font-semibold text-sky-800">View:</span> <span className="text-stone-600">{view.map((s) => s.label).join(', ') || '—'}</span></p>
-            </div>
-          )}
-          <div className="flex items-center justify-between pt-2 border-t border-stone-100">
-            <span className="text-[10.5px] text-stone-400">{role.customized ? `Customised ${role.updatedAt ? new Date(role.updatedAt).toLocaleDateString() : ''}` : 'System defaults'}</span>
-            {canEdit && role.defaultPrivilege === 'USER' && (
-              <button type="button" onClick={onEditAccess} className="btn btn-secondary !min-h-8 !px-3 !text-[11px]">Edit default access</button>
-            )}
-          </div>
-        </article>
-      );
-    })}
-  </div>
-);
+type RoleRow = AccessOverview['roles'][number];
+
+const roleAccessSummary = (role: RoleRow) => {
+  if (role.defaultPrivilege === 'SUPER_ADMIN') return 'All sections';
+  const full = SECTIONS.filter((s) => role.access[s.id] === 'FULL').length;
+  const view = SECTIONS.filter((s) => role.access[s.id] === 'VIEW').length;
+  return `${full} full · ${view} view`;
+};
+
+const RolesTab: React.FC<{ overview: AccessOverview; canEdit: boolean; onEditAccess: () => void; onRefresh: () => void }> = ({ overview, canEdit, onEditAccess, onRefresh }) => {
+  const members = (code: string) => overview.users.filter((u) => u.role === code).length;
+  return (
+    <DataTable<RoleRow>
+      title="Roles"
+      rows={overview.roles}
+      rowKey={(r) => r.code}
+      minWidth={860}
+      searchText={(r) => `${r.name} ${r.purpose}`}
+      searchPlaceholder="Search roles"
+      onRefresh={onRefresh}
+      exportName="roles"
+      exportRow={(r) => ({
+        Role: r.name,
+        Description: r.purpose,
+        'Default privilege': PRIVILEGE_LABELS[r.defaultPrivilege],
+        Access: roleAccessSummary(r),
+        Users: String(members(r.code)),
+        Status: 'Active'
+      })}
+      columns={[
+        { key: 'name', header: 'Role name', sortValue: (r) => r.name, render: (r) => <span className="font-semibold text-[var(--brand-text)] whitespace-nowrap">{r.name}</span> },
+        { key: 'purpose', header: 'Description', render: (r) => <span className="text-stone-600">{r.purpose}</span> },
+        {
+          key: 'privilege',
+          header: 'Default privilege',
+          sortValue: (r) => r.defaultPrivilege,
+          render: (r) => <Chip tone={r.defaultPrivilege === 'SUPER_ADMIN' ? 'brand' : 'muted'}>{PRIVILEGE_LABELS[r.defaultPrivilege]}</Chip>
+        },
+        {
+          key: 'access',
+          header: 'Default access',
+          render: (r) => (
+            <span className="whitespace-nowrap text-stone-600">
+              {roleAccessSummary(r)}
+              {r.customized && <span className="ml-1.5 text-[10.5px] text-[var(--brand-text)]" title={r.updatedAt ? `Customised ${new Date(r.updatedAt).toLocaleString()}` : 'Customised'}>· customised</span>}
+            </span>
+          )
+        },
+        {
+          key: 'users',
+          header: 'Users',
+          sortValue: (r) => members(r.code),
+          render: (r) => <Chip>{members(r.code)} user{members(r.code) === 1 ? '' : 's'}</Chip>
+        },
+        { key: 'status', header: 'Status', render: () => <StatusPill active /> }
+      ]}
+      rowActions={
+        canEdit
+          ? (r) =>
+              r.defaultPrivilege === 'USER' ? (
+                <button type="button" onClick={onEditAccess} className={rowIconBtn} title="Edit default access" aria-label={`Edit default access for ${r.name}`}>
+                  <KeyRound className="w-3.5 h-3.5" />
+                </button>
+              ) : (
+                <span className="text-[11px] text-stone-400" title="Super Admin roles always have full access">—</span>
+              )
+          : undefined
+      }
+    />
+  );
+};
 
 /* ----------------------------- Privileges -------------------------------- */
+const PRIVILEGE_INFO: Array<{ id: PrivilegeType; description: string }> = [
+  { id: 'SUPER_ADMIN', description: 'Full access to every section, including user, role, privilege and access management. Default for Owner and Manager.' },
+  { id: 'USER', description: 'Uses only the sections their role and assigned access allow. Default for Staff, Kitchen Staff and Delivery Staff.' }
+];
+
 const PrivilegesTab: React.FC<{ overview: AccessOverview; currentUserId?: string; currentRole?: string; canEdit: boolean; onChanged: () => void }> = ({
   overview,
   currentUserId,
@@ -161,6 +201,7 @@ const PrivilegesTab: React.FC<{ overview: AccessOverview; currentUserId?: string
   const { success, error } = useToast();
   const [confirm, setConfirm] = useState<{ user: SafeUser; to: PrivilegeType } | null>(null);
   const [saving, setSaving] = useState(false);
+  const holders = (p: PrivilegeType) => overview.users.filter((u) => (effectivePrivilege(u) || 'USER') === p).length;
 
   const apply = async () => {
     if (!confirm) return;
@@ -179,64 +220,76 @@ const PrivilegesTab: React.FC<{ overview: AccessOverview; currentUserId?: string
 
   return (
     <div className="space-y-3">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-        <div className="bg-white rounded-2xl border border-[var(--border-subtle)] p-4 space-y-1.5">
-          <PrivilegeChip privilege="SUPER_ADMIN" />
-          <p className="text-[12px] text-stone-700 leading-relaxed">
-            Manages users, assigns roles, configures access and application settings. Full access to every section. Default for Owner and Manager.
-          </p>
-        </div>
-        <div className="bg-white rounded-2xl border border-[var(--border-subtle)] p-4 space-y-1.5">
-          <PrivilegeChip privilege="USER" />
-          <p className="text-[12px] text-stone-700 leading-relaxed">
-            Uses only the sections and actions their role and assigned access allow; cannot manage users, roles or access. Default for Staff, Kitchen Staff and Delivery Staff.
-          </p>
-        </div>
-      </div>
+      <DataTable<(typeof PRIVILEGE_INFO)[number]>
+        title="Privileges"
+        rows={PRIVILEGE_INFO}
+        rowKey={(p) => p.id}
+        minWidth={640}
+        onRefresh={onChanged}
+        exportName="privileges"
+        exportRow={(p) => ({ Privilege: PRIVILEGE_LABELS[p.id], Description: p.description, Users: String(holders(p.id)), Status: 'Active' })}
+        columns={[
+          { key: 'name', header: 'Privilege name', sortValue: (p) => PRIVILEGE_LABELS[p.id], render: (p) => <span className="font-semibold text-[var(--brand-text)] whitespace-nowrap">{PRIVILEGE_LABELS[p.id]}</span> },
+          { key: 'description', header: 'Description', render: (p) => <span className="text-stone-600">{p.description}</span> },
+          { key: 'users', header: 'Users', sortValue: (p) => holders(p.id), render: (p) => <Chip>{holders(p.id)} user{holders(p.id) === 1 ? '' : 's'}</Chip> },
+          { key: 'status', header: 'Status', render: () => <StatusPill active /> }
+        ]}
+      />
 
-      <div className="bg-white rounded-2xl border border-[var(--border-subtle)] overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left min-w-[640px]">
-            <thead className="bg-stone-50 border-b border-stone-200 text-[11px] uppercase tracking-wider text-stone-500">
-              <tr>
-                <th className="px-4">User</th>
-                <th className="px-4">Role</th>
-                <th className="px-4">Privilege</th>
-                <th className="px-4">Source</th>
-                <th className="px-4 text-right">Action</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-stone-100 text-xs">
-              {overview.users.map((u) => {
-                const priv = effectivePrivilege(u) || 'USER';
-                const isSelf = u.id === currentUserId;
-                const ownerLocked = u.role === 'ADMIN' && currentRole !== 'ADMIN';
-                return (
-                  <tr key={u.id}>
-                    <td className="px-4 font-semibold text-stone-900">{u.firstName} {u.lastName}{isSelf && <span className="ml-1 text-stone-400 font-normal">(you)</span>}</td>
-                    <td className="px-4 text-stone-700">{roleDisplayName(u.role)}</td>
-                    <td className="px-4"><PrivilegeChip privilege={priv} /></td>
-                    <td className="px-4 text-stone-500">{u.privilege ? 'Assigned' : 'Role default'}</td>
-                    <td className="px-4 text-right">
-                      {canEdit && !isSelf && !ownerLocked ? (
-                        <button
-                          type="button"
-                          onClick={() => setConfirm({ user: u, to: priv === 'SUPER_ADMIN' ? 'USER' : 'SUPER_ADMIN' })}
-                          className={`btn !min-h-8 !px-3 !text-[11px] ${priv === 'SUPER_ADMIN' ? 'btn-secondary' : 'btn-primary'}`}
-                        >
-                          {priv === 'SUPER_ADMIN' ? 'Revoke Super Admin' : 'Grant Super Admin'}
-                        </button>
-                      ) : (
-                        <span className="text-[10.5px] text-stone-400">{isSelf ? 'Cannot change your own' : 'View only'}</span>
-                      )}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      </div>
+      <DataTable<SafeUser>
+        title="Privilege assignments"
+        rows={overview.users}
+        rowKey={(u) => u.id}
+        minWidth={760}
+        searchText={(u) => `${u.firstName} ${u.lastName} ${roleDisplayName(u.role)}`}
+        searchPlaceholder="Search users"
+        exportName="privilege-assignments"
+        exportRow={(u) => ({
+          User: `${u.firstName} ${u.lastName}`,
+          Role: roleDisplayName(u.role),
+          Privilege: PRIVILEGE_LABELS[effectivePrivilege(u) || 'USER'],
+          Source: u.privilege ? 'Assigned' : 'Role default'
+        })}
+        columns={[
+          {
+            key: 'user',
+            header: 'User',
+            sortValue: (u) => `${u.firstName} ${u.lastName}`.toLowerCase(),
+            render: (u) => (
+              <span className="font-semibold text-[var(--brand-text)] whitespace-nowrap">
+                {u.firstName} {u.lastName}
+                {u.id === currentUserId && <span className="ml-1 font-normal text-stone-400">(you)</span>}
+              </span>
+            )
+          },
+          { key: 'role', header: 'Role', sortValue: (u) => roleDisplayName(u.role), render: (u) => <Chip>{roleDisplayName(u.role)}</Chip> },
+          {
+            key: 'privilege',
+            header: 'Privilege',
+            sortValue: (u) => effectivePrivilege(u) || '',
+            render: (u) => {
+              const p = effectivePrivilege(u) || 'USER';
+              return <Chip tone={p === 'SUPER_ADMIN' ? 'brand' : 'muted'}>{PRIVILEGE_LABELS[p]}</Chip>;
+            }
+          },
+          { key: 'source', header: 'Source', render: (u) => <span className="text-stone-500">{u.privilege ? 'Assigned' : 'Role default'}</span> }
+        ]}
+        rowActions={(u) => {
+          const priv = effectivePrivilege(u) || 'USER';
+          const isSelf = u.id === currentUserId;
+          const ownerLocked = u.role === 'ADMIN' && currentRole !== 'ADMIN';
+          if (!canEdit || isSelf || ownerLocked) return <span className="text-[11px] text-stone-400">{isSelf ? 'Your account' : 'View only'}</span>;
+          return (
+            <button
+              type="button"
+              onClick={() => setConfirm({ user: u, to: priv === 'SUPER_ADMIN' ? 'USER' : 'SUPER_ADMIN' })}
+              className="h-7 px-2.5 rounded-full border border-[var(--brand-border)] text-[11px] font-semibold text-[var(--brand-text)] hover:bg-[var(--brand-soft)] cursor-pointer"
+            >
+              {priv === 'SUPER_ADMIN' ? 'Revoke Super Admin' : 'Grant Super Admin'}
+            </button>
+          );
+        }}
+      />
 
       {confirm && (
         <Modal isOpen={!!confirm} onClose={() => setConfirm(null)} title={confirm.to === 'SUPER_ADMIN' ? 'Grant Super Admin?' : 'Revoke Super Admin?'} maxWidth="max-w-md">

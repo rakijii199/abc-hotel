@@ -374,7 +374,7 @@ export const AdminDashboardPage: React.FC<{
   };
 
   return (
-    <div className="flex h-screen w-full overflow-hidden bg-[#f4efe7]">
+    <div className="flex h-screen w-full overflow-hidden bg-transparent">
       {/* Navigation drawer for tablet / mobile (desktop uses the top navigation) */}
       {mobileSidebarOpen && (
         <div className="fixed inset-0 z-50 flex lg:hidden">
@@ -382,7 +382,7 @@ export const AdminDashboardPage: React.FC<{
             className="fixed inset-0 bg-stone-900/40 backdrop-blur-xs"
             onClick={() => setMobileSidebarOpen(false)}
           />
-          <div className="relative z-50 w-72 max-w-[85vw] h-full bg-[#fffdf9] shadow-2xl animate-[lux-rise_0.3s_var(--ease-lux)]">
+          <div className="relative z-50 w-72 max-w-[85vw] h-full glass-strong !rounded-none animate-[lux-rise_0.3s_var(--ease-lux)]">
             <AdminSidebar
               activeTab={activeTab}
               setActiveTab={(tab) => {
@@ -419,7 +419,7 @@ export const AdminDashboardPage: React.FC<{
 
         <div className="px-3 sm:px-6 py-3 sm:py-4 flex-1 max-w-[1440px] w-full mx-auto space-y-3 pb-8">
           {allowedTabs.length === 0 && (
-            <div className="p-6 rounded-2xl bg-white border border-[var(--border-subtle)] text-center text-sm text-stone-600" role="alert">
+            <div className="surface p-6 text-center text-sm text-stone-600" role="alert">
               Your account has no access to the operations suite yet. Please ask a Super Admin to grant section access.
             </div>
           )}

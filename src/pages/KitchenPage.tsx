@@ -24,12 +24,12 @@ export const KitchenPage: React.FC<{ navigate: (route: string) => void }> = ({ n
   const { user, logout, isAdmin, isManager } = useAuth();
 
   return (
-    <div className="min-h-screen bg-[#f4efe7] text-stone-900 flex flex-col justify-between">
+    <div className="min-h-screen ambient text-stone-900 flex flex-col justify-between">
       {/* Top Kitchen Header - high contrast for the pass */}
-      <header className="bg-[var(--surface)]/90 backdrop-blur-xl text-stone-900 border-b border-[var(--border-subtle)] shadow-[0_10px_30px_-26px_rgba(26,23,21,0.55)] px-4 sm:px-8 h-16 flex items-center justify-between gap-3 sticky top-0 z-40">
+      <header className="glass !border-x-0 !border-t-0 text-stone-900 px-4 sm:px-8 h-16 flex items-center justify-between gap-3 sticky top-0 z-40">
         <div className="flex items-center gap-3 min-w-0">
-          <span className="relative w-10 h-10 shrink-0 flex items-center justify-center border border-amber-600/50 text-amber-800 bg-white">
-            <span className="absolute inset-[3px] border border-amber-600/20" />
+          <span className="relative w-10 h-10 shrink-0 flex items-center justify-center border border-[var(--brand)] text-[var(--brand-text)] bg-white">
+            <span className="absolute inset-[3px] border border-[var(--brand-border)]" />
             <span className="font-display text-[13px] font-semibold tracking-[0.06em]">ABC</span>
           </span>
           <div className="min-w-0">

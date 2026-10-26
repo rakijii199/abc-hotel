@@ -47,7 +47,7 @@ export const hideOnError = (e: React.SyntheticEvent<HTMLImageElement>) => {
 };
 
 /**
- * Full-bleed cinematic banner used at the top of inner customer pages.
+ * Full-bleed light banner (photo behind an ivory wash) used at the top of inner customer pages.
  * Place it as the first child of a page container that has no top padding.
  */
 export const PageHero: React.FC<{
@@ -58,16 +58,16 @@ export const PageHero: React.FC<{
   children?: React.ReactNode;
   className?: string;
 }> = ({ eyebrow, title, description, image = luxImage(LUX_IMAGES.interior, 1800), children, className = '' }) => (
-  <section className={`lux-bleed relative overflow-hidden bg-ink text-ivory lux-grain ${className}`}>
+  <section className={`lux-bleed relative overflow-hidden ambient text-stone-900 ${className}`}>
     <img
       src={image}
       alt=""
       aria-hidden="true"
       onError={hideOnError}
-      className="absolute inset-0 w-full h-full object-cover opacity-45 lux-kenburns"
+      className="absolute inset-0 w-full h-full object-cover opacity-90 lux-kenburns"
     />
-    <div className="absolute inset-0 bg-gradient-to-r from-ink via-ink/80 to-ink/30" />
-    <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-ink/70 to-transparent" />
+    <div className="absolute inset-0 bg-gradient-to-r from-ivory via-ivory/85 to-ivory/25" />
+    <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-ivory/80 to-transparent" />
 
     <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 sm:py-20 lg:py-24">
       <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8">
@@ -77,10 +77,10 @@ export const PageHero: React.FC<{
           transition={{ duration: 1, ease: LUX_EASE }}
           className="max-w-2xl"
         >
-          <p className="lux-eyebrow text-gold">{eyebrow}</p>
-          <h1 className="lux-display text-[clamp(2.5rem,6vw,4.75rem)] mt-5 text-ivory text-balance">{title}</h1>
+          <p className="lux-eyebrow text-[var(--brand)]">{eyebrow}</p>
+          <h1 className="lux-display text-[clamp(2.5rem,6vw,4.75rem)] mt-5 text-stone-900 text-balance">{title}</h1>
           {description && (
-            <p className="mt-5 text-sm sm:text-base text-ivory/65 leading-relaxed max-w-xl">{description}</p>
+            <p className="mt-5 text-sm sm:text-base text-stone-600 leading-relaxed max-w-xl">{description}</p>
           )}
         </m.div>
         {children && (

@@ -86,10 +86,10 @@ export const AdminCategoriesView: React.FC<AdminCategoriesViewProps> = ({
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-stone-200 pb-4">
         <div>
-          <span className="text-xs font-bold uppercase tracking-widest text-amber-800">
+          <span className="lux-eyebrow text-amber-800">
             Menu Management
           </span>
-          <h2 className="font-serif text-2xl font-bold text-stone-900">
+          <h2 className="page-title">
             Cuisine Categories ({categories.length})
           </h2>
           <p className="text-xs text-stone-500 mt-0.5">
@@ -102,7 +102,7 @@ export const AdminCategoriesView: React.FC<AdminCategoriesViewProps> = ({
           data-locked={!canEdit || undefined}
           title={canEdit ? undefined : 'View access — changes are disabled for your account'}
           onClick={openCreateModal}
-          className="px-4 py-2.5 bg-amber-700 hover:bg-amber-800 text-white font-bold text-xs rounded-xl shadow-xs flex items-center gap-2 cursor-pointer self-start sm:self-auto"
+          className="px-4 py-2.5 bg-amber-800 hover:bg-amber-900 text-white font-bold text-xs rounded-xl shadow-xs flex items-center gap-2 cursor-pointer self-start sm:self-auto"
         >
           <Plus className="w-4 h-4" />
           <span>Add New Category</span>
@@ -116,7 +116,7 @@ export const AdminCategoriesView: React.FC<AdminCategoriesViewProps> = ({
           return (
             <div
               key={cat.id}
-              className="bg-white rounded-2xl border border-stone-200/80 p-5 shadow-xs flex flex-col justify-between space-y-4 hover:shadow-md transition-shadow"
+              className="bg-white rounded-2xl border border-stone-200/80 p-5 shadow-[var(--shadow-card)] flex flex-col justify-between space-y-4 lift"
             >
               <div>
                 <div className="flex items-start justify-between">
@@ -125,16 +125,16 @@ export const AdminCategoriesView: React.FC<AdminCategoriesViewProps> = ({
                       <FolderOpen className="w-5 h-5" />
                     </div>
                     <div>
-                      <h3 className="font-serif font-bold text-base text-stone-900">{cat.name}</h3>
+                      <h3 className="section-title text-base">{cat.name}</h3>
                       <span className="text-[11px] font-mono text-stone-400">Order: #{cat.displayOrder}</span>
                     </div>
                   </div>
 
                   <span
-                    className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${
+                    className={`badge ${
                       cat.status === 'ACTIVE'
-                        ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                        : 'bg-stone-100 text-stone-500 border-stone-200'
+                        ? 'badge-success'
+                        : ''
                     }`}
                   >
                     {cat.status}
@@ -156,7 +156,7 @@ export const AdminCategoriesView: React.FC<AdminCategoriesViewProps> = ({
                     disabled={!canEdit}
                     data-locked={!canEdit || undefined}
                     onClick={() => openEditModal(cat)}
-                    className="p-1.5 bg-stone-100 hover:bg-amber-100 text-stone-700 hover:text-amber-900 rounded-lg text-xs font-semibold transition-colors cursor-pointer"
+                    className="p-1.5 bg-white border border-stone-200 hover:bg-[var(--brand-soft)] hover:border-[var(--brand-border)] text-stone-700 hover:text-[var(--brand-text)] rounded-lg text-xs font-semibold transition-colors cursor-pointer"
                     title="Edit Category"
                   >
                     <Edit2 className="w-4 h-4" />
@@ -193,7 +193,7 @@ export const AdminCategoriesView: React.FC<AdminCategoriesViewProps> = ({
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="e.g. Desserts & Artisan Sweets"
-                className="w-full px-3.5 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-xs text-stone-900 focus:border-amber-600"
+                className="w-full px-3.5 py-2.5 bg-white border border-stone-200 rounded-xl text-xs text-stone-900 focus:border-amber-600"
                 required
               />
             </div>
@@ -205,7 +205,7 @@ export const AdminCategoriesView: React.FC<AdminCategoriesViewProps> = ({
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Exquisite royal confections..."
-                className="w-full px-3.5 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs text-stone-900 focus:border-amber-600 resize-none"
+                className="w-full px-3.5 py-2 bg-white border border-stone-200 rounded-xl text-xs text-stone-900 focus:border-amber-600 resize-none"
               />
             </div>
 
@@ -217,7 +217,7 @@ export const AdminCategoriesView: React.FC<AdminCategoriesViewProps> = ({
                   min="0"
                   value={displayOrder}
                   onChange={(e) => setDisplayOrder(Number(e.target.value))}
-                  className="w-full px-3.5 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-xs font-mono text-stone-900 focus:border-amber-600"
+                  className="w-full px-3.5 py-2.5 bg-white border border-stone-200 rounded-xl text-xs font-mono text-stone-900 focus:border-amber-600"
                   required
                 />
               </div>
@@ -227,7 +227,7 @@ export const AdminCategoriesView: React.FC<AdminCategoriesViewProps> = ({
                 <select
                   value={status}
                   onChange={(e) => setStatus(e.target.value as any)}
-                  className="w-full px-3.5 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-xs text-stone-900 focus:border-amber-600"
+                  className="w-full px-3.5 py-2.5 bg-white border border-stone-200 rounded-xl text-xs text-stone-900 focus:border-amber-600"
                 >
                   <option value="ACTIVE">Active (Visible)</option>
                   <option value="INACTIVE">Inactive (Hidden)</option>
@@ -246,7 +246,7 @@ export const AdminCategoriesView: React.FC<AdminCategoriesViewProps> = ({
               <button
                 type="submit"
                 disabled={submitting}
-                className="px-5 py-2.5 bg-amber-700 hover:bg-amber-800 disabled:opacity-50 text-white font-bold rounded-xl shadow-xs transition-all cursor-pointer"
+                className="px-5 py-2.5 bg-amber-800 hover:bg-amber-900 disabled:opacity-50 text-white font-bold rounded-xl shadow-xs transition-all cursor-pointer"
               >
                 {submitting ? 'Saving...' : editingCategory ? 'Update Category' : 'Create Category'}
               </button>

@@ -17,17 +17,17 @@ interface AdminReportsViewProps {
 
 export const AdminReportsView: React.FC<AdminReportsViewProps> = ({ reports }) => {
   if (!reports) {
-    return <div className="p-8 text-center text-xs text-stone-400">Loading reports data...</div>;
+    return <div className="p-8 text-center text-xs text-stone-500">Loading reports data...</div>;
   }
 
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="border-b border-stone-200 pb-4">
-        <span className="text-xs font-bold uppercase tracking-widest text-amber-800">
+        <span className="lux-eyebrow text-amber-800">
           Analytics & Performance
         </span>
-        <h2 className="font-serif text-2xl font-bold text-stone-900">
+        <h2 className="page-title">
           Hotel Dining Operations Reports
         </h2>
         <p className="text-xs text-stone-500 mt-0.5">
@@ -38,8 +38,8 @@ export const AdminReportsView: React.FC<AdminReportsViewProps> = ({ reports }) =
       {/* Top Level Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
         <div className="bg-white p-6 rounded-2xl border border-stone-200/80 shadow-xs space-y-1">
-          <span className="text-xs font-bold uppercase text-stone-400">Total Net Revenue</span>
-          <p className="font-serif font-bold text-2xl text-stone-900">
+          <span className="label-caps">Total Net Revenue</span>
+          <p className="font-serif font-bold text-[1.75rem] leading-tight tabular-nums text-[var(--brand-text)]">
             {formatCurrency(reports.totalRevenue)}
           </p>
           <span className="text-[11px] text-emerald-600 font-semibold">
@@ -48,8 +48,8 @@ export const AdminReportsView: React.FC<AdminReportsViewProps> = ({ reports }) =
         </div>
 
         <div className="bg-white p-6 rounded-2xl border border-stone-200/80 shadow-xs space-y-1">
-          <span className="text-xs font-bold uppercase text-stone-400">Total Food Orders</span>
-          <p className="font-serif font-bold text-2xl text-indigo-700">
+          <span className="label-caps">Total Food Orders</span>
+          <p className="font-serif font-bold text-[1.75rem] leading-tight tabular-nums text-stone-900">
             {reports.totalOrdersCount}
           </p>
           <span className="text-[11px] text-stone-500">
@@ -58,8 +58,8 @@ export const AdminReportsView: React.FC<AdminReportsViewProps> = ({ reports }) =
         </div>
 
         <div className="bg-white p-6 rounded-2xl border border-stone-200/80 shadow-xs space-y-1">
-          <span className="text-xs font-bold uppercase text-stone-400">Table Bookings</span>
-          <p className="font-serif font-bold text-2xl text-amber-700">
+          <span className="label-caps">Table Bookings</span>
+          <p className="font-serif font-bold text-[1.75rem] leading-tight tabular-nums text-stone-900">
             {reports.totalBookingsCount}
           </p>
           <span className="text-[11px] text-stone-500">
@@ -72,13 +72,13 @@ export const AdminReportsView: React.FC<AdminReportsViewProps> = ({ reports }) =
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Service Type Distribution */}
         <div className="bg-white p-6 rounded-2xl border border-stone-200/80 shadow-xs space-y-4">
-          <h3 className="font-serif font-bold text-base text-stone-900 flex items-center gap-2">
+          <h3 className="section-title text-base flex items-center gap-2">
             <ShoppingBag className="w-4 h-4 text-amber-700" /> Revenue by Service Channel
           </h3>
 
           <div className="space-y-3">
             {Object.entries(reports.ordersByType).map(([type, stats]) => (
-              <div key={type} className="p-4 bg-stone-50 rounded-xl space-y-2 border border-stone-200/60">
+              <div key={type} className="p-4 bg-[var(--surface-muted)] rounded-xl space-y-2 border border-stone-200/60">
                 <div className="flex justify-between items-center text-xs">
                   <span className="font-bold text-stone-900 text-sm">{type}</span>
                   <span className="font-mono font-bold text-stone-900">{formatCurrency(stats.revenue)}</span>
@@ -94,16 +94,16 @@ export const AdminReportsView: React.FC<AdminReportsViewProps> = ({ reports }) =
 
         {/* Top Selling Gourmet Dishes */}
         <div className="bg-white p-6 rounded-2xl border border-stone-200/80 shadow-xs space-y-4">
-          <h3 className="font-serif font-bold text-base text-stone-900 flex items-center gap-2">
+          <h3 className="section-title text-base flex items-center gap-2">
             <Award className="w-4 h-4 text-amber-700" /> Top Selling Signature Dishes
           </h3>
 
           <div className="space-y-3">
             {reports.topSellingItems.length === 0 ? (
-              <p className="text-xs text-stone-400 italic">No sales recorded yet.</p>
+              <p className="text-xs text-stone-500 italic">No sales recorded yet.</p>
             ) : (
               reports.topSellingItems.map((item, idx) => (
-                <div key={item.name} className="flex justify-between items-center p-3 bg-stone-50 rounded-xl text-xs">
+                <div key={item.name} className="flex justify-between items-center p-3 bg-[var(--surface-muted)] border border-stone-200/60 rounded-xl text-xs">
                   <div className="flex items-center gap-3">
                     <span className="w-6 h-6 rounded-full bg-amber-100 text-amber-900 font-bold text-xs flex items-center justify-center font-mono">
                       #{idx + 1}

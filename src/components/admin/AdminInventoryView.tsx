@@ -736,7 +736,7 @@ export const AdminInventoryView: React.FC = () => {
 
         <button
           onClick={loadAllInventoryData}
-          className="p-2 bg-stone-50 hover:bg-stone-100 text-stone-600 rounded-xl transition-all cursor-pointer shrink-0 border border-stone-200/60 flex items-center gap-1.5 text-xs font-bold"
+          className="p-2 bg-white hover:bg-[var(--brand-soft)] hover:text-[var(--brand-text)] text-stone-600 rounded-xl transition-all cursor-pointer shrink-0 border border-stone-200/60 flex items-center gap-1.5 text-xs font-bold"
           title="Refresh Inventory"
         >
           <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin text-amber-800' : ''}`} />
@@ -746,16 +746,16 @@ export const AdminInventoryView: React.FC = () => {
 
       {/* Urgent Low Stock Alert Banner (Visible if any items low in stock) */}
       {lowStockAlertItems.length > 0 && activeTab === 'ITEMS' && (
-        <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-300 text-amber-950 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 animate-pulse">
+        <div className="p-4 rounded-2xl bg-[var(--warning-soft)] border border-[var(--warning-border)] border-l-4 border-l-[var(--warning)] text-stone-900 shadow-[var(--shadow-card)] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-amber-500 text-white flex items-center justify-center shrink-0 shadow-2xs">
+            <div className="w-9 h-9 rounded-xl bg-[var(--warning)] text-white flex items-center justify-center shrink-0 shadow-2xs">
               <AlertTriangle className="w-5 h-5" />
             </div>
             <div>
-              <h4 className="font-bold text-xs text-amber-950">
+              <h4 className="font-bold text-xs text-stone-900">
                 ⚠️ Low Stock Alert ({lowStockAlertItems.length} Item{lowStockAlertItems.length > 1 ? 's' : ''})
               </h4>
-              <p className="text-[11px] text-amber-900/90 leading-tight">
+              <p className="text-[11px] text-stone-700 leading-tight">
                 {lowStockAlertItems.map((i) => `${i.name} (${i.currentStock} ${i.unit})`).join(', ')} reached reorder threshold!
               </p>
             </div>
@@ -784,7 +784,7 @@ export const AdminInventoryView: React.FC = () => {
             {/* Row 1: Search Input (Full prominent field) + Quick Action Buttons */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               {/* Search Box with solid width */}
-              <div className="flex items-center gap-2.5 bg-stone-50 px-3.5 py-2 rounded-2xl border border-stone-200/90 w-full sm:w-80 md:w-96 shadow-2xs">
+              <div className="flex items-center gap-2.5 bg-white px-3.5 py-2 rounded-xl border border-stone-200 w-full sm:w-80 md:w-96 shadow-2xs focus-within:border-amber-700 focus-within:ring-3 focus-within:ring-[var(--brand-ring-soft)] transition-shadow">
                 <Search className="w-4 h-4 text-stone-400 shrink-0" />
                 <input
                   type="text"
@@ -846,10 +846,10 @@ export const AdminInventoryView: React.FC = () => {
                     <button
                       key={pill.id}
                       onClick={() => setStatusFilter(pill.id as any)}
-                      className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer whitespace-nowrap shrink-0 flex items-center gap-1.5 ${
+                      className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer whitespace-nowrap shrink-0 flex items-center gap-1.5 ${
                         isSelected
-                          ? 'bg-amber-800 text-white font-bold shadow-2xs'
-                          : 'bg-stone-50 hover:bg-stone-100 text-stone-700 border border-stone-200/80'
+                          ? 'bg-amber-800 text-white font-bold shadow-2xs border border-amber-800'
+                          : 'bg-white hover:bg-[var(--brand-soft)] hover:text-[var(--brand-text)] hover:border-[var(--brand-border)] text-stone-700 border border-stone-200'
                       }`}
                     >
                       <span>{pill.label}</span>
@@ -909,7 +909,7 @@ export const AdminInventoryView: React.FC = () => {
                   </button>
                 </div>
 
-                <div className="flex items-center gap-1.5 bg-stone-50 px-2.5 py-1.5 rounded-xl border border-stone-200 min-w-0">
+                <div className="flex items-center gap-1.5 bg-[var(--surface-muted)] px-2.5 py-1.5 rounded-xl border border-stone-200 min-w-0">
                   <span className="text-[10px] font-bold text-stone-400 uppercase whitespace-nowrap">Month:</span>
                   <input
                     type="month"
@@ -934,7 +934,7 @@ export const AdminInventoryView: React.FC = () => {
                   <div className="w-12 h-12 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center mx-auto shadow-2xs">
                     <CheckCircle2 className="w-6 h-6" />
                   </div>
-                  <h3 className="font-bold text-stone-900 text-sm">All Inventory Levels Healthy!</h3>
+                  <h3 className="section-title text-base">All Inventory Levels Healthy!</h3>
                   <p className="text-xs text-stone-500 max-w-sm mx-auto">
                     There are currently no raw materials at or below their reorder threshold. All items have sufficient stock.
                   </p>
@@ -953,7 +953,7 @@ export const AdminInventoryView: React.FC = () => {
               ) : (
                 <>
                   <Boxes className="w-10 h-10 mx-auto text-stone-300" />
-                  <h3 className="font-bold text-stone-800 text-sm">No Raw Materials Found</h3>
+                  <h3 className="section-title text-base">No Raw Materials Found</h3>
                   <p className="text-xs text-stone-500 max-w-sm mx-auto">
                     No inventory items match your search or selected filter.
                   </p>
@@ -965,7 +965,7 @@ export const AdminInventoryView: React.FC = () => {
                         setCategoryFilter('ALL');
                         setSearchQuery('');
                       }}
-                      className="px-3.5 py-1.5 bg-stone-100 hover:bg-stone-200 text-stone-800 font-bold text-xs rounded-xl transition-all cursor-pointer inline-flex items-center gap-1.5"
+                      className="px-3.5 py-1.5 bg-white border border-stone-300 hover:bg-[var(--brand-soft)] hover:border-[var(--brand-border)] text-stone-800 font-bold text-xs rounded-xl transition-all cursor-pointer inline-flex items-center gap-1.5"
                     >
                       <RotateCcw className="w-3.5 h-3.5 text-stone-500" />
                       <span>Reset All Filters</span>
@@ -978,8 +978,8 @@ export const AdminInventoryView: React.FC = () => {
             <div className="border border-stone-200/80 rounded-2xl overflow-hidden shadow-2xs bg-white">
               <div className="overflow-x-auto max-h-[580px] overflow-y-auto scrollbar-thin">
                 <table className="w-full min-w-[1100px] text-left text-xs text-stone-800 border-collapse">
-                  <thead className="sticky top-0 bg-stone-50/95 backdrop-blur-xs border-b border-stone-200 z-10 shadow-2xs">
-                    <tr className="text-stone-500 text-[11px] font-bold uppercase tracking-wider">
+                  <thead className="sticky top-0 bg-[var(--brand-soft)] border-b border-[var(--brand-border)] z-10 shadow-2xs">
+                    <tr className="text-stone-600 text-[11px] font-semibold uppercase tracking-wider">
                       <th className="py-3 px-3.5 whitespace-nowrap bg-stone-50">Material Name</th>
                       <th className="py-3 px-3.5 whitespace-nowrap text-right bg-stone-50">
                         {flowScope === 'ALL' ? 'Purchased / Add-Ons' : `Purchased (${overviewMonth})`}
@@ -1040,13 +1040,13 @@ export const AdminInventoryView: React.FC = () => {
                       const currentStockValuation = item.currentStock * item.unitCost;
 
                       return (
-                        <tr key={item.id} className="hover:bg-amber-50/20 transition-colors">
+                        <tr key={item.id} className="hover:bg-[var(--brand-soft)]/60 transition-colors">
                           <td className="py-2.5 px-3.5 font-bold text-stone-900 whitespace-nowrap">
                             <div className="flex flex-col gap-0.5">
                               <span>{item.name}</span>
                               {(isLow || isOut) && (
-                                <span className={`text-[9px] px-1.5 py-0.2 rounded-sm w-fit font-bold uppercase tracking-tight ${
-                                  isOut ? 'bg-rose-100 text-rose-700' : 'bg-amber-100 text-amber-700'
+                                <span className={`badge w-fit uppercase !text-[9px] !px-1.5 !py-0 ${
+                                  isOut ? 'badge-danger' : 'badge-warning'
                                 }`}>
                                   {isOut ? 'Out of Stock' : 'Low Stock'}
                                 </span>
@@ -1063,7 +1063,7 @@ export const AdminInventoryView: React.FC = () => {
                                   : '-'}
                               </span>
                               {addOnUnits > 0 ? (
-                                <span className="text-[9px] px-1.5 py-0.2 rounded-full font-bold bg-amber-100 text-amber-800 border border-amber-200">
+                                <span className="badge badge-brand !text-[9px] !px-1.5 !py-0">
                                   +{addOnUnits.toFixed(1)} Add-On
                                 </span>
                               ) : item.openingStock && item.openingStock > 0 ? (
@@ -1252,7 +1252,7 @@ export const AdminInventoryView: React.FC = () => {
         <div className="bg-white rounded-3xl border border-stone-200/80 p-5 sm:p-6 shadow-2xs space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-stone-100 pb-4">
             <div>
-              <h3 className="font-serif font-bold text-lg text-stone-900">
+              <h3 className="section-title text-lg">
                 Menu Recipes & BOM Mapping
               </h3>
               <p className="text-xs text-stone-500">
@@ -1270,7 +1270,7 @@ export const AdminInventoryView: React.FC = () => {
               return (
                 <div
                   key={menuItem.id}
-                  className="flex items-center justify-between p-4 bg-stone-50 rounded-2xl border border-stone-200/60 hover:border-amber-200 transition-all group"
+                  className="flex items-center justify-between p-4 bg-white rounded-2xl border border-stone-200 shadow-[var(--shadow-xs)] hover:border-[var(--brand-border)] hover:shadow-[var(--shadow-card)] transition-all group"
                 >
                   <div className="flex items-center gap-4">
                     <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center text-amber-800 font-bold text-xs group-hover:bg-amber-800 group-hover:text-white transition-colors">
@@ -1286,7 +1286,7 @@ export const AdminInventoryView: React.FC = () => {
 
                   <div className="flex items-center gap-4">
                     <div className="text-right">
-                      <span className="text-[10px] text-stone-400 font-medium uppercase block">Price</span>
+                      <span className="text-[10px] text-stone-500 font-medium uppercase block">Price</span>
                       <span className="text-xs font-bold text-stone-800">{formatCurrency(menuItem.price)}</span>
                     </div>
                     <button
@@ -1298,7 +1298,7 @@ export const AdminInventoryView: React.FC = () => {
                       className={`px-4 py-2 text-[10px] font-black uppercase rounded-xl transition-all shadow-2xs cursor-pointer ${
                         hasRecipe
                           ? 'bg-emerald-50 text-emerald-800 border border-emerald-200 hover:bg-emerald-100'
-                          : 'bg-stone-900 text-white hover:bg-amber-800'
+                          : 'bg-amber-800 text-white hover:bg-amber-900'
                       }`}
                     >
                       {hasRecipe ? 'Recipe Config' : 'Set Recipe'}
@@ -1320,7 +1320,7 @@ export const AdminInventoryView: React.FC = () => {
                 <div className="w-8 h-8 rounded-xl bg-rose-100 flex items-center justify-center text-rose-700">
                   <Trash2 className="w-4 h-4" />
                 </div>
-                <h3 className="font-serif font-bold text-lg text-stone-900">
+                <h3 className="section-title text-lg">
                   Record Kitchen Wastage & Spoilage
                 </h3>
               </div>
@@ -1358,12 +1358,12 @@ export const AdminInventoryView: React.FC = () => {
 
             return (
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div className="p-4 rounded-2xl bg-rose-50 border border-rose-200/80">
+                <div className="stat-card p-4">
                   <div className="flex items-center justify-between text-rose-900 text-xs font-bold">
-                    <span className="uppercase tracking-wider">Total Recorded Loss</span>
+                    <span className="label-caps">Total Recorded Loss</span>
                     <TrendingDown className="w-4 h-4 text-rose-600" />
                   </div>
-                  <p className="font-serif text-2xl font-black text-rose-950 mt-1">
+                  <p className="font-serif text-2xl font-black text-[var(--danger)] tabular-nums mt-1">
                     {formatCurrency(totalWastageCost)}
                   </p>
                   <p className="text-[10px] text-rose-700 font-medium mt-0.5">
@@ -1371,12 +1371,12 @@ export const AdminInventoryView: React.FC = () => {
                   </p>
                 </div>
 
-                <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200/80">
+                <div className="stat-card p-4">
                   <div className="flex items-center justify-between text-amber-900 text-xs font-bold">
-                    <span className="uppercase tracking-wider">Today's Wastage</span>
+                    <span className="label-caps">Today's Wastage</span>
                     <Clock className="w-4 h-4 text-amber-600" />
                   </div>
-                  <p className="font-serif text-2xl font-black text-amber-950 mt-1">
+                  <p className="font-serif text-2xl font-black text-[var(--warning)] tabular-nums mt-1">
                     {formatCurrency(todayWastageCost)}
                   </p>
                   <p className="text-[10px] text-amber-700 font-medium mt-0.5">
@@ -1384,9 +1384,9 @@ export const AdminInventoryView: React.FC = () => {
                   </p>
                 </div>
 
-                <div className="p-4 rounded-2xl bg-stone-50 border border-stone-200/80">
+                <div className="stat-card p-4">
                   <div className="flex items-center justify-between text-stone-700 text-xs font-bold">
-                    <span className="uppercase tracking-wider">Available Raw Materials</span>
+                    <span className="label-caps">Available Raw Materials</span>
                     <Boxes className="w-4 h-4 text-stone-500" />
                   </div>
                   <p className="font-serif text-2xl font-black text-stone-900 mt-1">
@@ -1413,15 +1413,15 @@ export const AdminInventoryView: React.FC = () => {
             </div>
 
             {movements.filter(m => m.type === 'WASTAGE').length === 0 ? (
-              <div className="p-8 text-center text-stone-400 bg-stone-50 rounded-2xl border border-dashed border-stone-200">
+              <div className="p-8 text-center text-stone-500 bg-[var(--surface-muted)] rounded-2xl border border-dashed border-stone-300">
                 <Trash2 className="w-8 h-8 mx-auto text-stone-300 mb-1" />
                 <p className="text-xs font-medium">No kitchen wastage has been recorded yet.</p>
               </div>
             ) : (
               <div className="overflow-x-auto max-h-[520px] overflow-y-auto scrollbar-thin rounded-2xl border border-stone-200/80 shadow-2xs bg-white">
                 <table className="w-full min-w-[850px] text-left text-xs text-stone-800 border-collapse">
-                  <thead className="sticky top-0 bg-stone-50/95 backdrop-blur-xs border-b border-stone-200 z-10 shadow-2xs">
-                    <tr className="text-stone-500 text-[11px] font-bold uppercase tracking-wider">
+                  <thead className="sticky top-0 bg-[var(--brand-soft)] border-b border-[var(--brand-border)] z-10 shadow-2xs">
+                    <tr className="text-stone-600 text-[11px] font-semibold uppercase tracking-wider">
                       <th className="py-3 px-3.5 whitespace-nowrap bg-stone-50">Date & Time</th>
                       <th className="py-3 px-3.5 whitespace-nowrap bg-stone-50">Raw Material</th>
                       <th className="py-3 px-3.5 whitespace-nowrap text-right bg-stone-50">Quantity Lost</th>
@@ -1437,7 +1437,7 @@ export const AdminInventoryView: React.FC = () => {
                         const invItem = items.find(i => i.id === mov.inventoryItemId);
                         const loss = mov.cost || (Math.abs(mov.quantity) * (invItem?.unitCost || 0));
                         return (
-                          <tr key={mov.id} className="hover:bg-rose-50/30 transition-colors">
+                          <tr key={mov.id} className="hover:bg-[var(--brand-soft)]/60 transition-colors">
                             <td className="py-2.5 px-3.5 font-mono text-[11px] text-stone-500 whitespace-nowrap">
                               {formatDate(mov.createdAt)}
                             </td>
@@ -1483,7 +1483,7 @@ export const AdminInventoryView: React.FC = () => {
         <div className="bg-white rounded-3xl border border-stone-200/80 p-5 sm:p-6 shadow-2xs space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-stone-100">
             <div>
-              <h3 className="font-serif font-bold text-lg text-stone-900">
+              <h3 className="section-title text-lg">
                 Daily Stocktaking & Audit Sheets
               </h3>
               <p className="text-xs text-stone-500">
@@ -1499,7 +1499,7 @@ export const AdminInventoryView: React.FC = () => {
                 value={dailyDate}
                 onChange={(e) => setDailyDate(e.target.value)}
                 max={new Date().toISOString().split('T')[0]}
-                className="px-3 py-1.5 bg-stone-50 border border-stone-200 rounded-xl text-xs font-bold text-stone-900 focus:outline-hidden"
+                className="px-3 py-1.5 bg-white border border-stone-200 rounded-xl text-xs font-bold text-stone-900 focus:outline-hidden"
               />
             </div>
           </div>
@@ -1517,8 +1517,8 @@ export const AdminInventoryView: React.FC = () => {
             <div className="border border-stone-200/80 rounded-2xl overflow-hidden shadow-2xs bg-white">
               <div className="overflow-x-auto max-h-[560px] overflow-y-auto scrollbar-thin">
                 <table className="w-full min-w-[1050px] text-left text-xs text-stone-800 border-collapse">
-                  <thead className="sticky top-0 bg-stone-50/95 backdrop-blur-xs border-b border-stone-200 z-10 shadow-2xs">
-                    <tr className="text-stone-500 text-[11px] font-bold uppercase tracking-wider">
+                  <thead className="sticky top-0 bg-[var(--brand-soft)] border-b border-[var(--brand-border)] z-10 shadow-2xs">
+                    <tr className="text-stone-600 text-[11px] font-semibold uppercase tracking-wider">
                       <th className="py-3 px-3.5 whitespace-nowrap bg-stone-50">Ingredient Name</th>
                       <th className="py-3 px-3.5 whitespace-nowrap text-right bg-stone-50">Opening Stock</th>
                       <th className="py-3 px-3.5 whitespace-nowrap text-right text-emerald-700 bg-stone-50">Purchased Today</th>
@@ -1535,7 +1535,7 @@ export const AdminInventoryView: React.FC = () => {
                       const isReconciled = log.status === 'RECONCILED';
 
                       return (
-                        <tr key={log.id} className="hover:bg-amber-50/20 transition-colors">
+                        <tr key={log.id} className="hover:bg-[var(--brand-soft)]/60 transition-colors">
                           <td className="py-2.5 px-3.5 font-bold text-stone-900 whitespace-nowrap">
                             {log.inventoryItemName}
                           </td>
@@ -1573,13 +1573,13 @@ export const AdminInventoryView: React.FC = () => {
                           </td>
                           <td className="py-2.5 px-3.5 text-center whitespace-nowrap">
                             {isReconciled ? (
-                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-[10px] font-bold">
-                                <Check className="w-3 h-3 text-emerald-600" />
+                              <span className="badge badge-success">
+                                <Check className="w-3 h-3" />
                                 <span>Reconciled</span>
                               </span>
                             ) : (
-                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-50 border border-amber-200 text-amber-900 text-[10px] font-bold">
-                                <Clock className="w-3 h-3 text-amber-700" />
+                              <span className="badge badge-warning">
+                                <Clock className="w-3 h-3" />
                                 <span>Pending Count</span>
                               </span>
                             )}
@@ -1626,7 +1626,7 @@ export const AdminInventoryView: React.FC = () => {
                   {monthlyReport?.status === 'CLOSED' ? 'Book Sealed' : 'Rolling Live'}
                 </span>
               </div>
-              <h3 className="font-serif font-bold text-xl text-stone-900 mt-1 flex items-center gap-2">
+              <h3 className="section-title text-xl mt-1 flex items-center gap-2">
                 <Layers className="w-6 h-6 text-amber-800" />
                 <span>Monthly Stock Rollup & Add-On Calculation</span>
               </h3>
@@ -1637,7 +1637,7 @@ export const AdminInventoryView: React.FC = () => {
 
             <div className="flex flex-wrap items-center gap-2.5 shrink-0">
               {/* Month Picker */}
-              <div className="flex items-center gap-2 bg-stone-50 px-3 py-1.5 rounded-2xl border border-stone-200">
+              <div className="flex items-center gap-2 bg-[var(--surface-muted)] px-3 py-1.5 rounded-xl border border-stone-200">
                 <span className="text-[11px] font-bold text-stone-600">Month:</span>
                 <input
                   type="month"
@@ -1670,7 +1670,7 @@ export const AdminInventoryView: React.FC = () => {
           ) : !monthlyReport ? (
             <div className="p-16 text-center text-stone-400 space-y-2">
               <Boxes className="w-10 h-10 mx-auto text-stone-300" />
-              <h3 className="font-bold text-stone-700 text-sm">No Inventory Data For {monthlyMonth}</h3>
+              <h3 className="section-title text-base">No Inventory Data For {monthlyMonth}</h3>
               <p className="text-xs text-stone-500">Record purchases, add-on stock, or recipes to initiate rolling monthly reports.</p>
             </div>
           ) : (
@@ -1689,11 +1689,11 @@ export const AdminInventoryView: React.FC = () => {
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <h4 className="font-serif font-bold text-base">
+                      <h4 className="section-title text-base">
                         Month Status: {monthlyReport.status === 'CLOSED' ? 'CLOSED & LOCKED' : 'OPEN / ACTIVE ROLLING'}
                       </h4>
-                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                        monthlyReport.status === 'CLOSED' ? 'bg-stone-200 text-stone-700' : 'bg-emerald-100 text-emerald-800'
+                      <span className={`badge ${
+                        monthlyReport.status === 'CLOSED' ? '' : 'badge-success'
                       }`}>
                         {monthlyMonth}
                       </span>
@@ -1711,7 +1711,7 @@ export const AdminInventoryView: React.FC = () => {
                     type="button"
                     onClick={handleCloseMonthlyBook}
                     disabled={submittingMonthlyClose}
-                    className="px-4 py-2 bg-stone-800 hover:bg-stone-900 text-white font-bold text-xs rounded-xl shadow-xs transition-all cursor-pointer flex items-center gap-2 shrink-0 disabled:opacity-50"
+                    className="px-4 py-2 bg-white border border-stone-300 hover:bg-[var(--brand-soft)] hover:border-[var(--brand-border)] hover:text-[var(--brand-text)] text-stone-800 font-bold text-xs rounded-xl shadow-xs transition-all cursor-pointer flex items-center gap-2 shrink-0 disabled:opacity-50"
                   >
                     <Lock className="w-3.5 h-3.5" />
                     <span>Seal & Lock Cycle</span>
@@ -1721,12 +1721,12 @@ export const AdminInventoryView: React.FC = () => {
 
               {/* 6 Summary Accounting KPI Cards */}
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
-                <div className="p-4 rounded-2xl bg-stone-50 border border-stone-200/80">
+                <div className="p-4 rounded-2xl bg-[var(--surface-muted)] border border-stone-200/80">
                   <span className="text-[10px] text-stone-500 font-bold uppercase tracking-wider block">1. Opening Stock</span>
                   <p className="font-serif text-base sm:text-lg font-bold text-stone-900 mt-1">
                     {formatCurrency(monthlyReport.totalOpeningValuation)}
                   </p>
-                  <span className="text-[10px] text-stone-400 font-medium">Brought Forward</span>
+                  <span className="text-[10px] text-stone-500 font-medium">Brought Forward</span>
                 </div>
 
                 <div className="p-4 rounded-2xl bg-emerald-50/60 border border-emerald-200/80">
@@ -1758,7 +1758,7 @@ export const AdminInventoryView: React.FC = () => {
                   <span className="text-[10px] text-rose-700/80 font-medium">Order Auto-Deductions</span>
                 </div>
 
-                <div className="p-4 rounded-2xl bg-stone-50 border border-stone-200/80">
+                <div className="p-4 rounded-2xl bg-[var(--surface-muted)] border border-stone-200/80">
                   <span className="text-[10px] text-stone-500 font-bold uppercase tracking-wider block">5. Wastage Loss</span>
                   <p className="font-serif text-base sm:text-lg font-bold text-stone-800 mt-1">
                     -{formatCurrency(monthlyReport.totalWastage)}
@@ -1776,7 +1776,7 @@ export const AdminInventoryView: React.FC = () => {
               </div>
 
               {/* Rolling Formula Banner */}
-              <div className="px-4 py-2.5 rounded-2xl bg-stone-50 border border-stone-200 text-stone-700 text-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-2 font-mono text-[11px]">
+              <div className="px-4 py-2.5 rounded-2xl bg-[var(--surface-muted)] border border-stone-200 text-stone-700 text-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-2 font-mono text-[11px]">
                 <span className="font-bold text-stone-900">
                   Rolling Stock Formula: Opening ({formatCurrency(monthlyReport.totalOpeningValuation)}) + Base Restocks (+{formatCurrency(monthlyReport.totalPurchases)}) + Add-On Stock (+{formatCurrency(monthlyReport.totalAddOnStock || 0)}) - Consumption (-{formatCurrency(monthlyReport.totalConsumption)}) - Wastage (-{formatCurrency(monthlyReport.totalWastage)}) = {formatCurrency(monthlyReport.totalClosingValuation)}
                 </span>
@@ -1816,8 +1816,8 @@ export const AdminInventoryView: React.FC = () => {
                 <div className="border border-stone-200/80 rounded-2xl overflow-hidden shadow-2xs bg-white">
                   <div className="overflow-x-auto max-h-[560px] overflow-y-auto scrollbar-thin">
                     <table className="w-full min-w-[1100px] text-left text-xs text-stone-800 border-collapse">
-                      <thead className="sticky top-0 bg-stone-50/95 backdrop-blur-xs border-b border-stone-200 z-10 shadow-2xs">
-                        <tr className="text-stone-500 text-[11px] font-bold uppercase tracking-wider">
+                      <thead className="sticky top-0 bg-[var(--brand-soft)] border-b border-[var(--brand-border)] z-10 shadow-2xs">
+                        <tr className="text-stone-600 text-[11px] font-semibold uppercase tracking-wider">
                           <th className="py-3 px-3.5 whitespace-nowrap bg-stone-50">Raw Material</th>
                           <th className="py-3 px-3.5 whitespace-nowrap text-right bg-stone-50">Unit Cost</th>
                           <th className="py-3 px-3.5 whitespace-nowrap text-right bg-stone-50">Opening Stock</th>
@@ -1834,11 +1834,11 @@ export const AdminInventoryView: React.FC = () => {
                         {(monthlyReport.itemsBreakdown || []).map((row) => {
                           const hasAddOn = row.addOnStockQty > 0;
                           return (
-                            <tr key={row.itemId} className="hover:bg-amber-50/20 transition-colors">
+                            <tr key={row.itemId} className="hover:bg-[var(--brand-soft)]/60 transition-colors">
                               <td className="py-2.5 px-3.5 font-bold text-stone-900 whitespace-nowrap">
                                 <div className="flex flex-col">
                                   <span>{row.itemName}</span>
-                                  <span className="text-[10px] text-stone-400 font-normal">{row.category}</span>
+                                  <span className="text-[10px] text-stone-500 font-normal">{row.category}</span>
                                 </div>
                               </td>
                               <td className="py-2.5 px-3.5 font-mono text-right text-stone-600 whitespace-nowrap">
@@ -1920,7 +1920,7 @@ export const AdminInventoryView: React.FC = () => {
                     </div>
 
                     {monthAddOnMovements.length === 0 ? (
-                      <div className="p-8 text-center text-stone-500 bg-stone-50 rounded-2xl border border-stone-200 space-y-2">
+                      <div className="p-8 text-center text-stone-500 bg-[var(--surface-muted)] rounded-2xl border border-dashed border-stone-300 space-y-2">
                         <PackagePlus className="w-8 h-8 mx-auto text-stone-300" />
                         <p className="text-xs font-bold text-stone-700">No Add-On Stock Recorded for {monthlyMonth}</p>
                         <p className="text-[11px] text-stone-500 max-w-md mx-auto">
@@ -1931,8 +1931,8 @@ export const AdminInventoryView: React.FC = () => {
                       <div className="border border-stone-200/80 rounded-2xl overflow-hidden shadow-2xs bg-white">
                         <div className="overflow-x-auto max-h-[480px] overflow-y-auto scrollbar-thin">
                           <table className="w-full min-w-[950px] text-left text-xs text-stone-800 border-collapse">
-                            <thead className="sticky top-0 bg-stone-50/95 backdrop-blur-xs border-b border-stone-200 z-10 shadow-2xs">
-                              <tr className="text-stone-500 text-[11px] font-bold uppercase tracking-wider">
+                            <thead className="sticky top-0 bg-[var(--brand-soft)] border-b border-[var(--brand-border)] z-10 shadow-2xs">
+                              <tr className="text-stone-600 text-[11px] font-semibold uppercase tracking-wider">
                                 <th className="py-3 px-3.5 whitespace-nowrap bg-stone-50">Timestamp / Date</th>
                                 <th className="py-3 px-3.5 whitespace-nowrap bg-stone-50">Raw Material</th>
                                 <th className="py-3 px-3.5 whitespace-nowrap text-right bg-stone-50">Qty Added</th>
@@ -1944,7 +1944,7 @@ export const AdminInventoryView: React.FC = () => {
                             </thead>
                             <tbody className="divide-y divide-stone-100 bg-white">
                               {monthAddOnMovements.map((mov) => (
-                                <tr key={mov.id} className="hover:bg-amber-50/20 transition-colors">
+                                <tr key={mov.id} className="hover:bg-[var(--brand-soft)]/60 transition-colors">
                                   <td className="py-2.5 px-3.5 font-mono text-stone-600 text-[11px] whitespace-nowrap">
                                     {formatDate(mov.createdAt)}
                                   </td>
@@ -1958,7 +1958,7 @@ export const AdminInventoryView: React.FC = () => {
                                     {mov.cost ? formatCurrency(mov.cost) : '-'}
                                   </td>
                                   <td className="py-2.5 px-3.5 whitespace-nowrap">
-                                    <span className="px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 border border-amber-200 text-[10px] font-bold">
+                                    <span className="badge badge-brand">
                                       {mov.reason || 'Mid-Month Extra Stock'}
                                     </span>
                                   </td>
@@ -2004,7 +2004,7 @@ export const AdminInventoryView: React.FC = () => {
                 placeholder="e.g., Royal Paneer, Amul Butter, Basmati Rice"
                 value={newItemName}
                 onChange={(e) => setNewItemName(e.target.value)}
-                className="w-full px-3.5 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs font-medium text-stone-900 focus:outline-hidden focus:border-amber-600"
+                className="w-full px-3.5 py-2 bg-white border border-stone-200 rounded-xl text-xs font-medium text-stone-900 focus:outline-hidden focus:border-amber-600"
               />
             </div>
 
@@ -2016,7 +2016,7 @@ export const AdminInventoryView: React.FC = () => {
                 <select
                   value={newItemCategory}
                   onChange={(e) => setNewItemCategory(e.target.value as any)}
-                  className="w-full px-3.5 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs font-medium text-stone-900 focus:outline-hidden focus:border-amber-600"
+                  className="w-full px-3.5 py-2 bg-white border border-stone-200 rounded-xl text-xs font-medium text-stone-900 focus:outline-hidden focus:border-amber-600"
                 >
                   <option value="Dairy">Dairy</option>
                   <option value="Spices">Spices</option>
@@ -2038,7 +2038,7 @@ export const AdminInventoryView: React.FC = () => {
                 <select
                   value={newItemUnit}
                   onChange={(e) => setNewItemUnit(e.target.value as any)}
-                  className="w-full px-3.5 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs font-medium text-stone-900 focus:outline-hidden focus:border-amber-600"
+                  className="w-full px-3.5 py-2 bg-white border border-stone-200 rounded-xl text-xs font-medium text-stone-900 focus:outline-hidden focus:border-amber-600"
                 >
                   <option value="kg">Kilograms (kg)</option>
                   <option value="g">Grams (g)</option>
@@ -2063,7 +2063,7 @@ export const AdminInventoryView: React.FC = () => {
                   min="0"
                   value={newItemOpeningStock}
                   onChange={(e) => setNewItemOpeningStock(parseFloat(e.target.value) || 0)}
-                  className="w-full px-3.5 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs font-medium text-stone-900 focus:outline-hidden focus:border-amber-600"
+                  className="w-full px-3.5 py-2 bg-white border border-stone-200 rounded-xl text-xs font-medium text-stone-900 focus:outline-hidden focus:border-amber-600"
                 />
               </div>
 
@@ -2078,7 +2078,7 @@ export const AdminInventoryView: React.FC = () => {
                   min="0"
                   value={newItemMinThreshold}
                   onChange={(e) => setNewItemMinThreshold(parseFloat(e.target.value) || 0)}
-                  className="w-full px-3.5 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs font-medium text-stone-900 focus:outline-hidden focus:border-amber-600"
+                  className="w-full px-3.5 py-2 bg-white border border-stone-200 rounded-xl text-xs font-medium text-stone-900 focus:outline-hidden focus:border-amber-600"
                 />
               </div>
 
@@ -2093,7 +2093,7 @@ export const AdminInventoryView: React.FC = () => {
                   min="0"
                   value={newItemUnitCost}
                   onChange={(e) => setNewItemUnitCost(parseFloat(e.target.value) || 0)}
-                  className="w-full px-3.5 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs font-medium text-stone-900 focus:outline-hidden focus:border-amber-600"
+                  className="w-full px-3.5 py-2 bg-white border border-stone-200 rounded-xl text-xs font-medium text-stone-900 focus:outline-hidden focus:border-amber-600"
                 />
               </div>
             </div>
@@ -2107,7 +2107,7 @@ export const AdminInventoryView: React.FC = () => {
                 placeholder="e.g., Amul Dairy Ltd, Nandini Distributors"
                 value={newItemSupplier}
                 onChange={(e) => setNewItemSupplier(e.target.value)}
-                className="w-full px-3.5 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs font-medium text-stone-900 focus:outline-hidden focus:border-amber-600"
+                className="w-full px-3.5 py-2 bg-white border border-stone-200 rounded-xl text-xs font-medium text-stone-900 focus:outline-hidden focus:border-amber-600"
               />
             </div>
 
@@ -2115,7 +2115,7 @@ export const AdminInventoryView: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setCreateItemModalOpen(false)}
-                className="px-4 py-2 bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold text-xs rounded-xl transition-all cursor-pointer"
+                className="px-4 py-2 bg-white border border-stone-300 hover:bg-stone-50 text-stone-700 font-bold text-xs rounded-xl transition-all cursor-pointer"
               >
                 Cancel
               </button>
@@ -2166,7 +2166,7 @@ export const AdminInventoryView: React.FC = () => {
                   setReplenishQty(q);
                   setReplenishTotalCost(Math.round(q * replenishItem.unitCost));
                 }}
-                className="w-full px-3.5 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs font-medium text-stone-900 focus:outline-hidden focus:border-amber-600"
+                className="w-full px-3.5 py-2 bg-white border border-stone-200 rounded-xl text-xs font-medium text-stone-900 focus:outline-hidden focus:border-amber-600"
               />
             </div>
 
@@ -2180,7 +2180,7 @@ export const AdminInventoryView: React.FC = () => {
                   placeholder="e.g. Amul Dairy Co."
                   value={replenishSupplier}
                   onChange={(e) => setReplenishSupplier(e.target.value)}
-                  className="w-full px-3.5 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs font-medium text-stone-900 focus:outline-hidden focus:border-amber-600"
+                  className="w-full px-3.5 py-2 bg-white border border-stone-200 rounded-xl text-xs font-medium text-stone-900 focus:outline-hidden focus:border-amber-600"
                 />
               </div>
 
@@ -2194,7 +2194,7 @@ export const AdminInventoryView: React.FC = () => {
                   min="0"
                   value={replenishTotalCost}
                   onChange={(e) => setReplenishTotalCost(parseFloat(e.target.value) || 0)}
-                  className="w-full px-3.5 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs font-medium text-stone-900 focus:outline-hidden focus:border-amber-600"
+                  className="w-full px-3.5 py-2 bg-white border border-stone-200 rounded-xl text-xs font-medium text-stone-900 focus:outline-hidden focus:border-amber-600"
                 />
               </div>
             </div>
@@ -2208,7 +2208,7 @@ export const AdminInventoryView: React.FC = () => {
                 placeholder="e.g. Purchase Order #PO-8812, Quality Checked"
                 value={replenishNotes}
                 onChange={(e) => setReplenishNotes(e.target.value)}
-                className="w-full px-3.5 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs font-medium text-stone-900 focus:outline-hidden focus:border-amber-600"
+                className="w-full px-3.5 py-2 bg-white border border-stone-200 rounded-xl text-xs font-medium text-stone-900 focus:outline-hidden focus:border-amber-600"
               />
             </div>
 
@@ -2216,7 +2216,7 @@ export const AdminInventoryView: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setReplenishItem(null)}
-                className="px-4 py-2 bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold text-xs rounded-xl transition-all cursor-pointer"
+                className="px-4 py-2 bg-white border border-stone-300 hover:bg-stone-50 text-stone-700 font-bold text-xs rounded-xl transition-all cursor-pointer"
               >
                 Cancel
               </button>
@@ -2249,7 +2249,7 @@ export const AdminInventoryView: React.FC = () => {
                 required
                 value={editName}
                 onChange={(e) => setEditName(e.target.value)}
-                className="w-full px-3.5 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs font-medium text-stone-900 focus:outline-hidden focus:border-amber-600"
+                className="w-full px-3.5 py-2 bg-white border border-stone-200 rounded-xl text-xs font-medium text-stone-900 focus:outline-hidden focus:border-amber-600"
               />
             </div>
 
@@ -2265,7 +2265,7 @@ export const AdminInventoryView: React.FC = () => {
                   min="0"
                   value={editMinThreshold}
                   onChange={(e) => setEditMinThreshold(parseFloat(e.target.value) || 0)}
-                  className="w-full px-3.5 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs font-medium text-stone-900 focus:outline-hidden focus:border-amber-600"
+                  className="w-full px-3.5 py-2 bg-white border border-stone-200 rounded-xl text-xs font-medium text-stone-900 focus:outline-hidden focus:border-amber-600"
                 />
               </div>
 
@@ -2280,7 +2280,7 @@ export const AdminInventoryView: React.FC = () => {
                   min="0"
                   value={editUnitCost}
                   onChange={(e) => setEditUnitCost(parseFloat(e.target.value) || 0)}
-                  className="w-full px-3.5 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs font-medium text-stone-900 focus:outline-hidden focus:border-amber-600"
+                  className="w-full px-3.5 py-2 bg-white border border-stone-200 rounded-xl text-xs font-medium text-stone-900 focus:outline-hidden focus:border-amber-600"
                 />
               </div>
             </div>
@@ -2293,7 +2293,7 @@ export const AdminInventoryView: React.FC = () => {
                 type="text"
                 value={editSupplier}
                 onChange={(e) => setEditSupplier(e.target.value)}
-                className="w-full px-3.5 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs font-medium text-stone-900 focus:outline-hidden focus:border-amber-600"
+                className="w-full px-3.5 py-2 bg-white border border-stone-200 rounded-xl text-xs font-medium text-stone-900 focus:outline-hidden focus:border-amber-600"
               />
             </div>
 
@@ -2301,7 +2301,7 @@ export const AdminInventoryView: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setEditItem(null)}
-                className="px-4 py-2 bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold text-xs rounded-xl transition-all cursor-pointer"
+                className="px-4 py-2 bg-white border border-stone-300 hover:bg-stone-50 text-stone-700 font-bold text-xs rounded-xl transition-all cursor-pointer"
               >
                 Cancel
               </button>
@@ -2325,7 +2325,7 @@ export const AdminInventoryView: React.FC = () => {
           title={`Recipe Portion Ingredients: ${selectedMenuItem.name}`}
         >
           <form onSubmit={handleSaveRecipe} className="space-y-4">
-            <div className="p-3 bg-stone-50 border border-stone-200 rounded-2xl text-xs space-y-1">
+            <div className="p-3 bg-[var(--surface-muted)] border border-stone-200 rounded-2xl text-xs space-y-1">
               <span className="text-[10px] font-bold uppercase tracking-wider text-amber-800">
                 Menu Item Portion Auto-Deduction
               </span>
@@ -2347,7 +2347,7 @@ export const AdminInventoryView: React.FC = () => {
                   return (
                     <div
                       key={idx}
-                      className="p-3 bg-stone-50 rounded-2xl border border-stone-200 flex items-center gap-2"
+                      className="p-3 bg-[var(--surface-muted)] rounded-2xl border border-stone-200 flex items-center gap-2"
                     >
                       <div className="flex-1">
                         <label className="block text-[10px] font-bold text-stone-500 uppercase mb-0.5">
@@ -2406,7 +2406,7 @@ export const AdminInventoryView: React.FC = () => {
             <button
               type="button"
               onClick={handleAddRecipeIngredient}
-              className="w-full py-2 px-3 bg-stone-100 hover:bg-stone-200 text-stone-800 font-bold text-xs rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1.5"
+              className="w-full py-2 px-3 bg-white border border-stone-300 hover:bg-[var(--brand-soft)] hover:border-[var(--brand-border)] text-stone-800 font-bold text-xs rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1.5"
             >
               <Plus className="w-3.5 h-3.5" />
               <span>+ Add Raw Material Ingredient</span>
@@ -2416,7 +2416,7 @@ export const AdminInventoryView: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setSelectedMenuItem(null)}
-                className="px-4 py-2 bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold text-xs rounded-xl transition-all cursor-pointer"
+                className="px-4 py-2 bg-white border border-stone-300 hover:bg-stone-50 text-stone-700 font-bold text-xs rounded-xl transition-all cursor-pointer"
               >
                 Cancel
               </button>
@@ -2440,7 +2440,7 @@ export const AdminInventoryView: React.FC = () => {
           title={`Daily Stock Audit: ${reconcilingLog.inventoryItemName}`}
         >
           <form onSubmit={handleSubmitReconcile} className="space-y-4">
-            <div className="p-3 bg-stone-50 border border-stone-200 rounded-2xl text-xs space-y-1.5">
+            <div className="p-3 bg-[var(--surface-muted)] border border-stone-200 rounded-2xl text-xs space-y-1.5">
               <span className="text-[10px] font-bold uppercase tracking-wider text-amber-800 block">
                 Discrepancy Calculation sheet
               </span>
@@ -2467,7 +2467,7 @@ export const AdminInventoryView: React.FC = () => {
                 min="0"
                 value={reconcileCount}
                 onChange={(e) => setReconcileCount(parseFloat(e.target.value) || 0)}
-                className="w-full px-3.5 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs font-bold text-stone-900 focus:outline-hidden"
+                className="w-full px-3.5 py-2 bg-white border border-stone-200 rounded-xl text-xs font-bold text-stone-900 focus:outline-hidden"
               />
             </div>
 
@@ -2480,7 +2480,7 @@ export const AdminInventoryView: React.FC = () => {
                 placeholder="e.g. 0.5kg spilled during cooking, or extra portion served"
                 value={reconcileNotes}
                 onChange={(e) => setReconcileNotes(e.target.value)}
-                className="w-full px-3.5 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs font-semibold text-stone-900 focus:outline-hidden"
+                className="w-full px-3.5 py-2 bg-white border border-stone-200 rounded-xl text-xs font-semibold text-stone-900 focus:outline-hidden"
               />
             </div>
 
@@ -2488,7 +2488,7 @@ export const AdminInventoryView: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setReconcilingLog(null)}
-                className="px-4 py-2 bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold text-xs rounded-xl transition-all cursor-pointer"
+                className="px-4 py-2 bg-white border border-stone-300 hover:bg-stone-50 text-stone-700 font-bold text-xs rounded-xl transition-all cursor-pointer"
               >
                 Cancel
               </button>
@@ -2516,38 +2516,38 @@ export const AdminInventoryView: React.FC = () => {
                 <Boxes className="w-6 h-6" />
               </div>
               <div>
-                <h4 className="font-serif font-bold text-lg text-stone-900 leading-tight">{viewItem.name}</h4>
+                <h4 className="section-title text-lg leading-tight">{viewItem.name}</h4>
                 <p className="text-xs text-stone-500 font-medium uppercase tracking-wider">{viewItem.category}</p>
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
-              <div className="p-3 rounded-2xl bg-stone-50 border border-stone-100 space-y-1">
+              <div className="p-3 rounded-2xl bg-[var(--surface-muted)] border border-stone-200/70 space-y-1">
                 <span className="text-[10px] font-bold text-stone-400 uppercase">Available Stock</span>
                 <p className="font-mono font-bold text-stone-900">{viewItem.currentStock} {viewItem.unit}</p>
               </div>
-              <div className="p-3 rounded-2xl bg-stone-50 border border-stone-100 space-y-1">
+              <div className="p-3 rounded-2xl bg-[var(--surface-muted)] border border-stone-200/70 space-y-1">
                 <span className="text-[10px] font-bold text-stone-400 uppercase">Reorder Level</span>
                 <p className="font-mono font-bold text-stone-900">{viewItem.minThreshold} {viewItem.unit}</p>
               </div>
-              <div className="p-3 rounded-2xl bg-stone-50 border border-stone-100 space-y-1">
+              <div className="p-3 rounded-2xl bg-[var(--surface-muted)] border border-stone-200/70 space-y-1">
                 <span className="text-[10px] font-bold text-stone-400 uppercase">Unit Cost</span>
                 <p className="font-mono font-bold text-stone-900">{formatCurrency(viewItem.unitCost)} / {viewItem.unit}</p>
               </div>
-              <div className="p-3 rounded-2xl bg-stone-50 border border-stone-100 space-y-1">
+              <div className="p-3 rounded-2xl bg-[var(--surface-muted)] border border-stone-200/70 space-y-1">
                 <span className="text-[10px] font-bold text-stone-400 uppercase">Current Value</span>
                 <p className="font-mono font-bold text-emerald-700">{formatCurrency(viewItem.currentStock * viewItem.unitCost)}</p>
               </div>
-              <div className="p-3 rounded-2xl bg-stone-50 border border-stone-100 space-y-1 col-span-2">
+              <div className="p-3 rounded-2xl bg-[var(--surface-muted)] border border-stone-200/70 space-y-1 col-span-2">
                 <span className="text-[10px] font-bold text-stone-400 uppercase">Supplier</span>
                 <p className="font-bold text-stone-800">{viewItem.supplier || 'No supplier set'}</p>
               </div>
             </div>
 
-            <div className="p-3 rounded-2xl bg-stone-900 text-white/90 text-[10px] font-mono space-y-1">
+            <div className="p-3 rounded-2xl bg-[var(--surface-muted)] border border-stone-200 text-stone-700 text-[10px] font-mono space-y-1">
               <div className="flex justify-between">
                 <span>Database ID:</span>
-                <span className="text-amber-400">{viewItem.id}</span>
+                <span className="text-amber-800">{viewItem.id}</span>
               </div>
               <div className="flex justify-between">
                 <span>Created At:</span>
@@ -2582,7 +2582,7 @@ export const AdminInventoryView: React.FC = () => {
 
                 if (itemMovs.length === 0) {
                   return (
-                    <div className="p-4 bg-stone-50 rounded-xl text-center text-xs text-stone-400">
+                    <div className="p-4 bg-[var(--surface-muted)] rounded-xl text-center text-xs text-stone-500">
                       No stock movements recorded for this ingredient yet.
                     </div>
                   );
@@ -2609,29 +2609,29 @@ export const AdminInventoryView: React.FC = () => {
                     {/* Scrollable movements table */}
                     <div className="max-h-60 overflow-y-auto rounded-xl border border-stone-200 bg-white scrollbar-thin">
                       <table className="w-full text-left text-xs">
-                        <thead className="sticky top-0 bg-stone-50 border-b border-stone-200 text-[10px] uppercase font-bold text-stone-500">
+                        <thead className="sticky top-0 bg-[var(--brand-soft)] border-b border-[var(--brand-border)] text-[10px] uppercase font-semibold text-stone-600">
                           <tr>
-                            <th className="py-2 px-2.5 bg-stone-50">Date</th>
-                            <th className="py-2 px-2.5 bg-stone-50">Type</th>
-                            <th className="py-2 px-2.5 text-right bg-stone-50">Qty</th>
-                            <th className="py-2 px-2.5 bg-stone-50">Details / Order</th>
+                            <th className="py-2 px-2.5 bg-[var(--brand-soft)]">Date</th>
+                            <th className="py-2 px-2.5 bg-[var(--brand-soft)]">Type</th>
+                            <th className="py-2 px-2.5 text-right bg-[var(--brand-soft)]">Qty</th>
+                            <th className="py-2 px-2.5 bg-[var(--brand-soft)]">Details / Order</th>
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-stone-100 text-[11px]">
                           {itemMovs.map((mov) => {
                             const isNeg = mov.quantity < 0;
                             return (
-                              <tr key={mov.id} className="hover:bg-stone-50/60">
+                              <tr key={mov.id} className="hover:bg-[var(--brand-soft)]/60">
                                 <td className="py-1.5 px-2.5 font-mono text-[10px] text-stone-500 whitespace-nowrap">
                                   {formatDate(mov.createdAt)}
                                 </td>
                                 <td className="py-1.5 px-2.5 whitespace-nowrap">
-                                  <span className={`px-1.5 py-0.2 rounded-md font-bold text-[9px] uppercase ${
+                                  <span className={`badge uppercase !text-[9px] !px-1.5 !py-0 ${
                                     mov.type === 'AUTO_CONSUMPTION'
-                                      ? 'bg-amber-100 text-amber-900'
+                                      ? 'badge-brand'
                                       : mov.type === 'PURCHASE' || mov.type === 'ADD_ON_STOCK'
-                                      ? 'bg-emerald-100 text-emerald-900'
-                                      : 'bg-rose-100 text-rose-900'
+                                      ? 'badge-success'
+                                      : 'badge-danger'
                                   }`}>
                                     {mov.type.replace('_', ' ')}
                                   </span>
@@ -2671,7 +2671,7 @@ export const AdminInventoryView: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setViewItem(null)}
-                className="px-4 py-2.5 bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold text-xs rounded-xl transition-all cursor-pointer"
+                className="px-4 py-2.5 bg-white border border-stone-300 hover:bg-stone-50 text-stone-700 font-bold text-xs rounded-xl transition-all cursor-pointer"
               >
                 Close Details
               </button>
@@ -2710,7 +2710,7 @@ export const AdminInventoryView: React.FC = () => {
                   value={selectedWastageItemId}
                   onChange={(e) => setSelectedWastageItemId(e.target.value)}
                   required
-                  className="w-full px-3.5 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs font-semibold text-stone-900 focus:outline-hidden focus:border-amber-700"
+                  className="w-full px-3.5 py-2 bg-white border border-stone-200 rounded-xl text-xs font-semibold text-stone-900 focus:outline-hidden focus:border-amber-700"
                 >
                   {items.map((item) => (
                     <option key={item.id} value={item.id}>
@@ -2745,7 +2745,7 @@ export const AdminInventoryView: React.FC = () => {
                         required
                         value={wastageQty}
                         onChange={(e) => setWastageQty(parseFloat(e.target.value) || 0)}
-                        className="w-full px-3.5 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs font-bold font-mono text-stone-900 focus:outline-hidden focus:border-amber-700"
+                        className="w-full px-3.5 py-2 bg-white border border-stone-200 rounded-xl text-xs font-bold font-mono text-stone-900 focus:outline-hidden focus:border-amber-700"
                       />
                       {isOverStock && (
                         <p className="text-[10px] text-amber-700 font-bold mt-1">
@@ -2764,7 +2764,7 @@ export const AdminInventoryView: React.FC = () => {
                         max={new Date().toISOString().split('T')[0]}
                         onChange={(e) => setWastageDate(e.target.value)}
                         required
-                        className="w-full px-3.5 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs font-semibold text-stone-900 focus:outline-hidden focus:border-amber-700"
+                        className="w-full px-3.5 py-2 bg-white border border-stone-200 rounded-xl text-xs font-semibold text-stone-900 focus:outline-hidden focus:border-amber-700"
                       />
                     </div>
                   </div>
@@ -2808,19 +2808,19 @@ export const AdminInventoryView: React.FC = () => {
                         value={customWastageReason}
                         onChange={(e) => setCustomWastageReason(e.target.value)}
                         required={wastageReason === 'Other'}
-                        className="w-full px-3.5 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs font-semibold text-stone-900 focus:outline-hidden focus:border-amber-700"
+                        className="w-full px-3.5 py-2 bg-white border border-stone-200 rounded-xl text-xs font-semibold text-stone-900 focus:outline-hidden focus:border-amber-700"
                       />
                     )}
                   </div>
 
                   {/* Real-time Impact Breakdown Card */}
-                  <div className="p-3.5 bg-stone-50 rounded-2xl border border-stone-200/80 space-y-2">
+                  <div className="p-3.5 bg-[var(--surface-muted)] rounded-2xl border border-stone-200/80 space-y-2">
                     <span className="text-[10px] font-bold uppercase tracking-wider text-stone-400 block">
                       Financial & Stock Impact Breakdown
                     </span>
                     <div className="grid grid-cols-3 gap-2 text-center">
                       <div className="p-2 bg-white rounded-xl border border-stone-100">
-                        <span className="text-[10px] text-stone-400 block font-medium">Unit Rate</span>
+                        <span className="text-[10px] text-stone-500 block font-medium">Unit Rate</span>
                         <span className="text-xs font-mono font-bold text-stone-800">
                           {formatCurrency(unitCost)}/{unit}
                         </span>
@@ -2832,7 +2832,7 @@ export const AdminInventoryView: React.FC = () => {
                         </span>
                       </div>
                       <div className="p-2 bg-white rounded-xl border border-stone-100">
-                        <span className="text-[10px] text-stone-400 block font-medium">New Stock</span>
+                        <span className="text-[10px] text-stone-500 block font-medium">New Stock</span>
                         <span className="text-xs font-mono font-bold text-stone-900">
                           {projectedStock} {unit}
                         </span>
@@ -2847,7 +2847,7 @@ export const AdminInventoryView: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setWastageModalOpen(false)}
-                className="px-4 py-2 bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold text-xs rounded-xl transition-all cursor-pointer"
+                className="px-4 py-2 bg-white border border-stone-300 hover:bg-stone-50 text-stone-700 font-bold text-xs rounded-xl transition-all cursor-pointer"
               >
                 Cancel
               </button>
@@ -2903,7 +2903,7 @@ export const AdminInventoryView: React.FC = () => {
                     }
                   }}
                   required
-                  className="w-full px-3.5 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs font-semibold text-stone-900 focus:outline-hidden focus:border-amber-700"
+                  className="w-full px-3.5 py-2 bg-white border border-stone-200 rounded-xl text-xs font-semibold text-stone-900 focus:outline-hidden focus:border-amber-700"
                 >
                   {items.map((item) => (
                     <option key={item.id} value={item.id}>
@@ -2941,7 +2941,7 @@ export const AdminInventoryView: React.FC = () => {
                           setAddOnQty(q);
                           setAddOnTotalCost(Math.round(q * unitCost));
                         }}
-                        className="w-full px-3.5 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs font-bold font-mono text-stone-900 focus:outline-hidden focus:border-amber-700"
+                        className="w-full px-3.5 py-2 bg-white border border-stone-200 rounded-xl text-xs font-bold font-mono text-stone-900 focus:outline-hidden focus:border-amber-700"
                       />
                     </div>
 
@@ -2954,7 +2954,7 @@ export const AdminInventoryView: React.FC = () => {
                         value={addOnMonth}
                         onChange={(e) => setAddOnMonth(e.target.value)}
                         required
-                        className="w-full px-3.5 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs font-semibold text-stone-900 focus:outline-hidden focus:border-amber-700"
+                        className="w-full px-3.5 py-2 bg-white border border-stone-200 rounded-xl text-xs font-semibold text-stone-900 focus:outline-hidden focus:border-amber-700"
                       />
                     </div>
 
@@ -2967,7 +2967,7 @@ export const AdminInventoryView: React.FC = () => {
                         value={addOnDate}
                         onChange={(e) => setAddOnDate(e.target.value)}
                         required
-                        className="w-full px-3.5 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs font-semibold text-stone-900 focus:outline-hidden focus:border-amber-700"
+                        className="w-full px-3.5 py-2 bg-white border border-stone-200 rounded-xl text-xs font-semibold text-stone-900 focus:outline-hidden focus:border-amber-700"
                       />
                     </div>
                   </div>
@@ -2988,7 +2988,7 @@ export const AdminInventoryView: React.FC = () => {
                           setAddOnUnitCost(uc);
                           setAddOnTotalCost(Math.round(addOnQty * uc));
                         }}
-                        className="w-full px-3.5 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs font-bold font-mono text-stone-900 focus:outline-hidden focus:border-amber-700"
+                        className="w-full px-3.5 py-2 bg-white border border-stone-200 rounded-xl text-xs font-bold font-mono text-stone-900 focus:outline-hidden focus:border-amber-700"
                       />
                     </div>
 
@@ -3002,7 +3002,7 @@ export const AdminInventoryView: React.FC = () => {
                         min="0"
                         value={addOnTotalCost}
                         onChange={(e) => setAddOnTotalCost(parseFloat(e.target.value) || 0)}
-                        className="w-full px-3.5 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs font-bold font-mono text-stone-900 focus:outline-hidden focus:border-amber-700"
+                        className="w-full px-3.5 py-2 bg-white border border-stone-200 rounded-xl text-xs font-bold font-mono text-stone-900 focus:outline-hidden focus:border-amber-700"
                       />
                     </div>
                   </div>
@@ -3047,7 +3047,7 @@ export const AdminInventoryView: React.FC = () => {
                         value={customAddOnReason}
                         onChange={(e) => setCustomAddOnReason(e.target.value)}
                         required={addOnReason === 'Other'}
-                        className="w-full px-3.5 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs font-semibold text-stone-900 focus:outline-hidden focus:border-amber-700"
+                        className="w-full px-3.5 py-2 bg-white border border-stone-200 rounded-xl text-xs font-semibold text-stone-900 focus:outline-hidden focus:border-amber-700"
                       />
                     )}
                   </div>
@@ -3063,7 +3063,7 @@ export const AdminInventoryView: React.FC = () => {
                         placeholder="e.g. Metro Cash & Carry, Local Farm"
                         value={addOnSupplier}
                         onChange={(e) => setAddOnSupplier(e.target.value)}
-                        className="w-full px-3.5 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs font-medium text-stone-900 focus:outline-hidden focus:border-amber-700"
+                        className="w-full px-3.5 py-2 bg-white border border-stone-200 rounded-xl text-xs font-medium text-stone-900 focus:outline-hidden focus:border-amber-700"
                       />
                     </div>
 
@@ -3076,7 +3076,7 @@ export const AdminInventoryView: React.FC = () => {
                         placeholder="e.g. INV-90422 / PO-EXTRA-11"
                         value={addOnInvoice}
                         onChange={(e) => setAddOnInvoice(e.target.value)}
-                        className="w-full px-3.5 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs font-medium text-stone-900 focus:outline-hidden focus:border-amber-700"
+                        className="w-full px-3.5 py-2 bg-white border border-stone-200 rounded-xl text-xs font-medium text-stone-900 focus:outline-hidden focus:border-amber-700"
                       />
                     </div>
                   </div>
@@ -3091,18 +3091,18 @@ export const AdminInventoryView: React.FC = () => {
                       placeholder="e.g., Requested by Head Chef for 150-guest banquet hall booking"
                       value={addOnNotes}
                       onChange={(e) => setAddOnNotes(e.target.value)}
-                      className="w-full px-3.5 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs font-medium text-stone-900 focus:outline-hidden focus:border-amber-700"
+                      className="w-full px-3.5 py-2 bg-white border border-stone-200 rounded-xl text-xs font-medium text-stone-900 focus:outline-hidden focus:border-amber-700"
                     />
                   </div>
 
                   {/* Real-time Rolling Calculation Preview Card */}
-                  <div className="p-3.5 bg-stone-50 rounded-2xl border border-stone-200/80 space-y-2">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-stone-500 block">
+                  <div className="p-3.5 bg-[var(--surface-muted)] rounded-2xl border border-stone-200/80 space-y-2">
+                    <span className="label-caps block">
                       Rolling Stock Impact ({addOnMonth})
                     </span>
                     <div className="grid grid-cols-3 gap-2 text-center">
                       <div className="p-2 bg-white rounded-xl border border-stone-100">
-                        <span className="text-[10px] text-stone-400 block font-medium">Current Balance</span>
+                        <span className="text-[10px] text-stone-500 block font-medium">Current Balance</span>
                         <span className="text-xs font-mono font-bold text-stone-700">
                           {curStock} {unit}
                         </span>
@@ -3129,7 +3129,7 @@ export const AdminInventoryView: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setAddOnModalOpen(false)}
-                className="px-4 py-2 bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold text-xs rounded-xl transition-all cursor-pointer"
+                className="px-4 py-2 bg-white border border-stone-300 hover:bg-stone-50 text-stone-700 font-bold text-xs rounded-xl transition-all cursor-pointer"
               >
                 Cancel
               </button>

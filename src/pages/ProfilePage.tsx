@@ -53,11 +53,11 @@ export const ProfilePage: React.FC<{ navigate: (route: string) => void }> = ({ n
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
       {/* Header */}
-      <div className="border-b border-stone-200 pb-4">
-        <span className="text-xs font-bold uppercase tracking-widest text-amber-800">
+      <div className="border-b border-[var(--border-subtle)] pb-5">
+        <span className="lux-eyebrow text-[var(--brand-text)]">
           Customer Account Settings
         </span>
-        <h1 className="font-serif text-2xl sm:text-3xl font-bold text-stone-900">
+        <h1 className="lux-display text-[clamp(2rem,4vw,2.75rem)] text-stone-900 mt-2">
           Profile Management
         </h1>
       </div>
@@ -65,17 +65,18 @@ export const ProfilePage: React.FC<{ navigate: (route: string) => void }> = ({ n
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         {/* Left Column: Clean Account Overview Card */}
         <div className="md:col-span-1 space-y-6">
-          <div className="bg-white rounded-2xl border border-stone-200/80 p-6 shadow-xs text-center space-y-3">
-            <div className="w-20 h-20 rounded-full bg-gradient-to-tr from-amber-700 to-amber-500 text-white flex items-center justify-center text-2xl font-bold font-serif mx-auto shadow-md">
+          <div className="surface !rounded-2xl p-6 text-center space-y-3 overflow-hidden relative">
+            <div className="absolute inset-x-0 top-0 h-20 bg-gradient-to-b from-[var(--brand-soft)] to-transparent pointer-events-none" aria-hidden="true" />
+            <div className="relative w-20 h-20 rounded-full bg-gradient-to-tr from-[var(--brand)] to-brand-400 text-white flex items-center justify-center text-2xl font-bold font-display mx-auto shadow-[var(--shadow-raised)] ring-4 ring-white">
               {(user.firstName && user.firstName.length > 0 ? user.firstName[0] : 'U').toUpperCase()}
             </div>
 
             <div>
-              <h3 className="font-serif font-bold text-lg text-stone-900">
+              <h3 className="section-title">
                 {user.firstName} {user.lastName}
               </h3>
-              <div className="mt-2 inline-flex items-center gap-1 text-[11px] font-bold px-3 py-0.5 rounded-full bg-amber-100 text-amber-800">
-                <Shield className="w-3 h-3 text-amber-700" />
+              <div className="mt-2 badge badge-brand !px-3 font-bold">
+                <Shield className="w-3 h-3" />
                 <span>Customer Profile</span>
               </div>
             </div>
@@ -84,9 +85,9 @@ export const ProfilePage: React.FC<{ navigate: (route: string) => void }> = ({ n
 
         {/* Right 2 Columns: Edit Profile Form */}
         <div className="md:col-span-2 space-y-6">
-          <div className="bg-white rounded-2xl border border-stone-200/80 p-6 shadow-xs space-y-4">
-            <h3 className="font-serif font-bold text-base text-stone-900 border-b border-stone-100 pb-3 flex items-center gap-2">
-              <User className="w-4 h-4 text-amber-700" /> Personal Details
+          <div className="surface !rounded-2xl p-5 sm:p-6 space-y-4">
+            <h3 className="section-title border-b border-stone-100 pb-3 flex items-center gap-2">
+              <User className="w-4 h-4 text-[var(--brand)]" /> Personal Details
             </h3>
 
             <form onSubmit={handleUpdateProfile} className="space-y-4">
@@ -98,7 +99,7 @@ export const ProfilePage: React.FC<{ navigate: (route: string) => void }> = ({ n
                     placeholder="Enter First Name"
                     value={firstName}
                     onChange={(e) => setFirstName(e.target.value)}
-                    className="w-full px-3.5 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-base sm:text-xs text-stone-900 focus:border-amber-600 focus:bg-white transition-all outline-none"
+                    className="w-full px-3.5 py-2.5 bg-white border border-[var(--border-subtle)] rounded-xl text-base sm:text-xs text-stone-900 focus:border-[var(--brand)] focus:ring-2 focus:ring-[var(--brand-ring-soft)] transition-all outline-none"
                     required
                   />
                 </div>
@@ -109,7 +110,7 @@ export const ProfilePage: React.FC<{ navigate: (route: string) => void }> = ({ n
                     placeholder="Enter Last Name"
                     value={lastName}
                     onChange={(e) => setLastName(e.target.value)}
-                    className="w-full px-3.5 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-base sm:text-xs text-stone-900 focus:border-amber-600 focus:bg-white transition-all outline-none"
+                    className="w-full px-3.5 py-2.5 bg-white border border-[var(--border-subtle)] rounded-xl text-base sm:text-xs text-stone-900 focus:border-[var(--brand)] focus:ring-2 focus:ring-[var(--brand-ring-soft)] transition-all outline-none"
                   />
                 </div>
               </div>
@@ -121,7 +122,7 @@ export const ProfilePage: React.FC<{ navigate: (route: string) => void }> = ({ n
                   placeholder="Enter Email Address"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full px-3.5 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-xs text-stone-900 focus:border-amber-600 focus:bg-white transition-all outline-none"
+                  className="w-full px-3.5 py-2.5 bg-white border border-[var(--border-subtle)] rounded-xl text-xs text-stone-900 focus:border-[var(--brand)] focus:ring-2 focus:ring-[var(--brand-ring-soft)] transition-all outline-none"
                 />
               </div>
 
@@ -132,7 +133,7 @@ export const ProfilePage: React.FC<{ navigate: (route: string) => void }> = ({ n
                   placeholder="Enter Phone Number"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
-                  className="w-full px-3.5 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-xs text-stone-900 font-mono focus:border-amber-600 focus:bg-white transition-all outline-none"
+                  className="w-full px-3.5 py-2.5 bg-white border border-[var(--border-subtle)] rounded-xl text-xs text-stone-900 font-mono focus:border-[var(--brand)] focus:ring-2 focus:ring-[var(--brand-ring-soft)] transition-all outline-none"
                   required
                 />
               </div>
@@ -141,7 +142,7 @@ export const ProfilePage: React.FC<{ navigate: (route: string) => void }> = ({ n
                 <button
                   type="submit"
                   disabled={updatingProfile}
-                  className="px-5 py-2.5 bg-amber-700 hover:bg-amber-800 disabled:opacity-50 text-white font-bold text-xs rounded-xl shadow-xs transition-all flex items-center gap-1.5 cursor-pointer"
+                  className="btn btn-primary"
                 >
                   <Save className="w-4 h-4" />
                   <span>{updatingProfile ? 'Saving...' : 'Save Profile Changes'}</span>

@@ -400,13 +400,13 @@ export const HotelUpiQrPaymentModal: React.FC<HotelUpiQrPaymentModalProps> = ({
     `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(genericUpiIntent)}&margin=10`;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-xs animate-in fade-in duration-200">
-      <div className="bg-white rounded-3xl max-w-md w-full overflow-hidden shadow-2xl border border-stone-200 flex flex-col max-h-[92vh]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-stone-900/45 backdrop-blur-sm animate-in fade-in duration-200">
+      <div className="surface-raised !rounded-2xl !shadow-[var(--shadow-float)] max-w-md w-full overflow-hidden flex flex-col max-h-[92vh] animate-in zoom-in-95 duration-200">
         
         {/* Neat & Clean Header */}
-        <div className="px-5 py-4 bg-stone-900 text-white flex items-center justify-between shrink-0 border-b border-stone-800">
+        <div className="px-5 py-4 bg-gradient-to-r from-[var(--brand-soft)] to-white flex items-center justify-between gap-3 shrink-0 border-b border-[var(--border-subtle)]">
           <div>
-            <h3 className="font-serif font-bold text-base sm:text-lg text-white leading-tight">
+            <h3 className="section-title !text-base sm:!text-lg leading-tight">
               {status === 'PAYMENT_SUCCESS'
                 ? 'Payment Confirmation'
                 : currentMode === 'PHONEPE'
@@ -417,7 +417,7 @@ export const HotelUpiQrPaymentModal: React.FC<HotelUpiQrPaymentModalProps> = ({
                 ? 'Scan & Pay via UPI QR'
                 : 'Credit / Debit Card Payment'}
             </h3>
-            <p className="text-xs text-amber-300/90 mt-0.5 font-medium">
+            <p className="text-xs text-[var(--brand-text)] mt-0.5 font-semibold">
               Order #{orderNumber} • {formatCurrency(amount)}
             </p>
           </div>
@@ -427,19 +427,20 @@ export const HotelUpiQrPaymentModal: React.FC<HotelUpiQrPaymentModalProps> = ({
               <div
                 className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-mono font-bold transition-colors ${
                   timeLeft <= 15
-                    ? 'bg-rose-500/20 text-rose-300 border border-rose-400/40 animate-pulse'
-                    : 'bg-stone-800 text-stone-300 border border-stone-700'
+                    ? 'bg-[var(--danger-soft)] text-[var(--danger)] border border-[var(--danger-border)] animate-pulse'
+                    : 'bg-white text-stone-700 border border-[var(--border-subtle)]'
                 }`}
               >
-                <Clock className="w-3.5 h-3.5 text-amber-400" />
+                <Clock className="w-3.5 h-3.5 text-[var(--brand)]" />
                 <span>{formatTimer(timeLeft)}</span>
               </div>
             )}
             {status !== 'PAYMENT_SUCCESS' && (
               <button
                 onClick={handleCancelPayment}
-                className="p-1 rounded-full hover:bg-white/10 text-stone-400 hover:text-white transition-colors cursor-pointer"
+                className="p-1 rounded-full hover:bg-[var(--brand-soft)] text-stone-500 hover:text-stone-900 transition-colors cursor-pointer"
                 title="Close"
+                aria-label="Close"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -462,11 +463,11 @@ export const HotelUpiQrPaymentModal: React.FC<HotelUpiQrPaymentModalProps> = ({
               </div>
 
               <div className="space-y-1">
-                <div className="inline-flex items-center gap-1.5 px-3 py-0.5 bg-emerald-100 text-emerald-900 rounded-full text-xs font-bold uppercase tracking-wider border border-emerald-300">
+                <div className="badge badge-success !px-3 !text-xs font-bold uppercase tracking-wider">
                   <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
                   <span>Payment Successful</span>
                 </div>
-                <h2 className="font-serif font-bold text-xl text-stone-900">
+                <h2 className="section-title !text-2xl">
                   Your Order Has Been Placed.
                 </h2>
                 <p className="text-xs text-stone-600">
@@ -475,7 +476,7 @@ export const HotelUpiQrPaymentModal: React.FC<HotelUpiQrPaymentModalProps> = ({
               </div>
 
               {/* Clean Confirmation Receipt */}
-              <div className="p-4 bg-emerald-50/50 rounded-2xl border border-emerald-200 text-left text-xs space-y-2">
+              <div className="p-4 bg-[var(--surface-muted)] rounded-2xl border border-[var(--border-subtle)] text-left text-xs space-y-2">
                 <div className="flex justify-between items-center border-b border-emerald-200/50 pb-1.5">
                   <span className="text-stone-600 font-medium">Order Number:</span>
                   <span className="font-serif font-bold text-sm text-stone-950">
@@ -485,7 +486,7 @@ export const HotelUpiQrPaymentModal: React.FC<HotelUpiQrPaymentModalProps> = ({
 
                 <div className="flex justify-between items-center border-b border-emerald-200/50 pb-1.5">
                   <span className="text-stone-600 font-medium">Amount Paid:</span>
-                  <span className="font-serif font-bold text-base text-amber-950">
+                  <span className="font-display font-bold text-lg text-[var(--brand-text)]">
                     {formatCurrency(amount)}
                   </span>
                 </div>
@@ -499,7 +500,7 @@ export const HotelUpiQrPaymentModal: React.FC<HotelUpiQrPaymentModalProps> = ({
 
                 <div className="flex justify-between items-center border-b border-emerald-200/50 pb-1.5">
                   <span className="text-stone-600 font-medium">Transaction Ref:</span>
-                  <span className="font-mono font-bold text-emerald-950 truncate max-w-[180px]">
+                  <span className="font-mono font-bold text-stone-900 truncate max-w-[180px]">
                     {verifiedPayment?.transactionId || verifiedPayment?.id || paymentData?.paymentReference || 'ABC-REF-PAID'}
                   </span>
                 </div>
@@ -517,7 +518,7 @@ export const HotelUpiQrPaymentModal: React.FC<HotelUpiQrPaymentModalProps> = ({
                 <button
                   type="button"
                   onClick={() => onSuccess(verifiedOrder, verifiedPayment)}
-                  className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-amber-800 to-amber-950 hover:from-amber-900 hover:to-black text-white font-bold text-xs sm:text-sm shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
+                  className="lux-btn lux-btn-wine w-full"
                 >
                   <Receipt className="w-4 h-4" />
                   <span>View Order Details</span>
@@ -528,9 +529,9 @@ export const HotelUpiQrPaymentModal: React.FC<HotelUpiQrPaymentModalProps> = ({
                   <button
                     type="button"
                     onClick={onReturnToMenu}
-                    className="w-full py-2 px-4 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold text-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                    className="lux-btn lux-btn-outline w-full !min-h-11"
                   >
-                    <Utensils className="w-3.5 h-3.5 text-stone-600" />
+                    <Utensils className="w-3.5 h-3.5" />
                     <span>Return to Menu</span>
                   </button>
                 )}
@@ -548,10 +549,10 @@ export const HotelUpiQrPaymentModal: React.FC<HotelUpiQrPaymentModalProps> = ({
               </div>
 
               <div>
-                <span className="text-[10px] font-bold text-rose-800 uppercase tracking-widest bg-rose-50 px-2.5 py-1 rounded-full border border-rose-200">
+                <span className="badge badge-danger uppercase tracking-widest !text-[10px] font-bold">
                   {status === 'PAYMENT_EXPIRED' ? 'Payment Timed Out (60s)' : 'Payment Cancelled'}
                 </span>
-                <h2 className="font-serif font-bold text-lg text-stone-900 mt-2">
+                <h2 className="section-title mt-2">
                   {status === 'PAYMENT_EXPIRED' ? 'Payment Window Expired' : 'Payment Not Completed'}
                 </h2>
                 <p className="text-xs text-stone-600 mt-1 max-w-xs mx-auto">
@@ -563,7 +564,7 @@ export const HotelUpiQrPaymentModal: React.FC<HotelUpiQrPaymentModalProps> = ({
                 <button
                   type="button"
                   onClick={handleRetryPayment}
-                  className="flex-1 py-2.5 px-4 rounded-xl bg-amber-800 hover:bg-amber-900 text-white font-bold text-xs shadow-sm transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                  className="btn btn-primary flex-1"
                 >
                   <RotateCcw className="w-3.5 h-3.5" />
                   <span>Retry Payment</span>
@@ -571,7 +572,7 @@ export const HotelUpiQrPaymentModal: React.FC<HotelUpiQrPaymentModalProps> = ({
                 <button
                   type="button"
                   onClick={onClose}
-                  className="py-2.5 px-4 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold text-xs transition-all cursor-pointer"
+                  className="btn btn-secondary"
                 >
                   Cancel
                 </button>
@@ -586,10 +587,10 @@ export const HotelUpiQrPaymentModal: React.FC<HotelUpiQrPaymentModalProps> = ({
             <div className="space-y-4">
               {/* Clean Amount Display */}
               <div className="text-center py-2">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-stone-500 block">
+                <span className="label-caps block">
                   Amount to Pay
                 </span>
-                <div className="font-serif font-bold text-3xl text-stone-900 mt-0.5">
+                <div className="font-display font-bold text-4xl text-[var(--brand-text)] mt-0.5">
                   {formatCurrency(amount)}
                 </div>
               </div>
@@ -625,7 +626,7 @@ export const HotelUpiQrPaymentModal: React.FC<HotelUpiQrPaymentModalProps> = ({
               {/* WORKFLOW 3: SCAN DYNAMIC QR CODE */}
               {currentMode === 'QR' && (
                 <div className="space-y-3 text-center">
-                  <div className="mx-auto w-48 h-48 bg-white p-2 rounded-2xl border-2 border-stone-200 shadow-xs flex items-center justify-center">
+                  <div className="mx-auto w-48 h-48 bg-white p-2 rounded-2xl border-2 border-[var(--brand-border)] shadow-[var(--shadow-card)] flex items-center justify-center">
                     <img
                       src={dynamicQrCodeUrl}
                       alt="Dynamic Hotel UPI QR Code"
@@ -640,13 +641,13 @@ export const HotelUpiQrPaymentModal: React.FC<HotelUpiQrPaymentModalProps> = ({
 
               {/* WORKFLOW 4: CREDIT / DEBIT CARD 3D-SECURE VERIFICATION */}
               {currentMode === 'CARD' && (
-                <div className="p-4 bg-stone-50 rounded-2xl border border-stone-200 space-y-3">
+                <div className="p-4 bg-[var(--surface-muted)] rounded-2xl border border-[var(--border-subtle)] space-y-3">
                   <div className="flex items-center justify-between border-b border-stone-200 pb-2">
                     <div className="flex items-center gap-2">
-                      <CreditCard className="w-4 h-4 text-amber-800" />
+                      <CreditCard className="w-4 h-4 text-[var(--brand)]" />
                       <span className="font-bold text-xs text-stone-900">3D-Secure Bank Verification</span>
                     </div>
-                    <span className="text-[10px] font-bold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-md">
+                    <span className="badge badge-success !text-[10px] font-bold">
                       256-Bit SSL
                     </span>
                   </div>
@@ -684,13 +685,13 @@ export const HotelUpiQrPaymentModal: React.FC<HotelUpiQrPaymentModalProps> = ({
                         value={cardOtp}
                         onChange={(e) => setCardOtp(e.target.value.replace(/\D/g, ''))}
                         placeholder="6-digit OTP"
-                        className="flex-1 px-3 py-2 bg-white border border-stone-300 rounded-xl font-mono text-center font-bold tracking-widest text-sm focus:border-amber-700 focus:outline-hidden"
+                        className="field flex-1 min-w-0 !rounded-xl font-mono text-center font-bold tracking-widest text-sm"
                       />
                       <button
                         type="button"
                         onClick={handleAuthorizeCardOtp}
                         disabled={isAuthorizingCard}
-                        className="px-4 py-2 bg-stone-900 hover:bg-black text-white font-bold text-xs rounded-xl transition-all cursor-pointer disabled:opacity-50"
+                        className="btn btn-primary shrink-0"
                       >
                         {isAuthorizingCard ? 'Authorizing...' : 'Authorize'}
                       </button>
@@ -708,7 +709,7 @@ export const HotelUpiQrPaymentModal: React.FC<HotelUpiQrPaymentModalProps> = ({
                   <button
                     type="button"
                     onClick={() => setShowUtrField(!showUtrField)}
-                    className="text-[11px] font-semibold text-amber-900 hover:underline cursor-pointer"
+                    className="text-[11px] font-semibold text-[var(--brand-text)] hover:underline underline-offset-2 cursor-pointer"
                   >
                     {showUtrField ? 'Hide Ref' : '+ Enter UTR Ref'}
                   </button>
@@ -720,7 +721,7 @@ export const HotelUpiQrPaymentModal: React.FC<HotelUpiQrPaymentModalProps> = ({
                     placeholder="12-digit UPI UTR / Bank Reference No."
                     value={utrInput}
                     onChange={(e) => setUtrInput(e.target.value)}
-                    className="w-full px-3 py-2 text-xs bg-stone-50 border border-stone-300 rounded-xl focus:border-amber-700 focus:outline-hidden font-mono"
+                    className="field !rounded-xl text-xs font-mono"
                   />
                 )}
 
@@ -728,9 +729,9 @@ export const HotelUpiQrPaymentModal: React.FC<HotelUpiQrPaymentModalProps> = ({
                   type="button"
                   onClick={handleConfirmPaymentDirect}
                   disabled={isConfirming || status === 'VERIFYING_PAYMENT'}
-                  className="w-full py-3 px-3 bg-emerald-700 hover:bg-emerald-800 text-white rounded-2xl text-xs sm:text-sm font-bold transition-all shadow-sm flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
+                  className="lux-btn lux-btn-wine w-full !tracking-[0.1em] disabled:opacity-50"
                 >
-                  <CheckCircle2 className="w-4 h-4 text-emerald-200" />
+                  <CheckCircle2 className="w-4 h-4" />
                   <span>{isConfirming ? 'Verifying Payment...' : '✓ I Have Completed Payment'}</span>
                 </button>
               </div>

@@ -97,8 +97,8 @@ export const ItemCustomizerPanel: React.FC<ItemCustomizerPanelProps> = ({
     <div className="space-y-5" data-testid="item-customizer">
       {portions.length > 0 && (
         <fieldset className="space-y-2">
-          <legend className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.18em] text-stone-500">
-            Portion size <span className="text-[10px] text-rose-700 normal-case tracking-normal font-semibold">Required</span>
+          <legend className="section-title !text-base flex items-center gap-2 mb-1">
+            Portion size <span className="badge badge-danger !text-[10px] font-lux">Required</span>
           </legend>
           <div className="grid grid-cols-2 gap-2">
             {portions.map((p) => {
@@ -111,11 +111,11 @@ export const ItemCustomizerPanel: React.FC<ItemCustomizerPanelProps> = ({
                   aria-checked={selected}
                   onClick={() => setPortionId(p.id)}
                   className={`min-h-12 px-3 py-2.5 rounded-xl border text-left transition-all cursor-pointer flex items-center justify-between gap-2 ${
-                    selected ? 'border-amber-600 bg-amber-50 ring-2 ring-amber-600/25' : 'border-stone-200 bg-white hover:border-amber-300'
+                    selected ? 'border-[var(--brand)] bg-[var(--brand-soft)] ring-2 ring-[var(--brand-ring-soft)] shadow-[var(--shadow-xs)]' : 'border-stone-200 bg-white hover:border-[var(--brand-border)] hover:bg-[var(--brand-soft)]/40'
                   }`}
                 >
                   <span className="font-semibold text-sm text-stone-900">{p.label}</span>
-                  <span className="font-mono text-sm text-stone-700">{formatCurrency(p.price)}</span>
+                  <span className="font-mono text-sm font-semibold text-[var(--brand-text)]">{formatCurrency(p.price)}</span>
                 </button>
               );
             })}
@@ -132,9 +132,9 @@ export const ItemCustomizerPanel: React.FC<ItemCustomizerPanelProps> = ({
         const short = touched && chosen < min;
         return (
           <fieldset key={group.id} className="space-y-2">
-            <legend className="flex flex-wrap items-center gap-2 text-xs font-bold uppercase tracking-[0.18em] text-stone-500">
+            <legend className="section-title !text-base flex flex-wrap items-center gap-2 mb-1">
               {group.name}
-              <span className={`text-[10px] normal-case tracking-normal font-semibold ${group.required ? 'text-rose-700' : 'text-stone-400'}`}>{rule}</span>
+              <span className={`badge !text-[10px] font-lux ${group.required ? 'badge-danger' : ''}`}>{rule}</span>
             </legend>
             <div className="space-y-1.5">
               {group.addons.map((a) => {
@@ -149,16 +149,16 @@ export const ItemCustomizerPanel: React.FC<ItemCustomizerPanelProps> = ({
                     disabled={atLimit}
                     onClick={() => toggleAddon(group.id, a.id)}
                     className={`w-full min-h-11 px-3 py-2 rounded-xl border flex items-center justify-between gap-3 text-left transition-all cursor-pointer disabled:opacity-45 disabled:cursor-not-allowed ${
-                      selected ? 'border-amber-600 bg-amber-50' : 'border-stone-200 bg-white hover:border-amber-300'
+                      selected ? 'border-[var(--brand)] bg-[var(--brand-soft)] ring-2 ring-[var(--brand-ring-soft)]' : 'border-stone-200 bg-white hover:border-[var(--brand-border)] hover:bg-[var(--brand-soft)]/40'
                     }`}
                   >
                     <span className="flex items-center gap-2.5">
-                      <span className={`w-5 h-5 shrink-0 flex items-center justify-center border ${max === 1 ? 'rounded-full' : 'rounded-md'} ${selected ? 'bg-amber-600 border-amber-600 text-white' : 'border-stone-300 bg-white'}`}>
+                      <span className={`w-5 h-5 shrink-0 flex items-center justify-center border ${max === 1 ? 'rounded-full' : 'rounded-md'} ${selected ? 'bg-[var(--brand)] border-[var(--brand)] text-white' : 'border-stone-300 bg-white'}`}>
                         {selected && <Check className="w-3.5 h-3.5" />}
                       </span>
                       <span className="text-sm text-stone-800">{a.name}</span>
                     </span>
-                    <span className="font-mono text-sm text-stone-600">{a.price > 0 ? `+${formatCurrency(a.price)}` : 'Free'}</span>
+                    <span className="font-mono text-sm font-semibold text-[var(--brand-text)]">{a.price > 0 ? `+${formatCurrency(a.price)}` : 'Free'}</span>
                   </button>
                 );
               })}
@@ -169,10 +169,10 @@ export const ItemCustomizerPanel: React.FC<ItemCustomizerPanelProps> = ({
       })}
 
       {/* Quantity + price breakdown */}
-      <div className="rounded-2xl border border-stone-200 bg-[#faf8f5] p-4 space-y-3">
+      <div className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface-muted)] p-4 space-y-3">
         <div className="flex items-center justify-between gap-3">
-          <span className="text-xs font-bold uppercase tracking-[0.18em] text-stone-500">Quantity</span>
-          <div className="flex items-center gap-1 bg-white border border-stone-200 rounded-xl p-1">
+          <span className="label-caps">Quantity</span>
+          <div className="flex items-center gap-1 bg-white border border-[var(--border-subtle)] rounded-xl p-1 shadow-[var(--shadow-xs)]">
             <button type="button" aria-label="Decrease quantity" onClick={() => setQuantity((q) => Math.max(1, q - 1))} className="w-9 h-9 flex items-center justify-center rounded-lg hover:bg-stone-100 cursor-pointer">
               <Minus className="w-4 h-4" />
             </button>
@@ -197,9 +197,9 @@ export const ItemCustomizerPanel: React.FC<ItemCustomizerPanelProps> = ({
             <dt>Per item</dt>
             <dd className="font-mono">{awaitingPortion ? 'Choose a portion' : formatCurrency(unitPrice)}</dd>
           </div>
-          <div className="flex justify-between text-stone-900 font-bold text-base">
+          <div className="flex justify-between text-stone-900 font-bold text-base pt-1">
             <dt>{awaitingPortion ? 'Total' : `Total (${quantity} × ${formatCurrency(unitPrice)})`}</dt>
-            <dd className="font-mono" data-testid="customizer-total">{awaitingPortion ? '—' : formatCurrency(unitPrice * quantity)}</dd>
+            <dd className="font-mono text-[var(--brand-text)]" data-testid="customizer-total">{awaitingPortion ? '—' : formatCurrency(unitPrice * quantity)}</dd>
           </div>
         </dl>
       </div>

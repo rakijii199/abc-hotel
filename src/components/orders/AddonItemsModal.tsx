@@ -182,19 +182,19 @@ export const AddonItemsModal: React.FC<AddonItemsModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/75 backdrop-blur-xs animate-in fade-in duration-200">
-      <div className="bg-white rounded-3xl max-w-2xl w-full overflow-hidden shadow-2xl border border-stone-200 flex flex-col max-h-[90vh]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-stone-900/45 backdrop-blur-sm animate-in fade-in duration-200">
+      <div className="surface-raised !rounded-2xl !shadow-[var(--shadow-float)] max-w-2xl w-full overflow-hidden flex flex-col max-h-[90vh] animate-in zoom-in-95 duration-200">
         {/* Header */}
-        <div className="p-4 sm:p-5 bg-gradient-to-r from-stone-900 via-stone-950 to-amber-950 text-white flex items-center justify-between shrink-0 border-b border-stone-800">
+        <div className="p-4 sm:p-5 bg-gradient-to-r from-[var(--brand-soft)] to-white flex items-center justify-between gap-3 shrink-0 border-b border-[var(--border-subtle)]">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-amber-500/20 text-amber-300 border border-amber-400/30 flex items-center justify-center font-bold text-lg shrink-0">
-              <Utensils className="w-5 h-5 text-amber-300" />
+            <div className="w-10 h-10 rounded-2xl bg-white text-[var(--brand)] border border-[var(--brand-border)] shadow-[var(--shadow-xs)] flex items-center justify-center font-bold text-lg shrink-0">
+              <Utensils className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="font-serif font-bold text-base sm:text-lg leading-tight">
+              <h3 className="section-title !text-base sm:!text-lg leading-tight">
                 Add More Dishes
               </h3>
-              <p className="text-xs text-amber-200/80 mt-0.5">
+              <p className="text-xs text-stone-600 mt-0.5">
                 Appending to Order <strong>#{order.orderNumber}</strong> • {order.tableNumber ? `Table ${order.tableNumber}` : order.orderType}
               </p>
             </div>
@@ -202,14 +202,15 @@ export const AddonItemsModal: React.FC<AddonItemsModalProps> = ({
 
           <button
             onClick={onClose}
-            className="p-1.5 rounded-full hover:bg-white/10 text-stone-300 hover:text-white transition-colors cursor-pointer"
+            className="p-1.5 rounded-full hover:bg-[var(--brand-soft)] text-stone-500 hover:text-stone-900 transition-colors cursor-pointer shrink-0"
+            aria-label="Close"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Search & Categories */}
-        <div className="p-3 sm:p-4 bg-stone-50 border-b border-stone-200 space-y-3 shrink-0">
+        <div className="p-3 sm:p-4 bg-[var(--surface-muted)] border-b border-[var(--border-subtle)] space-y-3 shrink-0">
           <div className="relative">
             <Search className="w-4 h-4 text-stone-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
             <input
@@ -217,7 +218,7 @@ export const AddonItemsModal: React.FC<AddonItemsModalProps> = ({
               placeholder="Search appetizers, mains, desserts, beverages..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9.5 pr-4 py-2 bg-white border border-stone-300 rounded-xl text-xs focus:border-amber-700 focus:outline-hidden"
+              className="field !pl-9.5 !rounded-full text-xs"
             />
           </div>
 
@@ -228,8 +229,8 @@ export const AddonItemsModal: React.FC<AddonItemsModalProps> = ({
               onClick={() => setSelectedCategory('all')}
               className={`px-3 py-1.5 rounded-full font-bold transition-all shrink-0 cursor-pointer ${
                 selectedCategory === 'all'
-                  ? 'bg-amber-800 text-white shadow-2xs'
-                  : 'bg-white text-stone-600 border border-stone-200 hover:bg-stone-100'
+                  ? 'bg-[var(--brand)] border border-[var(--brand)] text-white shadow-[var(--shadow-xs)]'
+                  : 'bg-white text-stone-600 border border-stone-200 hover:border-[var(--brand-border)] hover:bg-[var(--brand-soft)] hover:text-[var(--brand-text)]'
               }`}
             >
               All Dishes
@@ -241,8 +242,8 @@ export const AddonItemsModal: React.FC<AddonItemsModalProps> = ({
                 onClick={() => setSelectedCategory(c.id)}
                 className={`px-3 py-1.5 rounded-full font-medium transition-all shrink-0 cursor-pointer ${
                   selectedCategory === c.id
-                    ? 'bg-amber-800 text-white font-bold shadow-2xs'
-                    : 'bg-white text-stone-600 border border-stone-200 hover:bg-stone-100'
+                    ? 'bg-[var(--brand)] border border-[var(--brand)] text-white shadow-[var(--shadow-xs)] font-bold'
+                    : 'bg-white text-stone-600 border border-stone-200 hover:border-[var(--brand-border)] hover:bg-[var(--brand-soft)] hover:text-[var(--brand-text)]'
                 }`}
               >
                 {c.name}
@@ -254,15 +255,15 @@ export const AddonItemsModal: React.FC<AddonItemsModalProps> = ({
         {/* Menu Dish List */}
         <div className="p-4 sm:p-5 overflow-y-auto space-y-3 flex-1">
           {loading ? (
-            <div className="py-12 text-center space-y-2 text-stone-400">
-              <RefreshCw className="w-6 h-6 animate-spin mx-auto text-amber-700" />
+            <div className="py-12 text-center space-y-2 text-stone-500">
+              <RefreshCw className="w-6 h-6 animate-spin mx-auto text-[var(--brand)]" />
               <p className="text-xs font-medium">Loading restaurant menu...</p>
             </div>
           ) : filteredItems.length === 0 ? (
             <div className="py-12 text-center text-stone-400 space-y-1">
               <Utensils className="w-8 h-8 mx-auto text-stone-300" />
               <p className="text-xs font-medium text-stone-600">No matching dishes found</p>
-              <p className="text-[11px] text-stone-400">Try changing your search term or category filter</p>
+              <p className="text-[11px] text-stone-500">Try changing your search term or category filter</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -276,8 +277,8 @@ export const AddonItemsModal: React.FC<AddonItemsModalProps> = ({
                     key={dish.id}
                     className={`p-3 rounded-2xl border transition-all flex flex-col justify-between gap-2.5 ${
                       qty > 0
-                        ? 'bg-amber-50/70 border-amber-400/80 shadow-2xs ring-1 ring-amber-400/30'
-                        : 'bg-white border-stone-200/80 hover:border-stone-300'
+                        ? 'bg-[var(--brand-soft)] border-[var(--brand)] shadow-[var(--shadow-xs)] ring-2 ring-[var(--brand-ring-soft)]'
+                        : 'bg-white border-stone-200/80 shadow-[var(--shadow-xs)] hover:border-[var(--brand-border)]'
                     }`}
                   >
                     <div className="flex gap-3 items-start">
@@ -299,7 +300,7 @@ export const AddonItemsModal: React.FC<AddonItemsModalProps> = ({
                           <h4 className="font-bold text-xs text-stone-900 truncate">{dish.name}</h4>
                         </div>
                         <p className="text-[11px] text-stone-500 line-clamp-1 mt-0.5">{dish.description}</p>
-                        <p className="font-mono font-bold text-xs text-amber-950 mt-1">
+                        <p className="font-mono font-bold text-xs text-[var(--brand-text)] mt-1">
                           {configurable ? `From ${formatCurrency(startingPrice(dish))}` : formatCurrency(dish.price)}
                         </p>
                         {dishEntries.filter(([, e]) => e.selection.portionId || e.selection.addonIds?.length).map(([k, e]) => (
@@ -318,10 +319,10 @@ export const AddonItemsModal: React.FC<AddonItemsModalProps> = ({
                           placeholder="Kitchen note (e.g. Extra spicy)..."
                           value={addonCart[noteKey]?.notes || ''}
                           onChange={(e) => handleUpdateNotes(noteKey, e.target.value)}
-                          className="flex-1 mr-2 px-2 py-1 text-[11px] bg-white border border-amber-300 rounded-lg focus:outline-hidden"
+                          className="flex-1 min-w-0 mr-2 px-2 py-1 text-[11px] bg-white border border-[var(--brand-border)] rounded-lg focus:outline-hidden focus:border-[var(--brand)]"
                         />
                       ) : (
-                        <span className="text-[10px] text-stone-400 flex items-center gap-1 font-mono">
+                        <span className="text-[10px] text-stone-500 flex items-center gap-1 font-mono">
                           <Clock className="w-3 h-3" />
                           <span>~{dish.prepTimeMinutes}m prep</span>
                         </span>
@@ -331,27 +332,27 @@ export const AddonItemsModal: React.FC<AddonItemsModalProps> = ({
                         <button
                           type="button"
                           onClick={() => handleUpdateQuantity(dish, 1)}
-                          className="px-3 py-1.5 bg-amber-800 hover:bg-amber-900 text-white rounded-xl text-xs font-bold transition-all flex items-center gap-1 cursor-pointer shadow-2xs"
+                          className="px-3 py-1.5 bg-[var(--brand-soft)] hover:bg-[var(--brand)] text-[var(--brand-text)] hover:text-white border border-[var(--brand-border)] hover:border-[var(--brand)] rounded-full text-xs font-bold transition-all flex items-center gap-1 cursor-pointer"
                         >
                           <Plus className="w-3.5 h-3.5" />
                           <span>Add</span>
                         </button>
                       ) : (
-                        <div className="flex items-center gap-1 bg-white border border-amber-400 rounded-xl p-0.5 shadow-2xs">
+                        <div className="flex items-center gap-1 bg-white border border-[var(--brand-border)] rounded-full p-0.5 shadow-[var(--shadow-xs)]">
                           <button
                             type="button"
                             onClick={() => handleUpdateQuantity(dish, -1)}
-                            className="w-6 h-6 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-700 flex items-center justify-center font-bold cursor-pointer"
+                            className="w-7 h-7 rounded-full bg-stone-100 hover:bg-stone-200 text-stone-700 flex items-center justify-center font-bold cursor-pointer"
                           >
                             <Minus className="w-3 h-3" />
                           </button>
-                          <span className="w-6 text-center font-mono font-bold text-xs text-amber-950">
+                          <span className="w-6 text-center font-mono font-bold text-xs text-[var(--brand-text)]">
                             {qty}
                           </span>
                           <button
                             type="button"
                             onClick={() => handleUpdateQuantity(dish, 1)}
-                            className="w-6 h-6 rounded-lg bg-amber-800 hover:bg-amber-900 text-white flex items-center justify-center font-bold cursor-pointer"
+                            className="w-7 h-7 rounded-full bg-[var(--brand)] hover:bg-[var(--brand-hover)] text-white flex items-center justify-center font-bold cursor-pointer"
                           >
                             <Plus className="w-3 h-3" />
                           </button>
@@ -366,17 +367,17 @@ export const AddonItemsModal: React.FC<AddonItemsModalProps> = ({
         </div>
 
         {/* Sticky Bottom Tray & Confirmation Action */}
-        <div className="p-4 bg-stone-50 border-t border-stone-200 shrink-0 space-y-2.5">
-          <div className="flex items-center justify-between text-xs">
+        <div className="p-4 bg-[var(--surface-muted)] border-t border-[var(--border-subtle)] shrink-0 space-y-2.5">
+          <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
             <div>
-              <span className="text-stone-500 font-medium">Add-on Dishes:</span>
+              <span className="text-stone-600 font-medium">Add-on Dishes:</span>
               <span className="font-bold text-stone-900 ml-1.5">
                 {totalAddonItemsCount} {totalAddonItemsCount === 1 ? 'Dish' : 'Dishes'}
               </span>
             </div>
             <div className="text-right">
-              <span className="text-stone-500 font-medium mr-1.5">Additional Total:</span>
-              <span className="font-serif font-bold text-base text-amber-950">
+              <span className="text-stone-600 font-medium mr-1.5">Additional Total:</span>
+              <span className="font-display font-bold text-xl text-[var(--brand-text)]">
                 +{formatCurrency(totalAddonAmount)}
               </span>
             </div>
@@ -386,7 +387,7 @@ export const AddonItemsModal: React.FC<AddonItemsModalProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="py-3 px-4 rounded-xl bg-white hover:bg-stone-100 text-stone-700 border border-stone-300 font-bold text-xs transition-all cursor-pointer"
+              className="btn btn-secondary !min-h-12"
             >
               Cancel
             </button>
@@ -394,9 +395,9 @@ export const AddonItemsModal: React.FC<AddonItemsModalProps> = ({
               type="button"
               onClick={handleConfirmAddonOrder}
               disabled={submitting || totalAddonItemsCount === 0}
-              className="flex-1 py-3 px-4 rounded-xl bg-gradient-to-r from-amber-800 to-amber-950 hover:from-amber-900 hover:to-black text-white font-bold text-xs sm:text-sm shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+              className="lux-btn lux-btn-wine flex-1 !h-auto !py-3 !px-4 !tracking-[0.08em] text-center leading-snug disabled:opacity-50"
             >
-              <Sparkles className="w-4 h-4 text-amber-300" />
+              <Sparkles className="w-4 h-4 shrink-0" />
               <span>
                 {submitting
                   ? 'Adding to Order & Notifying Kitchen...'

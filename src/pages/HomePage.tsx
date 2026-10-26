@@ -1,6 +1,6 @@
 /**
  * Landing Page for ABC Hotel & Restaurant
- * Cinematic, editorial presentation. Optimized for mobile, tablet, and desktop viewports.
+ * Light, editorial presentation. Optimized for mobile, tablet, and desktop viewports.
  */
 import React, { useEffect, useRef, useState } from 'react';
 import { m, useScroll, useTransform } from 'motion/react';
@@ -127,7 +127,7 @@ export const HomePage: React.FC<{ navigate: (route: string, state?: any) => void
       {/* ------------------------------------------------------------------ */}
       <section
         ref={heroRef}
-        className="relative min-h-[100svh] bg-ink text-ivory overflow-hidden flex items-center lux-grain"
+        className="relative min-h-[100svh] ambient text-stone-900 overflow-hidden flex items-center"
       >
         <m.div style={{ y: bgY }} className="absolute inset-0 will-change-transform">
           <img
@@ -135,12 +135,13 @@ export const HomePage: React.FC<{ navigate: (route: string, state?: any) => void
             alt="Candle-lit dining room at ABC Hotel"
             fetchPriority="high"
             onError={hideOnError}
-            className="w-full h-full object-cover opacity-55 lux-kenburns"
+            className="w-full h-full object-cover opacity-30 saturate-[0.85] lux-kenburns"
           />
         </m.div>
-        <div className="absolute inset-0 bg-gradient-to-r from-ink via-ink/75 to-ink/20" />
-        <div className="absolute inset-0 bg-gradient-to-t from-ink via-transparent to-ink/40" />
-        <div className="absolute -top-40 -left-40 w-[640px] h-[640px] rounded-full bg-wine/30 blur-[140px] pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[var(--page-bg)] via-[var(--page-bg)]/92 to-[var(--page-bg)]/55" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[var(--page-bg)] via-transparent to-[var(--page-bg)]/70" />
+        <div className="absolute -top-40 -left-40 w-[640px] h-[640px] rounded-full bg-champagne/45 blur-[140px] pointer-events-none" />
+        <div className="absolute -bottom-48 right-[-12%] w-[560px] h-[560px] rounded-full bg-[var(--brand-soft)] blur-[120px] pointer-events-none" />
 
         <m.div
           style={{ opacity: heroFade }}
@@ -151,12 +152,12 @@ export const HomePage: React.FC<{ navigate: (route: string, state?: any) => void
               initial={{ opacity: 0, y: 14 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1, ease: LUX_EASE, delay: 0.1 }}
-              className="lux-eyebrow text-gold"
+              className="lux-eyebrow text-amber-700"
             >
               ABC Hotel · Fine Dining & Suites
             </m.p>
 
-            <h1 className="lux-display mt-7 text-[clamp(3.1rem,8.4vw,7.4rem)] text-ivory">
+            <h1 className="lux-display mt-7 text-[clamp(3.1rem,8.4vw,7.4rem)] text-stone-900">
               <m.span
                 initial={{ opacity: 0, y: 40 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -169,7 +170,7 @@ export const HomePage: React.FC<{ navigate: (route: string, state?: any) => void
                 initial={{ opacity: 0, y: 40 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 1.2, ease: LUX_EASE, delay: 0.35 }}
-                className="block italic font-normal text-champagne"
+                className="block italic font-normal text-[var(--brand)]"
               >
                 Unforgettable Evenings.
               </m.span>
@@ -179,7 +180,7 @@ export const HomePage: React.FC<{ navigate: (route: string, state?: any) => void
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1, ease: LUX_EASE, delay: 0.55 }}
-              className="mt-7 max-w-lg text-[15px] sm:text-base text-ivory/70 leading-relaxed"
+              className="mt-7 max-w-lg text-[15px] sm:text-base text-stone-600 leading-relaxed"
             >
               Reserve your table, explore our menu, and enjoy heritage recipes reimagined with modern culinary
               artistry, served at your table, in your suite, or at your door.
@@ -191,13 +192,13 @@ export const HomePage: React.FC<{ navigate: (route: string, state?: any) => void
               transition={{ duration: 1, ease: LUX_EASE, delay: 0.7 }}
               className="mt-10 flex flex-col sm:flex-row gap-3 sm:gap-4"
             >
-              <button onClick={handleBookOrder} className="lux-btn lux-btn-gold">
+              <button onClick={handleBookOrder} className="lux-btn lux-btn-wine">
                 <UtensilsCrossed className="w-4 h-4" />
                 <span>Order from the Menu</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
-              <button onClick={handleBookTable} className="lux-btn lux-btn-ghost">
-                <Calendar className="w-4 h-4 text-champagne" />
+              <button onClick={handleBookTable} className="lux-btn lux-btn-outline bg-white/60">
+                <Calendar className="w-4 h-4" />
                 <span>Reserve a Table</span>
               </button>
             </m.div>
@@ -206,19 +207,19 @@ export const HomePage: React.FC<{ navigate: (route: string, state?: any) => void
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 1.2, delay: 1 }}
-              className="mt-14 grid grid-cols-3 gap-4 max-w-lg border-t border-white/10 pt-6"
+              className="mt-14 grid grid-cols-3 gap-4 max-w-lg border-t border-stone-300/70 pt-6"
             >
               <div>
-                <dt className="text-[9.5px] uppercase tracking-[0.24em] text-ivory/45">Open Daily</dt>
-                <dd className="font-display text-lg sm:text-2xl text-ivory mt-1">9 AM – 11 PM</dd>
+                <dt className="text-[9.5px] uppercase tracking-[0.24em] text-stone-500">Open Daily</dt>
+                <dd className="font-display text-lg sm:text-2xl text-stone-900 mt-1">9 AM – 11 PM</dd>
               </div>
               <div>
-                <dt className="text-[9.5px] uppercase tracking-[0.24em] text-ivory/45">Ways to Dine</dt>
-                <dd className="font-display text-lg sm:text-2xl text-ivory mt-1">Four</dd>
+                <dt className="text-[9.5px] uppercase tracking-[0.24em] text-stone-500">Ways to Dine</dt>
+                <dd className="font-display text-lg sm:text-2xl text-stone-900 mt-1">Four</dd>
               </div>
               <div>
-                <dt className="text-[9.5px] uppercase tracking-[0.24em] text-ivory/45">Orders</dt>
-                <dd className="font-display text-lg sm:text-2xl text-ivory mt-1">Live Tracked</dd>
+                <dt className="text-[9.5px] uppercase tracking-[0.24em] text-stone-500">Orders</dt>
+                <dd className="font-display text-lg sm:text-2xl text-stone-900 mt-1">Live Tracked</dd>
               </div>
             </m.dl>
           </m.div>
@@ -235,10 +236,10 @@ export const HomePage: React.FC<{ navigate: (route: string, state?: any) => void
         </m.div>
 
         {/* Scroll cue */}
-        <div className="absolute bottom-7 left-1/2 -translate-x-1/2 hidden sm:flex flex-col items-center gap-3 text-[9px] uppercase tracking-[0.3em] text-ivory/45">
+        <div className="absolute bottom-7 left-1/2 -translate-x-1/2 hidden sm:flex flex-col items-center gap-3 text-[9px] uppercase tracking-[0.3em] text-stone-500">
           <span>Scroll</span>
-          <span className="w-px h-10 bg-ivory/15 overflow-hidden">
-            <span className="block w-full h-full bg-champagne lux-scroll-cue" />
+          <span className="w-px h-10 bg-stone-300/70 overflow-hidden">
+            <span className="block w-full h-full bg-[var(--brand)] lux-scroll-cue" />
           </span>
         </div>
       </section>
@@ -246,7 +247,7 @@ export const HomePage: React.FC<{ navigate: (route: string, state?: any) => void
       {/* ------------------------------------------------------------------ */}
       {/* Reservation in three moments                                        */}
       {/* ------------------------------------------------------------------ */}
-      <section className="relative bg-charcoal text-ivory border-t border-white/5">
+      <section className="relative bg-[var(--surface)] text-stone-900 border-y border-[var(--border-subtle)]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12 grid grid-cols-1 md:grid-cols-[1fr_1fr_1fr_auto] gap-6 md:gap-10 items-center">
           {[
             { icon: Calendar, step: '01', label: 'Select Date & Time' },
@@ -255,12 +256,12 @@ export const HomePage: React.FC<{ navigate: (route: string, state?: any) => void
           ].map(({ icon: Icon, step, label }, i) => (
             <Reveal key={step} delay={i * 0.08} y={16}>
               <div className="flex items-center gap-4">
-                <span className="w-12 h-12 shrink-0 rounded-full border border-gold/40 flex items-center justify-center text-gold">
+                <span className="w-12 h-12 shrink-0 rounded-full border border-[var(--brand-border)] bg-[var(--brand-soft)] flex items-center justify-center text-amber-700">
                   <Icon className="w-[18px] h-[18px]" strokeWidth={1.5} />
                 </span>
                 <div>
-                  <p className="text-[9.5px] uppercase tracking-[0.26em] text-ivory/45">Step {step}</p>
-                  <p className="font-display text-xl text-ivory mt-0.5">{label}</p>
+                  <p className="text-[9.5px] uppercase tracking-[0.26em] text-stone-500">Step {step}</p>
+                  <p className="font-display text-xl text-stone-900 mt-0.5">{label}</p>
                 </div>
               </div>
             </Reveal>
@@ -282,7 +283,7 @@ export const HomePage: React.FC<{ navigate: (route: string, state?: any) => void
           <div ref={storyRef} className="lg:col-span-6 relative h-[420px] sm:h-[560px]">
             <m.div
               style={{ y: storyBackY }}
-              className="absolute top-0 left-0 w-[78%] h-[82%] overflow-hidden lux-zoom shadow-[0_40px_80px_-40px_rgba(26,23,21,0.6)]"
+              className="absolute top-0 left-0 w-[78%] h-[82%] overflow-hidden rounded-2xl lux-zoom shadow-[0_40px_80px_-40px_rgba(99,72,38,0.5)]"
             >
               <img
                 src={luxImage(LUX_IMAGES.diningRoom, 1100)}
@@ -294,7 +295,7 @@ export const HomePage: React.FC<{ navigate: (route: string, state?: any) => void
             </m.div>
             <m.div
               style={{ y: storyFrontY }}
-              className="absolute bottom-0 right-0 w-[52%] h-[52%] overflow-hidden border-[6px] border-ivory shadow-[0_40px_80px_-30px_rgba(26,23,21,0.7)] lux-zoom"
+              className="absolute bottom-0 right-0 w-[52%] h-[52%] overflow-hidden rounded-2xl border-[6px] border-white shadow-[0_40px_80px_-30px_rgba(99,72,38,0.55)] lux-zoom"
             >
               <img
                 src={luxImage(LUX_IMAGES.plated, 800)}
@@ -322,7 +323,7 @@ export const HomePage: React.FC<{ navigate: (route: string, state?: any) => void
               </p>
             </Reveal>
             <Reveal delay={0.18}>
-              <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 gap-px bg-stone-200 border border-stone-200">
+              <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 gap-px bg-[var(--border-subtle)] border border-[var(--border-subtle)] rounded-2xl overflow-hidden shadow-[var(--shadow-card)]">
                 <div className="bg-ivory p-6">
                   <Wine className="w-6 h-6 text-wine" strokeWidth={1.4} />
                   <h3 className="font-display text-2xl text-stone-900 mt-4">Fine Dining Cellar</h3>
@@ -386,18 +387,18 @@ export const HomePage: React.FC<{ navigate: (route: string, state?: any) => void
       {/* ------------------------------------------------------------------ */}
       {/* Ways to dine                                                        */}
       {/* ------------------------------------------------------------------ */}
-      <section className="relative bg-ink text-ivory overflow-hidden lux-grain">
-        <div className="absolute -bottom-40 -right-40 w-[600px] h-[600px] rounded-full bg-wine/25 blur-[140px] pointer-events-none" />
+      <section className="relative bg-[var(--surface)] text-stone-900 overflow-hidden border-y border-[var(--border-subtle)]">
+        <div className="absolute -bottom-40 -right-40 w-[600px] h-[600px] rounded-full bg-champagne/35 blur-[140px] pointer-events-none" />
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 sm:py-32">
           <div className="grid lg:grid-cols-2 gap-6 items-end mb-14">
             <Reveal>
-              <p className="lux-eyebrow text-gold">The Experience</p>
-              <h2 className="lux-display text-[clamp(2.5rem,5vw,4.25rem)] mt-5">
-                One kitchen. <em className="font-normal text-champagne">Four ways to dine.</em>
+              <p className="lux-eyebrow text-amber-700">The Experience</p>
+              <h2 className="lux-display text-[clamp(2.5rem,5vw,4.25rem)] text-stone-900 mt-5">
+                One kitchen. <em className="font-normal text-[var(--brand)]">Four ways to dine.</em>
               </h2>
             </Reveal>
             <Reveal delay={0.1}>
-              <p className="text-ivory/60 text-[15px] leading-relaxed lg:max-w-md lg:ml-auto">
+              <p className="text-stone-600 text-[15px] leading-relaxed lg:max-w-md lg:ml-auto">
                 Whether you are seated in our dining room, resting in your suite, or ordering from home, every dish is
                 prepared fresh to order.
               </p>
@@ -409,7 +410,7 @@ export const HomePage: React.FC<{ navigate: (route: string, state?: any) => void
               <Reveal key={mode.title} delay={i * 0.08}>
                 <button
                   onClick={handleBookOrder}
-                  className="group relative block w-full text-left aspect-[3/4] overflow-hidden bg-charcoal cursor-pointer transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] hover:[transform:rotateX(3deg)_translateY(-6px)] focus-visible:[transform:translateY(-6px)]"
+                  className="group relative block w-full text-left aspect-[3/4] overflow-hidden rounded-2xl bg-charcoal shadow-[var(--shadow-card)] hover:shadow-[var(--shadow-float)] cursor-pointer transition-[transform,box-shadow] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] hover:[transform:rotateX(3deg)_translateY(-6px)] focus-visible:[transform:translateY(-6px)]"
                   aria-label={`${mode.title}: ${mode.text}`}
                 >
                   <img
@@ -419,8 +420,8 @@ export const HomePage: React.FC<{ navigate: (route: string, state?: any) => void
                     onError={hideOnError}
                     className="absolute inset-0 w-full h-full object-cover opacity-70 transition-all duration-[1200ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.07] group-hover:opacity-85"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/40 to-transparent" />
-                  <div className="absolute inset-3 border border-white/0 group-hover:border-gold/40 transition-colors duration-700" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-ink/90 via-ink/35 to-transparent" />
+                  <div className="absolute inset-3 rounded-xl border border-white/0 group-hover:border-gold/50 transition-colors duration-700" />
                   <div className="absolute inset-x-0 bottom-0 p-6">
                     <p className="text-[9.5px] uppercase tracking-[0.28em] text-gold">{mode.caption}</p>
                     <div className="flex items-end justify-between gap-3 mt-2">
@@ -467,7 +468,7 @@ export const HomePage: React.FC<{ navigate: (route: string, state?: any) => void
       {/* Visit                                                               */}
       {/* ------------------------------------------------------------------ */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-24 sm:pb-32">
-        <div className="grid grid-cols-1 lg:grid-cols-2 lux-card overflow-hidden">
+        <div className="grid grid-cols-1 lg:grid-cols-2 lux-card rounded-2xl overflow-hidden">
           <div className="relative min-h-[300px] lux-zoom overflow-hidden">
             <img
               src={luxImage(LUX_IMAGES.interior, 1200)}
@@ -513,33 +514,33 @@ export const HomePage: React.FC<{ navigate: (route: string, state?: any) => void
       {/* ------------------------------------------------------------------ */}
       {/* Closing call to action                                              */}
       {/* ------------------------------------------------------------------ */}
-      <section className="relative overflow-hidden bg-wine text-ivory lux-grain">
+      <section className="relative overflow-hidden bg-[var(--brand-soft)] text-stone-900 border-t border-[var(--border-subtle)]">
         <img
           src={luxImage(LUX_IMAGES.plated, 1800)}
           alt=""
           aria-hidden="true"
           loading="lazy"
           onError={hideOnError}
-          className="absolute inset-0 w-full h-full object-cover opacity-25 mix-blend-luminosity"
+          className="absolute inset-0 w-full h-full object-cover opacity-[0.14] mix-blend-multiply"
         />
-        <div className="absolute inset-0 bg-gradient-to-br from-wine/90 via-wine/70 to-ink/90" />
+        <div className="absolute inset-0 bg-gradient-to-br from-[var(--page-bg)]/90 via-[var(--brand-soft)]/70 to-champagne/50" />
         <div className="relative max-w-4xl mx-auto px-4 sm:px-6 py-24 sm:py-32 text-center">
           <Reveal>
-            <p className="lux-eyebrow text-champagne justify-center">An Evening at ABC</p>
-            <h2 className="lux-display text-[clamp(2.75rem,7vw,5.75rem)] mt-6">
-              Your table <em className="font-normal text-champagne">awaits.</em>
+            <p className="lux-eyebrow text-amber-700 justify-center">An Evening at ABC</p>
+            <h2 className="lux-display text-[clamp(2.75rem,7vw,5.75rem)] text-stone-900 mt-6">
+              Your table <em className="font-normal text-[var(--brand)]">awaits.</em>
             </h2>
-            <p className="text-ivory/70 text-[15px] sm:text-base leading-relaxed mt-6 max-w-xl mx-auto">
+            <p className="text-stone-600 text-[15px] sm:text-base leading-relaxed mt-6 max-w-xl mx-auto">
               Reserve your table today or order from our menu directly to your suite or doorstep.
             </p>
           </Reveal>
           <Reveal delay={0.12}>
             <div className="mt-10 flex flex-col sm:flex-row justify-center gap-3 sm:gap-4">
-              <button onClick={handleBookTable} className="lux-btn lux-btn-gold">
+              <button onClick={handleBookTable} className="lux-btn lux-btn-wine">
                 <span>Reserve Your Table</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
-              <button onClick={handleBookOrder} className="lux-btn lux-btn-ghost">
+              <button onClick={handleBookOrder} className="lux-btn lux-btn-outline bg-white/60">
                 Browse Menu
               </button>
             </div>

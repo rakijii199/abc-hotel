@@ -39,7 +39,7 @@ export const PublicInvoicePage: React.FC<{
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-stone-100 flex items-center justify-center p-4">
+      <div className="min-h-screen ambient flex items-center justify-center p-4">
         <Spinner size="lg" text="Retrieving verified tax invoice..." />
       </div>
     );
@@ -47,15 +47,15 @@ export const PublicInvoicePage: React.FC<{
 
   if (errorMsg || !invoice) {
     return (
-      <div className="min-h-screen bg-stone-100 flex items-center justify-center p-4">
-        <div className="bg-white p-8 rounded-3xl shadow-xl max-w-md w-full text-center space-y-4">
+      <div className="min-h-screen ambient flex items-center justify-center p-4">
+        <div className="surface-raised !rounded-2xl p-8 max-w-md w-full text-center space-y-4">
           <AlertCircle className="w-12 h-12 text-rose-600 mx-auto" />
-          <h2 className="font-serif font-bold text-xl text-stone-900">Invoice Unavailable</h2>
+          <h2 className="section-title !text-2xl">Invoice Unavailable</h2>
           <p className="text-xs text-stone-600">{errorMsg || 'Could not locate invoice.'}</p>
           {navigate && (
             <button
               onClick={() => navigate('/')}
-              className="py-2.5 px-4 bg-stone-900 text-white font-bold rounded-xl text-xs"
+              className="btn btn-primary"
             >
               Go to Home Page
             </button>
@@ -66,14 +66,14 @@ export const PublicInvoicePage: React.FC<{
   }
 
   return (
-    <div className="min-h-screen bg-stone-100 py-8 px-4 font-sans text-stone-800 print:bg-white print:p-0">
+    <div className="min-h-screen ambient py-8 px-4 font-sans text-stone-800 print:bg-white print:p-0">
       <div className="max-w-xl mx-auto space-y-4">
         
         {/* Navigation & Print Action Bar (Hidden in Print) */}
-        <div className="flex items-center justify-between bg-white p-4 rounded-2xl shadow-xs border border-stone-200 print:hidden">
+        <div className="glass flex flex-wrap items-center justify-between gap-2 p-3 sm:p-4 rounded-2xl print:hidden">
           <div className="flex items-center gap-2">
-            <Building2 className="w-5 h-5 text-amber-800" />
-            <span className="font-serif font-bold text-stone-900 text-sm">
+            <Building2 className="w-5 h-5 text-[var(--brand)]" />
+            <span className="font-display font-bold text-stone-900 text-base">
               Invoice #{invoice.invoiceNumber}
             </span>
           </div>
@@ -81,7 +81,7 @@ export const PublicInvoicePage: React.FC<{
           <div className="flex items-center gap-2">
             <button
               onClick={() => window.print()}
-              className="py-2 px-3 bg-stone-900 hover:bg-stone-800 text-white font-bold text-xs rounded-xl flex items-center gap-1.5 cursor-pointer"
+              className="btn btn-primary"
             >
               <Printer className="w-3.5 h-3.5" />
               <span>Print Invoice</span>
@@ -90,11 +90,11 @@ export const PublicInvoicePage: React.FC<{
         </div>
 
         {/* Printable Tax Invoice Container */}
-        <div className="bg-white p-6 sm:p-8 rounded-3xl shadow-xl border border-stone-200/90 print:shadow-none print:border-0 print:p-0">
+        <div className="surface-raised !rounded-2xl p-5 sm:p-8 print:shadow-none print:border-0 print:p-0">
           
           {/* Hotel Header */}
-          <div className="text-center space-y-1.5 border-b border-stone-200 pb-4">
-            <h1 className="font-serif font-bold text-2xl sm:text-3xl text-stone-900 tracking-tight">
+          <div className="text-center space-y-1.5 border-b border-dashed border-[var(--brand-border)] pb-4">
+            <h1 className="lux-display text-3xl sm:text-4xl text-stone-900 tracking-[0.04em]">
               {invoice.hotelNameSnapshot || 'ABC HOTEL'}
             </h1>
             <p className="text-xs text-stone-600 max-w-sm mx-auto leading-tight">
@@ -112,14 +112,14 @@ export const PublicInvoicePage: React.FC<{
               </div>
             )}
             <div className="pt-2">
-              <span className="inline-block px-3 py-1 bg-stone-100 text-stone-900 font-bold uppercase tracking-widest text-[10px] rounded-md border border-stone-300">
+              <span className="badge badge-brand !px-3 !py-1 font-bold uppercase tracking-widest !text-[10px]">
                 TAX INVOICE
               </span>
             </div>
           </div>
 
           {/* Invoice Meta Grid */}
-          <div className="grid grid-cols-2 gap-4 my-4 text-xs py-2 border-b border-stone-100">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 my-4 text-xs py-2 border-b border-stone-100">
             <div className="space-y-1">
               <p>
                 <strong className="text-stone-500">Invoice No:</strong>{' '}
@@ -139,7 +139,7 @@ export const PublicInvoicePage: React.FC<{
               </p>
             </div>
 
-            <div className="space-y-1 text-right">
+            <div className="space-y-1 sm:text-right">
               <p>
                 <strong className="text-stone-500">Customer:</strong>{' '}
                 <span className="font-bold text-stone-900">{invoice.customerName}</span>
@@ -150,10 +150,10 @@ export const PublicInvoicePage: React.FC<{
               </p>
               <p>
                 <strong className="text-stone-500">Status:</strong>{' '}
-                <span className={`font-bold px-2 py-0.5 rounded-md text-[10px] border ${
+                <span className={`badge font-bold !text-[10px] ${
                   invoice.paymentStatus === 'PAID'
-                    ? 'bg-emerald-100 text-emerald-900 border-emerald-300'
-                    : 'bg-amber-100 text-amber-900 border-amber-300'
+                    ? 'badge-success'
+                    : 'badge-warning'
                 }`}>
                   {invoice.paymentStatus}
                 </span>
@@ -179,7 +179,7 @@ export const PublicInvoicePage: React.FC<{
                     <td className="py-2.5 pr-2 font-medium text-stone-900">
                       <div>{item.productNameSnapshot}<OrderLineChoices item={item} /></div>
                       {item.specialInstructions && (
-                        <div className="text-[10px] text-stone-400 italic font-normal">
+                        <div className="text-[10px] text-stone-500 italic font-normal">
                           Note: {item.specialInstructions}
                         </div>
                       )}
@@ -219,9 +219,9 @@ export const PublicInvoicePage: React.FC<{
               <span className="font-mono">{formatCurrency(invoice.serviceCharge)}</span>
             </div>
 
-            <div className="flex justify-between items-center text-sm font-bold text-stone-900 pt-2 border-t-2 border-stone-800">
+            <div className="flex justify-between items-center text-sm font-bold text-stone-900 pt-2 border-t-2 border-[var(--brand)]">
               <span>Grand Total:</span>
-              <span className="font-serif text-lg text-amber-900 font-extrabold font-mono">
+              <span className="text-lg text-[var(--brand-text)] font-extrabold font-mono">
                 {formatCurrency(invoice.grandTotal)}
               </span>
             </div>
@@ -229,11 +229,11 @@ export const PublicInvoicePage: React.FC<{
 
           {/* Footer */}
           <div className="text-center mt-6 pt-4 border-t border-stone-200 text-stone-500 space-y-1">
-            <p className="font-serif italic font-bold text-stone-800 text-xs">
+            <p className="font-display italic font-semibold text-stone-800 text-sm">
               {invoice.invoiceFooterSnapshot || 'Thank you for dining at ABC HOTEL.'}
             </p>
             {invoice.termsSnapshot && (
-              <p className="text-[10px] text-stone-400 max-w-md mx-auto leading-tight">
+              <p className="text-[10px] text-stone-500 max-w-md mx-auto leading-tight">
                 {invoice.termsSnapshot}
               </p>
             )}

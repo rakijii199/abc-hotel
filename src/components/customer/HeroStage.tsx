@@ -43,13 +43,13 @@ export const HeroStage: React.FC<{ dishes: MenuItem[] }> = ({ dishes }) => {
     <div className="lux-stage relative w-full max-w-[520px] aspect-[5/6] mx-auto" aria-hidden="true">
       <div ref={innerRef} className="lux-stage-inner absolute inset-0">
         {/* Back plane: double gold frame */}
-        <div className="lux-layer top-[2%] right-[0%] w-[74%] h-[80%] border border-gold/40" style={{ '--z': '-90px' } as React.CSSProperties}>
-          <div className="absolute inset-3 border border-gold/15" />
+        <div className="lux-layer top-[2%] right-[0%] w-[74%] h-[80%] border border-gold/60 bg-[var(--brand-soft)]/40" style={{ '--z': '-90px' } as React.CSSProperties}>
+          <div className="absolute inset-3 border border-gold/30" />
         </div>
 
         {/* Main photograph: dining room */}
         <div
-          className="lux-layer top-[7%] right-[6%] w-[70%] h-[76%] overflow-hidden shadow-[0_50px_80px_-30px_rgba(0,0,0,0.85)]"
+          className="lux-layer top-[7%] right-[6%] w-[70%] h-[76%] overflow-hidden rounded-sm ring-1 ring-white/70 shadow-[0_50px_90px_-35px_rgba(99,72,38,0.5)]"
           style={{ '--z': '0px' } as React.CSSProperties}
         >
           <img
@@ -58,12 +58,12 @@ export const HeroStage: React.FC<{ dishes: MenuItem[] }> = ({ dishes }) => {
             onError={hideOnError}
             className="w-full h-full object-cover scale-105"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-ink/60 via-transparent to-ink/10" />
+          <div className="absolute inset-0 bg-gradient-to-t from-ink/35 via-transparent to-transparent" />
         </div>
 
         {/* Small square: second signature dish */}
         <div
-          className="lux-layer top-[0%] left-[2%] w-[30%] aspect-square overflow-hidden border border-white/10 shadow-[0_30px_50px_-20px_rgba(0,0,0,0.8)] lux-layer-float"
+          className="lux-layer top-[0%] left-[2%] w-[30%] aspect-square overflow-hidden border-4 border-white shadow-[0_30px_50px_-22px_rgba(99,72,38,0.5)] lux-layer-float"
           style={{ '--z': '70px', animationDelay: '-3s' } as React.CSSProperties}
         >
           <img src={sideSrc} alt="" onError={hideOnError} className="w-full h-full object-cover" />
@@ -78,7 +78,7 @@ export const HeroStage: React.FC<{ dishes: MenuItem[] }> = ({ dishes }) => {
             <circle cx="100" cy="100" r="97" fill="none" stroke="currentColor" strokeOpacity="0.55" strokeWidth="0.6" />
             <circle cx="100" cy="100" r="91" fill="none" stroke="currentColor" strokeOpacity="0.35" strokeWidth="0.5" strokeDasharray="1 5" />
           </svg>
-          <div className="absolute inset-0 rounded-full overflow-hidden ring-1 ring-champagne/40 shadow-[0_40px_70px_-20px_rgba(0,0,0,0.9)]">
+          <div className="absolute inset-0 rounded-full overflow-hidden ring-4 ring-white shadow-[0_40px_70px_-24px_rgba(99,72,38,0.55)]">
             <img src={plateSrc} alt="" onError={hideOnError} className="w-full h-full object-cover scale-110" />
             <div className="absolute inset-0 rounded-full bg-[radial-gradient(circle_at_30%_25%,rgba(255,255,255,0.18),transparent_55%)]" />
           </div>
@@ -87,14 +87,14 @@ export const HeroStage: React.FC<{ dishes: MenuItem[] }> = ({ dishes }) => {
         {/* Caption: real menu data only */}
         {primary && (
           <div
-            className="lux-layer bottom-[14%] right-[0%] w-[46%] p-4 bg-ink/70 backdrop-blur-md border border-white/10"
+            className="lux-layer bottom-[14%] right-[0%] w-[46%] p-4 rounded-2xl glass-strong"
             style={{ '--z': '160px' } as React.CSSProperties}
           >
-            <p className="text-[9px] font-bold uppercase tracking-[0.28em] text-gold">From the kitchen</p>
-            <p className="font-display text-xl leading-tight text-ivory mt-1.5 line-clamp-2">{primary.name}</p>
-            <div className="mt-3 pt-3 border-t border-white/10 flex items-center justify-between text-[11px]">
-              <span className="text-ivory/55">{primary.categoryName || 'Signature'}</span>
-              <span className="font-semibold text-champagne tabular-nums">{formatCurrency(primary.price)}</span>
+            <p className="text-[9px] font-bold uppercase tracking-[0.28em] text-amber-700">From the kitchen</p>
+            <p className="font-display text-xl leading-tight text-stone-900 mt-1.5 line-clamp-2">{primary.name}</p>
+            <div className="mt-3 pt-3 border-t border-[var(--border-subtle)] flex items-center justify-between text-[11px]">
+              <span className="text-stone-500">{primary.categoryName || 'Signature'}</span>
+              <span className="font-semibold text-[var(--brand-text)] tabular-nums">{formatCurrency(primary.price)}</span>
             </div>
           </div>
         )}

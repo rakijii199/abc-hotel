@@ -75,9 +75,9 @@ export const OrderStatusTimeline: React.FC<{ status: OrderStatus; orderType?: Or
     <div className="py-2 sm:py-4">
       <div className="relative flex items-center justify-between">
         {/* Horizontal Connecting Progress Line */}
-        <div className="absolute left-4 right-4 top-1/2 -translate-y-1/2 h-1 bg-stone-200 z-0" />
+        <div className="absolute left-4 right-4 top-1/2 -translate-y-1/2 h-1 rounded-full bg-stone-200/80 z-0" />
         <div
-          className="absolute left-4 top-1/2 -translate-y-1/2 h-1 bg-amber-800 transition-all duration-700 z-0"
+          className="absolute left-4 top-1/2 -translate-y-1/2 h-1 rounded-full bg-gradient-to-r from-brand-400 to-[var(--brand)] transition-all duration-700 z-0"
           style={{
             width: `calc(${(Math.max(0, currentIdx) / (steps.length - 1)) * 100}% - 2rem)`
           }}
@@ -91,11 +91,11 @@ export const OrderStatusTimeline: React.FC<{ status: OrderStatus; orderType?: Or
           return (
             <div key={step.key} className="relative z-10 flex flex-col items-center">
               <div
-                className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${
+                className={`w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center transition-all ${
                   isDone
-                    ? 'bg-amber-800 text-white'
+                    ? 'bg-[var(--brand)] text-white shadow-[var(--shadow-xs)]'
                     : isCurrent
-                    ? 'bg-amber-800 text-white ring-4 ring-amber-200'
+                    ? 'bg-[var(--brand)] text-white ring-4 ring-[var(--brand-ring-soft)] shadow-[var(--shadow-raised)] scale-110'
                     : 'bg-white text-stone-400 border-2 border-stone-200'
                 }`}
               >
@@ -103,7 +103,7 @@ export const OrderStatusTimeline: React.FC<{ status: OrderStatus; orderType?: Or
               </div>
               <span
                 className={`text-[10px] mt-1.5 font-bold text-center hidden sm:block ${
-                  isCurrent ? 'text-amber-900 font-bold' : isDone ? 'text-stone-700' : 'text-stone-400'
+                  isCurrent ? 'text-[var(--brand-text)] font-bold' : isDone ? 'text-stone-700' : 'text-stone-500'
                 }`}
               >
                 {step.label}
@@ -115,7 +115,7 @@ export const OrderStatusTimeline: React.FC<{ status: OrderStatus; orderType?: Or
 
       {/* Mobile Current Step Label */}
       <div className="mt-3 text-center sm:hidden">
-        <span className="text-[10px] font-bold text-amber-800 uppercase tracking-wider block">
+        <span className="label-caps !text-[10px] !text-[var(--brand-text)] block">
           Current State
         </span>
         <p className="font-bold text-xs text-stone-900">
@@ -145,17 +145,17 @@ export const OrderCard: React.FC<{
   return (
     <div
       onClick={handleAction}
-      className="bg-white rounded-2xl border border-stone-200/90 shadow-xs hover:shadow-md transition-all p-5 flex flex-col justify-between space-y-4 cursor-pointer group"
+      className="surface lift !rounded-2xl p-5 flex flex-col justify-between space-y-4 cursor-pointer group"
     >
       {/* 1. Header: Order Number + Status Pill */}
       <div>
-        <div className="flex items-center justify-between gap-2 pb-3 border-b border-stone-100">
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-mono font-bold text-amber-900 bg-amber-50 px-2.5 py-1 rounded-lg border border-amber-200/80">
+        <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-stone-100">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-xs font-mono font-bold text-[var(--brand-text)] bg-[var(--brand-soft)] px-2.5 py-1 rounded-lg border border-[var(--brand-border)]">
               #{order.orderNumber}
             </span>
             {/* Dining / Delivery Type Badge */}
-            <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-stone-700 bg-stone-100 px-2.5 py-0.5 rounded-md">
+            <span className="badge">
               {order.orderType === 'Dine-in' ? (
                 <>
                   <Utensils className="w-3 h-3 text-amber-700" />
@@ -186,17 +186,17 @@ export const OrderCard: React.FC<{
         </div>
 
         {/* 2. Order Metadata & Date */}
-        <div className="pt-3 pb-2 flex items-center justify-between text-xs text-stone-500">
+        <div className="pt-3 pb-2 flex flex-wrap items-center justify-between gap-2 text-xs text-stone-600">
           <span className="flex items-center gap-1.5 font-medium">
             <Calendar className="w-3.5 h-3.5 text-amber-700 shrink-0" />
             <span>{formatOrderDateTime(order.createdAt)}</span>
           </span>
 
           <span
-            className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+            className={`badge !text-[10px] font-bold ${
               isPaid
-                ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                : 'bg-amber-50 text-amber-800 border border-amber-200'
+                ? 'badge-success'
+                : 'badge-warning'
             }`}
           >
             {isPaid ? '✓ Paid' : '⏳ Payment Pending'}
@@ -204,8 +204,8 @@ export const OrderCard: React.FC<{
         </div>
 
         {/* 3. Items Ordered List (Clear & Readable) */}
-        <div className="bg-stone-50/70 rounded-xl p-3 border border-stone-200/70 space-y-1.5 mt-1">
-          <span className="text-[11px] font-bold text-stone-700 uppercase tracking-wider block">
+        <div className="bg-[var(--surface-muted)] rounded-xl p-3 border border-[var(--border-subtle)] space-y-1.5 mt-1">
+          <span className="label-caps block">
             Ordered Items ({order.items.reduce((sum, item) => sum + item.quantity, 0)})
           </span>
           <div className="space-y-1 divide-y divide-stone-200/50">
@@ -233,12 +233,12 @@ export const OrderCard: React.FC<{
       </div>
 
       {/* 4. Footer: Total Amount & Action Button */}
-      <div className="border-t border-stone-100 pt-3 flex items-center justify-between">
+      <div className="border-t border-stone-100 pt-3 flex items-center justify-between gap-3">
         <div>
-          <span className="text-[10px] text-stone-400 uppercase font-bold tracking-wider block">
+          <span className="label-caps !text-[10px] block">
             Total Bill
           </span>
-          <span className="font-serif font-bold text-lg text-stone-900">
+          <span className="font-display font-bold text-xl text-[var(--brand-text)]">
             {formatCurrency(order.total)}
           </span>
         </div>
@@ -248,7 +248,7 @@ export const OrderCard: React.FC<{
             e.stopPropagation();
             handleAction();
           }}
-          className="px-4 py-2 bg-amber-800 hover:bg-amber-900 text-white rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-xs group-hover:scale-102"
+          className="btn btn-primary shrink-0"
         >
           <span>Track Order</span>
           <ArrowRight className="w-3.5 h-3.5" />

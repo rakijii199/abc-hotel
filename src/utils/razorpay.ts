@@ -123,7 +123,7 @@ function createTestModePaymentModal(options: RazorpayCheckoutOptions): void {
 
   const overlay = document.createElement('div');
   overlay.id = 'rzp-test-modal-overlay';
-  overlay.className = 'fixed inset-0 z-50 flex items-center justify-center bg-stone-900/80 backdrop-blur-xs p-3 sm:p-4 animate-in fade-in duration-200';
+  overlay.className = 'fixed inset-0 z-50 flex items-center justify-center bg-stone-900/40 backdrop-blur-sm p-3 sm:p-4 animate-in fade-in duration-200';
 
   const mockPaymentId = `pay_test_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`;
   const mockSignature = `sig_test_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`;

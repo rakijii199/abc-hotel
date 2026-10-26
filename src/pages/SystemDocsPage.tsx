@@ -10,15 +10,15 @@ export const SystemDocsPage: React.FC = () => {
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
       {/* Header */}
-      <div className="bg-stone-900 text-white rounded-3xl p-8 shadow-xl flex flex-wrap items-center justify-between gap-4">
+      <div className="surface ambient text-stone-900 rounded-3xl p-8 flex flex-wrap items-center justify-between gap-4">
         <div>
-          <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-amber-400">
+          <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[var(--brand)]">
             <BookOpen className="w-4 h-4" /> System Architecture & Engineering Specifications
           </div>
           <h1 className="font-serif text-3xl font-bold mt-1">
             ABC Hotel Architectural Documentation
           </h1>
-          <p className="text-stone-400 text-xs mt-1">
+          <p className="text-stone-600 text-xs mt-1">
             Official specifications covering High-Level Design (HLD), Low-Level Design (LLD), Database Relational Model, and Security Protocols.
           </p>
         </div>
@@ -62,7 +62,7 @@ export const SystemDocsPage: React.FC = () => {
             </p>
           </div>
 
-          <div className="p-4 bg-stone-900 text-amber-300 font-mono text-xs rounded-2xl overflow-x-auto leading-relaxed border border-stone-800">
+          <div className="p-4 bg-[var(--surface-muted)] text-stone-800 font-mono text-xs rounded-2xl overflow-x-auto leading-relaxed border border-[var(--border-subtle)]">
 {`+-------------------------------------------------------------------------+
 |                         PRESENTATION LAYER                              |
 |   React SPA + TypeScript + Vite + Tailwind CSS + Context Providers      |
@@ -134,7 +134,7 @@ export const SystemDocsPage: React.FC = () => {
             </p>
           </div>
 
-          <div className="p-4 bg-stone-900 text-amber-300 font-mono text-xs rounded-2xl overflow-x-auto leading-relaxed border border-stone-800">
+          <div className="p-4 bg-[var(--surface-muted)] text-stone-800 font-mono text-xs rounded-2xl overflow-x-auto leading-relaxed border border-[var(--border-subtle)]">
 {`SEQUENCE FLOW: TABLE RESERVATION WITH ATOMIC LOCKING
 
 Customer Browser            BookingController          BookingService           BookingRepository       MutexLock
@@ -195,7 +195,7 @@ Customer Browser            BookingController          BookingService           
             </p>
           </div>
 
-          <div className="p-4 bg-stone-900 text-amber-300 font-mono text-xs rounded-2xl overflow-x-auto leading-relaxed border border-stone-800">
+          <div className="p-4 bg-[var(--surface-muted)] text-stone-800 font-mono text-xs rounded-2xl overflow-x-auto leading-relaxed border border-[var(--border-subtle)]">
 {`+------------------------+          +--------------------------+
 |         users          |          |          hotels          |
 +------------------------+          +--------------------------+

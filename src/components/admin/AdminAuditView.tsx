@@ -29,10 +29,10 @@ export const AdminAuditView: React.FC<{ auditLogs: AuditLog[] }> = ({ auditLogs 
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-stone-200 pb-4">
         <div>
-          <span className="text-xs font-bold uppercase tracking-widest text-amber-800">
+          <span className="lux-eyebrow text-amber-800">
             Compliance & Security
           </span>
-          <h2 className="font-serif text-2xl font-bold text-stone-900">
+          <h2 className="page-title">
             System Operations Audit Log ({auditLogs.length})
           </h2>
           <p className="text-xs text-stone-500 mt-0.5">
@@ -42,8 +42,8 @@ export const AdminAuditView: React.FC<{ auditLogs: AuditLog[] }> = ({ auditLogs 
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="flex flex-col sm:flex-row gap-3 bg-white p-3 rounded-2xl border border-stone-200/80 shadow-2xs">
-        <div className="flex-1 flex items-center gap-3 bg-stone-50 px-3.5 py-2 rounded-xl border border-stone-200">
+      <div className="flex flex-col sm:flex-row gap-3 bg-white p-3 rounded-2xl border border-stone-200/80 shadow-[var(--shadow-card)]">
+        <div className="flex-1 flex items-center gap-3 bg-white px-3.5 py-2 rounded-xl border border-stone-200 focus-within:border-amber-700 focus-within:ring-3 focus-within:ring-[var(--brand-ring-soft)] transition-shadow">
           <Search className="w-4 h-4 text-stone-400" />
           <input
             type="text"
@@ -57,7 +57,7 @@ export const AdminAuditView: React.FC<{ auditLogs: AuditLog[] }> = ({ auditLogs 
         <select
           value={entityFilter}
           onChange={(e) => setEntityFilter(e.target.value)}
-          className="px-3 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs font-semibold text-stone-700"
+          className="px-3 py-2 bg-white border border-stone-200 rounded-xl text-xs font-semibold text-stone-700"
         >
           <option value="ALL">All Entities</option>
           <option value="MENU_ITEM">Menu Items</option>
@@ -70,10 +70,10 @@ export const AdminAuditView: React.FC<{ auditLogs: AuditLog[] }> = ({ auditLogs 
       </div>
 
       {/* Audit Table */}
-      <div className="bg-white rounded-2xl border border-stone-200/80 shadow-xs overflow-hidden">
+      <div className="bg-white rounded-2xl border border-stone-200/80 shadow-[var(--shadow-card)] overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-xs text-left">
-            <thead className="bg-stone-50 text-stone-500 uppercase font-semibold border-b border-stone-200">
+            <thead className="bg-[var(--brand-soft)] text-stone-600 uppercase font-semibold tracking-wide border-b border-[var(--brand-border)]">
               <tr>
                 <th className="p-4">Timestamp</th>
                 <th className="p-4">Staff Admin</th>
@@ -85,13 +85,13 @@ export const AdminAuditView: React.FC<{ auditLogs: AuditLog[] }> = ({ auditLogs 
             <tbody className="divide-y divide-stone-100">
               {filtered.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="p-8 text-center text-stone-400">
+                  <td colSpan={5} className="p-8 text-center text-stone-500">
                     No audit records match the selected filter.
                   </td>
                 </tr>
               ) : (
                 filtered.map((log) => (
-                  <tr key={log.id} className="hover:bg-stone-50/70 transition-colors">
+                  <tr key={log.id} className="hover:bg-[var(--brand-soft)]/60 transition-colors">
                     <td className="p-4 font-mono text-stone-600 text-[11px] whitespace-nowrap">
                       {formatDate(log.timestamp)} • {formatTime(log.timestamp)}
                     </td>
@@ -101,13 +101,13 @@ export const AdminAuditView: React.FC<{ auditLogs: AuditLog[] }> = ({ auditLogs 
                     </td>
 
                     <td className="p-4">
-                      <span className="px-2.5 py-0.5 rounded-full bg-stone-100 font-mono font-bold text-[10px] text-stone-800">
+                      <span className="badge font-mono">
                         {log.action}
                       </span>
                     </td>
 
                     <td className="p-4">
-                      <span className="px-2.5 py-0.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200 font-bold text-[10px]">
+                      <span className="badge badge-brand">
                         {log.entity}
                       </span>
                     </td>

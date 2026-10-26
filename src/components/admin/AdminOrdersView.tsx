@@ -624,10 +624,10 @@ export const AdminOrdersView: React.FC<AdminOrdersViewProps> = ({
   return (
     <div className="space-y-4">
       {/* 1. Header & Primary View Toggle */}
-      <div className="bg-white p-4 sm:p-5 rounded-2xl border border-stone-200/80 shadow-2xs space-y-4">
+      <div className="bg-white p-4 sm:p-5 rounded-2xl border border-stone-200/80 shadow-[var(--shadow-card)] space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
-            <h1 className="font-serif text-xl sm:text-2xl font-bold text-stone-900 mt-0.5">
+            <h1 className="page-title mt-0.5">
               Kitchen & Dining Orders Log
             </h1>
           </div>
@@ -652,10 +652,10 @@ export const AdminOrdersView: React.FC<AdminOrdersViewProps> = ({
               <button
                 key={item.id}
                 onClick={() => setStatusFilter(item.id)}
-                className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer whitespace-nowrap shrink-0 flex items-center gap-1.5 ${
+                className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer whitespace-nowrap shrink-0 flex items-center gap-1.5 ${
                   isSelected
-                    ? 'bg-amber-800 text-white font-bold shadow-2xs'
-                    : 'bg-stone-50 hover:bg-stone-100 text-stone-700 border border-stone-200/80'
+                    ? 'bg-amber-800 text-white font-bold shadow-2xs border border-amber-800'
+                    : 'bg-white hover:bg-[var(--brand-soft)] hover:text-[var(--brand-text)] hover:border-[var(--brand-border)] text-stone-700 border border-stone-200'
                 }`}
               >
                 <span>{item.label}</span>
@@ -678,7 +678,7 @@ export const AdminOrdersView: React.FC<AdminOrdersViewProps> = ({
         {/* 3. Secondary Filters: Search, Date Filter, Service Type, Payment & Channel */}
         <div className="grid grid-cols-1 sm:grid-cols-12 gap-2.5 pt-2 border-t border-stone-100">
           {/* Search Box (3 cols) */}
-          <div className="sm:col-span-3 flex items-center gap-2 bg-stone-50 px-3 py-2 rounded-xl border border-stone-200">
+          <div className="sm:col-span-3 flex items-center gap-2 bg-white px-3 py-2 rounded-xl border border-stone-200 focus-within:border-amber-700 focus-within:ring-3 focus-within:ring-[var(--brand-ring-soft)] transition-shadow">
             <Search className="w-3.5 h-3.5 text-stone-400 shrink-0" />
             <input
               type="text"
@@ -690,7 +690,7 @@ export const AdminOrdersView: React.FC<AdminOrdersViewProps> = ({
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery('')}
-                className="text-[10px] text-stone-400 hover:text-stone-600 font-bold cursor-pointer"
+                className="text-[10px] text-stone-500 hover:text-stone-600 font-bold cursor-pointer"
               >
                 ✕
               </button>
@@ -705,7 +705,7 @@ export const AdminOrdersView: React.FC<AdminOrdersViewProps> = ({
               className={`w-full px-3 py-2 rounded-xl border text-xs font-medium flex items-center justify-between transition-all cursor-pointer ${
                 dateFilterOpen || presetSelection !== 'ALL'
                   ? 'bg-amber-50 border-amber-300 text-amber-900 font-semibold shadow-2xs'
-                  : 'bg-stone-50 border-stone-200 text-stone-700 hover:bg-stone-100'
+                  : 'bg-white border-stone-200 text-stone-700 hover:bg-[var(--brand-soft)]'
               }`}
             >
               <div className="flex items-center gap-1.5 min-w-0">
@@ -724,7 +724,7 @@ export const AdminOrdersView: React.FC<AdminOrdersViewProps> = ({
 
             {/* Date Filters Popover Dropdown (similar to Dashboard) */}
             {dateFilterOpen && (
-              <div className="absolute left-0 sm:left-auto sm:right-0 top-full mt-2 w-72 sm:w-80 bg-white rounded-2xl shadow-xl border border-stone-200 z-50 p-3 space-y-2.5 animate-in fade-in zoom-in-95 duration-150">
+              <div className="absolute left-0 sm:left-auto sm:right-0 top-full mt-2 w-72 sm:w-80 bg-white rounded-2xl shadow-[var(--shadow-float)] border border-stone-200 z-50 p-3 space-y-2.5 animate-in fade-in zoom-in-95 duration-150">
                 {/* Header */}
                 <div className="flex items-center justify-between pb-2 border-b border-stone-100">
                   <span className="font-semibold text-xs text-stone-900 flex items-center gap-1.5">
@@ -928,12 +928,12 @@ export const AdminOrdersView: React.FC<AdminOrdersViewProps> = ({
 
       {/* 4. ORDERS DISPLAY: CARDS VIEW OR TABLE VIEW */}
       {filteredOrders.length === 0 ? (
-        <div className="bg-white rounded-2xl border border-stone-200/80 p-12 text-center space-y-3 shadow-2xs">
+        <div className="bg-white rounded-2xl border border-stone-200/80 p-12 text-center space-y-3 shadow-[var(--shadow-card)]">
           <div className="w-12 h-12 rounded-2xl bg-amber-50 text-amber-800 flex items-center justify-center mx-auto">
             <ShoppingBag className="w-6 h-6" />
           </div>
           <div>
-            <h3 className="font-serif font-bold text-base text-stone-900">
+            <h3 className="section-title text-base">
               No Orders Found
             </h3>
             <p className="text-xs text-stone-500 max-w-sm mx-auto mt-0.5">
@@ -962,33 +962,33 @@ export const AdminOrdersView: React.FC<AdminOrdersViewProps> = ({
             return (
               <div
                 key={order.id}
-                className="bg-white rounded-2xl border border-stone-200/80 shadow-2xs hover:shadow-md transition-all flex flex-col justify-between overflow-hidden group"
+                className="bg-white rounded-2xl border border-stone-200/80 shadow-[var(--shadow-card)] lift flex flex-col justify-between overflow-hidden group"
               >
                 {/* Card Top: Order Number, Channel & Status */}
-                <div className="p-4 border-b border-stone-100 bg-[#fdfcfb]">
+                <div className="p-4 border-b border-stone-100 bg-stone-50">
                   <div className="flex items-center justify-between gap-2">
                     <div className="flex items-center gap-2">
                       <div>
                         <span className="font-mono font-bold text-sm text-stone-900 block">
                           #{order.orderNumber}
                         </span>
-                        <span className="text-[10px] text-stone-400 font-mono block">
+                        <span className="text-[10px] text-stone-500 font-mono block">
                           {formatOrderDateTime(order.createdAt)}
                         </span>
                       </div>
                       {isOnline ? (
-                        <span className="inline-flex items-center gap-1 px-2 py-0.2 rounded-full bg-blue-50 text-blue-800 text-[10px] font-bold border border-blue-200">
-                          <Globe className="w-2.5 h-2.5 text-blue-600" /> Online
+                        <span className="badge badge-info">
+                          <Globe className="w-2.5 h-2.5" /> Online
                         </span>
                       ) : (
-                        <span className="inline-flex items-center gap-1 px-2 py-0.2 rounded-full bg-amber-50 text-amber-900 text-[10px] font-bold border border-amber-200">
-                          <Store className="w-2.5 h-2.5 text-amber-700" /> POS
+                        <span className="badge badge-brand">
+                          <Store className="w-2.5 h-2.5" /> POS
                         </span>
                       )}
                     </div>
 
                     <span
-                      className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border ${badge.color}`}
+                      className={`badge uppercase tracking-wider ${badge.color}`}
                     >
                       {badge.label}
                     </span>
@@ -1000,7 +1000,7 @@ export const AdminOrdersView: React.FC<AdminOrdersViewProps> = ({
                       <p className="font-bold text-xs text-stone-900 leading-tight">
                         {order.customerName}
                       </p>
-                      <p className="text-[10px] text-stone-400 font-mono mt-0.5 flex items-center gap-1">
+                      <p className="text-[10px] text-stone-500 font-mono mt-0.5 flex items-center gap-1">
                         <Phone className="w-2.5 h-2.5 text-stone-400" />
                         {order.customerPhone}
                       </p>
@@ -1088,7 +1088,7 @@ export const AdminOrdersView: React.FC<AdminOrdersViewProps> = ({
                 {/* Card Pricing & Payment Ribbon */}
                 <div className="px-4 py-2.5 bg-stone-50/70 border-t border-stone-100 flex items-center justify-between">
                   <div>
-                    <span className="text-[10px] uppercase font-bold text-stone-400 block leading-tight">
+                    <span className="text-[10px] uppercase font-bold text-stone-500 block leading-tight">
                       Order Total
                     </span>
                     <span className="font-serif font-bold text-base text-stone-900">
@@ -1101,10 +1101,10 @@ export const AdminOrdersView: React.FC<AdminOrdersViewProps> = ({
                       {order.paymentMethod}
                     </span>
                     <span
-                      className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border ${
+                      className={`badge uppercase tracking-wider ${
                         isPaid
-                          ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
-                          : 'bg-rose-50 text-rose-800 border-rose-200 animate-pulse'
+                          ? 'badge-success'
+                          : 'badge-danger animate-pulse'
                       }`}
                     >
                       {isPaid ? 'PAID' : 'DUE'}
@@ -1144,7 +1144,7 @@ export const AdminOrdersView: React.FC<AdminOrdersViewProps> = ({
                       className={`px-2.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 border shadow-2xs ${
                         order.status === 'BILLING_PENDING' || order.customerStatus === 'DONE'
                           ? 'bg-amber-500 text-amber-950 border-amber-600 animate-pulse font-extrabold'
-                          : 'bg-stone-900 hover:bg-black text-amber-300 border-stone-800'
+                          : 'bg-amber-800 hover:bg-amber-900 text-white border-amber-900'
                       }`}
                       title="Generate, Print, or View Tax Invoice"
                     >
@@ -1305,9 +1305,9 @@ export const AdminOrdersView: React.FC<AdminOrdersViewProps> = ({
                           <button
                             type="button"
                             onClick={() => onUpdateStatus(order.id, 'DELIVERED').then(() => onRefresh())}
-                            className="w-full py-2 px-3 bg-teal-700 hover:bg-teal-800 text-white rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-2xs"
+                            className="w-full py-2 px-3 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-2xs"
                           >
-                            <CheckCircle2 className="w-4 h-4 text-teal-200" />
+                            <CheckCircle2 className="w-4 h-4 text-emerald-100" />
                             <span>6. Rider Confirms Delivery</span>
                           </button>
                         )}
@@ -1315,14 +1315,14 @@ export const AdminOrdersView: React.FC<AdminOrdersViewProps> = ({
                           <button
                             type="button"
                             onClick={() => onUpdateStatus(order.id, 'COMPLETED').then(() => onRefresh())}
-                            className="w-full py-2 px-3 bg-teal-800 hover:bg-teal-900 text-white rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-2xs"
+                            className="w-full py-2 px-3 bg-emerald-800 hover:bg-emerald-900 text-white rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-2xs"
                           >
-                            <PackageCheck className="w-4 h-4 text-teal-200" />
+                            <PackageCheck className="w-4 h-4 text-emerald-100" />
                             <span>7. Complete & Close Order</span>
                           </button>
                         )}
                         {order.status === 'COMPLETED' && (
-                          <span className="w-full py-2 px-3 bg-teal-50 text-teal-900 border border-teal-200 rounded-xl text-xs font-bold block text-center">
+                          <span className="w-full py-2 px-3 bg-[var(--success-soft)] text-[var(--success)] border border-[var(--success-border)] rounded-xl text-xs font-bold block text-center">
                             Delivered & Completed ✅
                           </span>
                         )}
@@ -1385,14 +1385,14 @@ export const AdminOrdersView: React.FC<AdminOrdersViewProps> = ({
                           <button
                             type="button"
                             onClick={() => handleExecuteStatus(order.id, 'COMPLETED')}
-                            className="w-full py-2 px-3 bg-teal-800 hover:bg-teal-900 text-white rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-2xs"
+                            className="w-full py-2 px-3 bg-emerald-800 hover:bg-emerald-900 text-white rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-2xs"
                           >
-                            <PackageCheck className="w-4 h-4 text-teal-200" />
+                            <PackageCheck className="w-4 h-4 text-emerald-100" />
                             <span>Complete Payment</span>
                           </button>
                         )}
                         {order.status === 'COMPLETED' && (
-                          <span className="w-full py-2 px-3 bg-teal-50 text-teal-900 border border-teal-200 rounded-xl text-xs font-bold block text-center">
+                          <span className="w-full py-2 px-3 bg-[var(--success-soft)] text-[var(--success)] border border-[var(--success-border)] rounded-xl text-xs font-bold block text-center">
                             Payment Completed ✅
                           </span>
                         )}
@@ -1413,7 +1413,7 @@ export const AdminOrdersView: React.FC<AdminOrdersViewProps> = ({
 
       {/* Pagination Controls */}
       {filteredOrders.length > 0 && (
-        <div className="bg-white p-3.5 rounded-2xl border border-stone-200/80 shadow-2xs flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-stone-600">
+        <div className="bg-white p-3.5 rounded-2xl border border-stone-200/80 shadow-[var(--shadow-card)] flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-stone-600">
           <div className="flex items-center gap-2">
             <span>
               Showing <strong>{Math.min((currentPage - 1) * pageSize + 1, filteredOrders.length)}</strong> to{' '}
@@ -1430,7 +1430,7 @@ export const AdminOrdersView: React.FC<AdminOrdersViewProps> = ({
                   setPageSize(Number(e.target.value));
                   setCurrentPage(1);
                 }}
-                className="px-2 py-1 bg-stone-50 border border-stone-200 rounded-lg text-xs font-semibold focus:outline-hidden cursor-pointer"
+                className="px-2 py-1 bg-white border border-stone-200 rounded-lg text-xs font-semibold focus:outline-hidden cursor-pointer"
               >
                 <option value="20">20</option>
                 <option value="50">50</option>
@@ -1475,7 +1475,7 @@ export const AdminOrdersView: React.FC<AdminOrdersViewProps> = ({
           <div className="space-y-4 text-xs">
             {/* Status Timeline */}
             <div className="bg-stone-50 p-3 rounded-2xl border border-stone-200/80">
-              <span className="text-[10px] uppercase font-bold text-stone-400 block mb-2">
+              <span className="text-[10px] uppercase font-bold text-stone-500 block mb-2">
                 Order Fulfillment Progress
               </span>
               <OrderStatusTimeline status={selectedOrder.status} orderType={selectedOrder.orderType} />
@@ -1484,14 +1484,14 @@ export const AdminOrdersView: React.FC<AdminOrdersViewProps> = ({
             {/* Customer & Service Info */}
             <div className="grid grid-cols-2 gap-3 bg-stone-50 p-3 rounded-2xl border border-stone-200/80">
               <div>
-                <span className="text-[10px] uppercase font-bold text-stone-400 block">Customer</span>
+                <span className="text-[10px] uppercase font-bold text-stone-500 block">Customer</span>
                 <p className="font-bold text-stone-900">{selectedOrder.customerName}</p>
                 <p className="text-[10px] text-stone-500 font-mono">{selectedOrder.customerPhone}</p>
-                <p className="text-[10px] text-stone-400">{selectedOrder.customerEmail}</p>
+                <p className="text-[10px] text-stone-500">{selectedOrder.customerEmail}</p>
               </div>
 
               <div>
-                <span className="text-[10px] uppercase font-bold text-stone-400 block">Service Mode</span>
+                <span className="text-[10px] uppercase font-bold text-stone-500 block">Service Mode</span>
                 <p className="font-bold text-stone-900">{selectedOrder.orderType}</p>
                 {selectedOrder.tableNumber && (
                   <p className="text-[11px] text-amber-800 font-semibold">{selectedOrder.tableNumber}</p>
@@ -1510,7 +1510,7 @@ export const AdminOrdersView: React.FC<AdminOrdersViewProps> = ({
 
             {/* Dishes Breakdown */}
             <div className="space-y-2 border border-stone-200 rounded-2xl p-3 bg-white">
-              <span className="text-[10px] uppercase font-bold text-stone-400 block">
+              <span className="text-[10px] uppercase font-bold text-stone-500 block">
                 Dishes ({selectedOrder.items.length})
               </span>
               <div className="divide-y divide-stone-100 max-h-48 overflow-y-auto">
@@ -1808,22 +1808,22 @@ export const AdminOrdersView: React.FC<AdminOrdersViewProps> = ({
       {/* 9. MODAL: Assign Delivery Rider Popup */}
       {assigningRiderOrder && (
         <div className="fixed inset-0 z-50 bg-stone-900/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-150">
-          <div className="bg-white rounded-3xl border border-stone-200 shadow-2xl max-w-lg w-full overflow-hidden animate-in zoom-in-95 duration-150">
+          <div className="bg-white rounded-3xl border border-stone-200 shadow-[var(--shadow-float)] max-w-lg w-full overflow-hidden animate-in zoom-in-95 duration-150">
             {/* Modal Header */}
-            <div className="p-5 bg-gradient-to-r from-amber-900 to-amber-950 text-white flex items-center justify-between">
+            <div className="p-5 bg-[var(--brand-soft)] border-b border-[var(--brand-border)] text-stone-900 flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-2xl bg-white/10 flex items-center justify-center border border-white/20 shrink-0">
-                  <Truck className="w-5 h-5 text-amber-300" />
+                <div className="w-10 h-10 rounded-2xl bg-white flex items-center justify-center border border-[var(--brand-border)] shrink-0">
+                  <Truck className="w-5 h-5 text-amber-800" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-base">Assign Delivery Rider</h3>
-                  <p className="text-xs text-amber-200 font-mono">Order #{assigningRiderOrder.orderNumber}</p>
+                  <h3 className="section-title text-base">Assign Delivery Rider</h3>
+                  <p className="text-xs text-amber-800 font-mono">Order #{assigningRiderOrder.orderNumber}</p>
                 </div>
               </div>
               <button
                 type="button"
                 onClick={() => setAssigningRiderOrder(null)}
-                className="text-white/70 hover:text-white p-1.5 rounded-full hover:bg-white/10 cursor-pointer transition-colors"
+                className="text-stone-500 hover:text-stone-900 p-1.5 rounded-full hover:bg-white cursor-pointer transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -1872,7 +1872,7 @@ export const AdminOrdersView: React.FC<AdminOrdersViewProps> = ({
                       </div>
                     </div>
                     <div className="text-right shrink-0">
-                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                      <span className="badge badge-success">
                         {rider.status}
                       </span>
                     </div>
@@ -1943,7 +1943,7 @@ export const AdminOrdersView: React.FC<AdminOrdersViewProps> = ({
           <div className="max-h-72 overflow-y-auto border border-stone-200 rounded-xl">
             <table className="w-full text-left border-collapse text-[11px]">
               <thead>
-                <tr className="bg-stone-50 text-stone-500 font-bold border-b border-stone-200">
+                <tr className="bg-[var(--brand-soft)] text-stone-600 font-semibold border-b border-[var(--brand-border)]">
                   <th className="py-2 px-3">Order #</th>
                   <th className="py-2 px-3">Date</th>
                   <th className="py-2 px-3">Customer</th>
@@ -1961,20 +1961,20 @@ export const AdminOrdersView: React.FC<AdminOrdersViewProps> = ({
                   </tr>
                 ) : (
                   archiveOrdersList.map((ao) => (
-                    <tr key={ao.id} className="hover:bg-stone-50">
+                    <tr key={ao.id} className="hover:bg-[var(--brand-soft)]/60 transition-colors">
                       <td className="py-2 px-3 font-mono font-bold text-stone-900">#{ao.orderNumber}</td>
                       <td className="py-2 px-3 text-stone-500 font-mono">{formatDate(ao.createdAt)}</td>
                       <td className="py-2 px-3 font-semibold text-stone-800">{ao.customerName}</td>
                       <td className="py-2 px-3 font-serif font-bold text-stone-900">{formatCurrency(ao.total)}</td>
                       <td className="py-2 px-3">
-                        <span className="px-2 py-0.5 rounded-full font-bold text-[10px] bg-stone-100 text-stone-700 border border-stone-200">
+                        <span className="badge">
                           {ao.status}
                         </span>
                       </td>
                       <td className="py-2 px-3 text-right">
                         <button
                           onClick={() => setSelectedOrder(ao)}
-                          className="px-2 py-1 bg-stone-100 hover:bg-stone-200 rounded text-[10px] font-bold cursor-pointer"
+                          className="px-2 py-1 bg-white border border-stone-200 hover:bg-[var(--brand-soft)] hover:border-[var(--brand-border)] hover:text-[var(--brand-text)] rounded-md text-[10px] font-bold cursor-pointer transition-colors"
                         >
                           View
                         </button>

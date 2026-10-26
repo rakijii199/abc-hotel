@@ -70,23 +70,23 @@ export const ApiDocsPage: React.FC = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
       {/* Header */}
-      <div className="bg-stone-900 text-white rounded-3xl p-8 shadow-xl flex flex-wrap items-center justify-between gap-4">
+      <div className="surface ambient text-stone-900 rounded-3xl p-8 flex flex-wrap items-center justify-between gap-4">
         <div>
-          <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-amber-400">
+          <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[var(--brand)]">
             <FileCode className="w-4 h-4" /> OpenAPI 3.0 Standard
           </div>
           <h1 className="font-serif text-3xl font-bold mt-1">
             ABC Hotel REST API Documentation
           </h1>
-          <p className="text-stone-400 text-xs mt-1">
+          <p className="text-stone-600 text-xs mt-1">
             Explore and execute live REST endpoints for table booking, orders, menu querying, and administration.
           </p>
         </div>
 
-        <div className="flex items-center gap-2 bg-stone-800 p-2.5 rounded-xl border border-stone-700 text-xs">
-          <Shield className="w-4 h-4 text-emerald-400" />
+        <div className="flex items-center gap-2 bg-white p-2.5 rounded-xl border border-[var(--border-subtle)] text-xs">
+          <Shield className="w-4 h-4 text-emerald-600" />
           <span>Auth Status: </span>
-          <strong className={token ? 'text-emerald-400' : 'text-amber-400'}>
+          <strong className={token ? 'text-emerald-700' : 'text-amber-700'}>
             {token ? 'Authenticated (Bearer Token Active)' : 'Public Guest (No Token)'}
           </strong>
         </div>
@@ -191,7 +191,7 @@ export const ApiDocsPage: React.FC = () => {
                 </div>
               </div>
 
-              <pre className="p-4 bg-stone-900 text-amber-200 rounded-xl font-mono text-xs overflow-x-auto max-h-[420px] leading-relaxed border border-stone-800">
+              <pre className="p-4 bg-[var(--surface-muted)] text-stone-800 rounded-xl font-mono text-xs overflow-x-auto max-h-[420px] leading-relaxed border border-[var(--border-subtle)]">
                 {responseOutput}
               </pre>
             </div>

@@ -110,8 +110,8 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({
   };
 
   return (
-    <header className="bg-[var(--surface)]/90 backdrop-blur-xl border-b border-[var(--border-subtle)] sticky top-0 z-30 shadow-[0_10px_30px_-26px_rgba(26,23,21,0.55)]">
-      <div className="mx-auto max-w-[1440px] h-16 px-3 sm:px-6 flex items-center gap-3 lg:gap-6">
+    <header className="sticky top-0 z-30 px-3 sm:px-6 pt-3">
+      <div className="topbar-float mx-auto max-w-[1440px] h-16 px-3 sm:px-4 flex items-center gap-3 lg:gap-5">
         {/* Mobile / tablet: navigation lives in the drawer */}
         <button
           onClick={onToggleMobileSidebar}
@@ -123,13 +123,13 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({
 
         {/* Brand */}
         <div className="flex items-center gap-2.5 shrink-0">
-          <span className="relative w-9 h-9 flex items-center justify-center border border-amber-600/50 text-amber-800 bg-white">
-            <span className="absolute inset-[3px] border border-amber-600/20" />
+          <span className="relative w-9 h-9 flex items-center justify-center border border-[var(--brand)] text-[var(--brand-text)] bg-white">
+            <span className="absolute inset-[3px] border border-[var(--brand-border)]" />
             <span className="font-display text-[12px] font-semibold tracking-[0.06em]">ABC</span>
           </span>
           <div className="leading-none hidden sm:block">
             <span className="font-display font-semibold text-stone-900 text-base tracking-[0.16em] block">ABC HOTEL</span>
-            <span className="text-[9px] uppercase tracking-[0.28em] text-amber-700 font-semibold block mt-1">Staff Portal</span>
+            <span className="text-[9px] uppercase tracking-[0.28em] text-[var(--brand)] font-semibold block mt-1">Staff Portal</span>
           </div>
         </div>
 
@@ -157,7 +157,7 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({
                       <ChevronDown className={`w-3.5 h-3.5 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
                     </button>
                     {isOpen && (
-                      <div role="menu" aria-label={section.title} className="absolute left-0 top-full mt-2 min-w-[220px] bg-white rounded-xl border border-[var(--border-subtle)] shadow-[0_24px_48px_-24px_rgba(26,23,21,0.45)] p-1.5 z-50 animate-in fade-in zoom-in-95">
+                      <div role="menu" aria-label={section.title} className="glass-strong absolute left-0 top-full mt-2 min-w-[220px] rounded-xl p-1.5 z-50 animate-in fade-in zoom-in-95 origin-top-left">
                         {section.items.map((item) => {
                           const Icon = item.icon;
                           const isActive = activeTab === item.id;
@@ -193,9 +193,6 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({
 
         {/* Right: role, refresh, notifications, account */}
         <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-          <span className="hidden xl:inline-flex px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-[0.16em] bg-[var(--brand-soft)] text-[var(--brand-text)] border border-[var(--brand-border)]">
-            {roleDisplayName(user?.role)}
-          </span>
           <button
             onClick={onRefresh}
             disabled={refreshing}
@@ -225,7 +222,7 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({
           </button>
 
           {notifDropdownOpen && (
-            <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-white rounded-2xl shadow-2xl border border-stone-200 py-3 z-50 animate-in fade-in zoom-in-95">
+            <div className="absolute right-0 mt-2 w-80 sm:w-96 glass-strong rounded-2xl py-3 z-50 animate-in fade-in zoom-in-95 origin-top-right">
               <div className="px-4 pb-2 border-b border-stone-100 flex items-center justify-between">
                 <div>
                   <span className="font-serif font-bold text-sm text-stone-900">Notifications</span>
@@ -323,7 +320,7 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({
           </button>
 
           {staffDropdownOpen && (
-            <div className="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-2xl border border-stone-200 py-2 z-50 animate-in fade-in zoom-in-95">
+            <div className="absolute right-0 mt-2 w-56 glass-strong rounded-2xl py-2 z-50 animate-in fade-in zoom-in-95 origin-top-right">
               <div className="px-4 py-2.5 border-b border-stone-100">
                 <p className="text-[10px] uppercase font-bold text-amber-700 tracking-[0.16em]">
                   Hotel Staff Account

@@ -111,18 +111,18 @@ export const InvoiceViewModal: React.FC<InvoiceViewModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/75 backdrop-blur-xs animate-in fade-in duration-200">
-      <div className="bg-white rounded-3xl max-w-2xl w-full max-h-[94vh] flex flex-col shadow-2xl border border-stone-200 overflow-hidden print:max-w-none print:max-h-none print:border-0 print:shadow-none print:rounded-none">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-stone-900/40 backdrop-blur-sm animate-in fade-in duration-200">
+      <div className="bg-white rounded-3xl max-w-2xl w-full max-h-[94vh] flex flex-col shadow-[var(--shadow-float)] border border-stone-200 overflow-hidden print:max-w-none print:max-h-none print:border-0 print:shadow-none print:rounded-none">
         
         {/* Top Control Header (Hidden in Print) */}
-        <div className="p-4 bg-stone-900 text-white flex items-center justify-between shrink-0 print:hidden">
+        <div className="p-4 bg-[var(--brand-soft)] text-stone-900 border-b border-[var(--brand-border)] flex items-center justify-between shrink-0 print:hidden">
           <div className="flex items-center gap-2">
-            <Building2 className="w-5 h-5 text-amber-400" />
+            <Building2 className="w-5 h-5 text-amber-700" />
             <div>
-              <h3 className="font-serif font-bold text-sm leading-none">
+              <h3 className="section-title text-base leading-none">
                 Invoice {invoice.invoiceNumber}
               </h3>
-              <p className="text-[10px] text-stone-400 mt-0.5">
+              <p className="text-[10px] text-stone-500 mt-0.5">
                 Order #{invoice.orderNumber} • {invoice.tableNumber || 'Dine-in'}
               </p>
             </div>
@@ -130,13 +130,13 @@ export const InvoiceViewModal: React.FC<InvoiceViewModalProps> = ({
 
           {/* Format Toggle Buttons */}
           <div className="flex items-center gap-2">
-            <div className="bg-stone-800 p-1 rounded-xl flex items-center gap-1 text-[11px] font-semibold border border-stone-700">
+            <div className="bg-white/80 p-1 rounded-xl flex items-center gap-1 text-[11px] font-semibold border border-[var(--brand-border)]">
               {(['A4', '80mm', '58mm'] as InvoicePrintFormat[]).map((fmt) => (
                 <button
                   key={fmt}
                   onClick={() => setPrintFormat(fmt)}
                   className={`px-2.5 py-1 rounded-lg transition-colors cursor-pointer ${
-                    printFormat === fmt ? 'bg-amber-600 text-white font-bold' : 'text-stone-300 hover:text-white'
+                    printFormat === fmt ? 'bg-amber-800 text-white font-bold shadow-2xs' : 'text-stone-600 hover:text-[var(--brand-text)] hover:bg-[var(--brand-soft)]'
                   }`}
                 >
                   {fmt}
@@ -146,7 +146,7 @@ export const InvoiceViewModal: React.FC<InvoiceViewModalProps> = ({
 
             <button
               onClick={onClose}
-              className="p-1.5 rounded-full hover:bg-stone-800 text-stone-300 hover:text-white transition-colors cursor-pointer"
+              className="p-1.5 rounded-full hover:bg-white text-stone-500 hover:text-stone-900 transition-colors cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
@@ -154,11 +154,11 @@ export const InvoiceViewModal: React.FC<InvoiceViewModalProps> = ({
         </div>
 
         {/* Action Toolbar (Hidden in Print) */}
-        <div className="p-3 bg-stone-100 border-b border-stone-200 flex flex-wrap items-center justify-between gap-2 shrink-0 print:hidden text-xs">
+        <div className="p-3 bg-[var(--surface-muted)] border-b border-stone-200 flex flex-wrap items-center justify-between gap-2 shrink-0 print:hidden text-xs">
           <div className="flex items-center gap-2 flex-wrap">
             <button
               onClick={handlePrint}
-              className="px-3.5 py-2 bg-stone-900 hover:bg-stone-800 text-white font-bold rounded-xl flex items-center gap-1.5 shadow-2xs transition-all cursor-pointer"
+              className="px-3.5 py-2 bg-amber-800 hover:bg-amber-900 text-white font-bold rounded-xl flex items-center gap-1.5 shadow-2xs transition-all cursor-pointer"
             >
               <Printer className="w-3.5 h-3.5" />
               <span>Print Bill</span>
@@ -166,7 +166,7 @@ export const InvoiceViewModal: React.FC<InvoiceViewModalProps> = ({
 
             <button
               onClick={handleDownloadPdf}
-              className="px-3.5 py-2 bg-white hover:bg-stone-50 border border-stone-300 text-stone-800 font-bold rounded-xl flex items-center gap-1.5 shadow-2xs transition-all cursor-pointer"
+              className="px-3.5 py-2 bg-white hover:bg-[var(--brand-soft)] hover:border-[var(--brand-border)] border border-stone-300 text-stone-800 font-bold rounded-xl flex items-center gap-1.5 shadow-2xs transition-all cursor-pointer"
             >
               <Download className="w-3.5 h-3.5 text-amber-700" />
               <span>Download PDF</span>
@@ -184,9 +184,9 @@ export const InvoiceViewModal: React.FC<InvoiceViewModalProps> = ({
           {isStaffOrAdmin && invoice.paymentStatus !== 'PAID' && (
             <button
               onClick={() => setShowPayModal(true)}
-              className="px-4 py-2 bg-amber-800 hover:bg-amber-900 text-white font-bold rounded-xl flex items-center gap-1.5 shadow-sm transition-all cursor-pointer"
+              className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded-xl flex items-center gap-1.5 shadow-sm transition-all cursor-pointer"
             >
-              <DollarSign className="w-4 h-4 text-amber-300" />
+              <DollarSign className="w-4 h-4 text-emerald-100" />
               <span>Collect Payment</span>
             </button>
           )}
@@ -267,10 +267,10 @@ export const InvoiceViewModal: React.FC<InvoiceViewModalProps> = ({
               )}
               <p>
                 <strong className="text-stone-500">Status:</strong>{' '}
-                <span className={`font-bold px-2 py-0.5 rounded-md text-[10px] border ${
+                <span className={`badge ${
                   invoice.paymentStatus === 'PAID'
-                    ? 'bg-emerald-100 text-emerald-900 border-emerald-300'
-                    : 'bg-amber-100 text-amber-900 border-amber-300'
+                    ? 'badge-success'
+                    : 'badge-warning'
                 }`}>
                   {invoice.paymentStatus}
                 </span>
@@ -283,7 +283,7 @@ export const InvoiceViewModal: React.FC<InvoiceViewModalProps> = ({
           <div className="my-4 overflow-x-auto">
             <table className="w-full min-w-[420px] border-collapse text-xs">
               <thead>
-                <tr className="border-b-2 border-stone-200 text-stone-500 uppercase text-[10px]">
+                <tr className="border-b-2 border-stone-300 text-stone-600 uppercase text-[10px] tracking-wider font-semibold">
                   <th className="py-2 text-left">Item Description</th>
                   <th className="py-2 text-center">Qty</th>
                   <th className="py-2 text-right">Unit Price</th>
@@ -296,7 +296,7 @@ export const InvoiceViewModal: React.FC<InvoiceViewModalProps> = ({
                     <td className="py-2.5 pr-2 font-medium text-stone-900">
                       <div>{item.productNameSnapshot}<OrderLineChoices item={item} /></div>
                       {item.specialInstructions && (
-                        <div className="text-[10px] text-stone-400 italic font-normal">
+                        <div className="text-[10px] text-stone-500 italic font-normal">
                           Note: {item.specialInstructions}
                         </div>
                       )}
@@ -343,7 +343,7 @@ export const InvoiceViewModal: React.FC<InvoiceViewModalProps> = ({
 
             <div className="flex justify-between items-center text-sm font-bold text-stone-900 pt-2 border-t-2 border-stone-800">
               <span>Grand Total:</span>
-              <span className="font-serif text-lg text-amber-900 font-extrabold font-mono">
+              <span className="text-lg text-amber-900 font-extrabold font-mono">
                 {formatCurrency(invoice.grandTotal)}
               </span>
             </div>
@@ -375,7 +375,7 @@ export const InvoiceViewModal: React.FC<InvoiceViewModalProps> = ({
               {invoice.invoiceFooterSnapshot || 'Thank you for dining at ABC HOTEL.'}
             </p>
             {invoice.termsSnapshot && (
-              <p className="text-[10px] text-stone-400 max-w-md mx-auto leading-tight">
+              <p className="text-[10px] text-stone-500 max-w-md mx-auto leading-tight">
                 {invoice.termsSnapshot}
               </p>
             )}
@@ -384,12 +384,12 @@ export const InvoiceViewModal: React.FC<InvoiceViewModalProps> = ({
 
         {/* Share Options Popup Modal */}
         {showShareOptions && (
-          <div className="p-4 bg-stone-900 text-white border-t border-stone-800 space-y-3 print:hidden">
+          <div className="p-4 bg-[var(--surface-muted)] text-stone-900 border-t border-stone-200 space-y-3 print:hidden">
             <div className="flex items-center justify-between">
-              <h4 className="text-xs font-bold uppercase tracking-wider text-amber-400">
+              <h4 className="label-caps !text-amber-800">
                 Share Invoice Options
               </h4>
-              <button onClick={() => setShowShareOptions(false)} className="text-stone-400 hover:text-white">
+              <button onClick={() => setShowShareOptions(false)} className="text-stone-500 hover:text-stone-900">
                 <X className="w-4 h-4" />
               </button>
             </div>
@@ -397,7 +397,7 @@ export const InvoiceViewModal: React.FC<InvoiceViewModalProps> = ({
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
               <button
                 onClick={handleWhatsAppShare}
-                className="p-2.5 bg-emerald-800 hover:bg-emerald-700 text-white rounded-xl font-bold flex items-center justify-center gap-2 cursor-pointer"
+                className="p-2.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl font-bold flex items-center justify-center gap-2 cursor-pointer"
               >
                 <MessageSquare className="w-4 h-4" />
                 <span>WhatsApp</span>
@@ -405,15 +405,15 @@ export const InvoiceViewModal: React.FC<InvoiceViewModalProps> = ({
 
               <button
                 onClick={handleCopyLink}
-                className="p-2.5 bg-stone-800 hover:bg-stone-700 text-white rounded-xl font-bold flex items-center justify-center gap-2 cursor-pointer"
+                className="p-2.5 bg-white hover:bg-[var(--brand-soft)] border border-stone-300 hover:border-[var(--brand-border)] text-stone-800 rounded-xl font-bold flex items-center justify-center gap-2 cursor-pointer"
               >
-                {copiedLink ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
+                {copiedLink ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4" />}
                 <span>{copiedLink ? 'Link Copied' : 'Copy Link'}</span>
               </button>
 
               <button
                 onClick={handleDownloadPdf}
-                className="p-2.5 bg-amber-700 hover:bg-amber-600 text-white rounded-xl font-bold flex items-center justify-center gap-2 cursor-pointer col-span-2 sm:col-span-1"
+                className="p-2.5 bg-amber-800 hover:bg-amber-900 text-white rounded-xl font-bold flex items-center justify-center gap-2 cursor-pointer col-span-2 sm:col-span-1"
               >
                 <Download className="w-4 h-4" />
                 <span>PDF Document</span>
@@ -424,10 +424,10 @@ export const InvoiceViewModal: React.FC<InvoiceViewModalProps> = ({
 
         {/* Staff Collect Payment Sub-Modal */}
         {showPayModal && (
-          <div className="fixed inset-0 z-60 bg-black/70 flex items-center justify-center p-4">
-            <div className="bg-white rounded-3xl p-6 max-w-sm w-full space-y-4 text-stone-800 shadow-2xl">
-              <div className="flex justify-between items-center border-b pb-3">
-                <h3 className="font-serif font-bold text-lg text-stone-900">
+          <div className="fixed inset-0 z-60 bg-stone-900/40 backdrop-blur-sm flex items-center justify-center p-4">
+            <div className="bg-white rounded-3xl p-6 max-w-sm w-full space-y-4 text-stone-800 shadow-[var(--shadow-float)] border border-stone-200">
+              <div className="flex justify-between items-center border-b border-stone-200 pb-3">
+                <h3 className="section-title text-lg">
                   Collect Payment — {formatCurrency(invoice.grandTotal)}
                 </h3>
                 <button onClick={() => setShowPayModal(false)} className="text-stone-400 hover:text-stone-600">
@@ -447,7 +447,7 @@ export const InvoiceViewModal: React.FC<InvoiceViewModalProps> = ({
                         className={`p-2.5 rounded-xl font-bold border transition-colors cursor-pointer text-center ${
                           selectedMethod === m
                             ? 'bg-amber-800 text-white border-amber-900'
-                            : 'bg-stone-100 hover:bg-stone-200 border-stone-300 text-stone-700'
+                            : 'bg-white hover:bg-[var(--brand-soft)] border-stone-300 hover:border-[var(--brand-border)] text-stone-700'
                         }`}
                       >
                         {m}
@@ -463,7 +463,7 @@ export const InvoiceViewModal: React.FC<InvoiceViewModalProps> = ({
                     placeholder="e.g. Cash received in till / Bank UTR / Card Slip #"
                     value={paymentRef}
                     onChange={(e) => setPaymentRef(e.target.value)}
-                    className="w-full px-3 py-2 bg-stone-50 border border-stone-300 rounded-xl text-xs font-mono"
+                    className="w-full px-3 py-2 bg-white border border-stone-300 rounded-xl text-xs font-mono"
                   />
                 </div>
               </div>
@@ -481,7 +481,7 @@ export const InvoiceViewModal: React.FC<InvoiceViewModalProps> = ({
                 <button
                   type="button"
                   onClick={() => setShowPayModal(false)}
-                  className="px-4 py-3 bg-stone-100 hover:bg-stone-200 font-bold rounded-xl text-xs text-stone-700"
+                  className="px-4 py-3 bg-white border border-stone-300 hover:bg-stone-50 font-bold rounded-xl text-xs text-stone-700"
                 >
                   Cancel
                 </button>

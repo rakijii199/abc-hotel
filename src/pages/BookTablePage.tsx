@@ -30,7 +30,7 @@ import { Modal, Spinner } from '../components/common/Footer.tsx';
 import { useAuth } from '../context/AuthContext.tsx';
 import { useToast } from '../context/ToastContext.tsx';
 import { formatDate, formatTime, getBookingStatusBadge } from '../utils/formatters.ts';
-import { PageHero, LUX_IMAGES, luxImage } from '../components/customer/Reveal.tsx';
+import { LUX_IMAGES, luxImage, hideOnError } from '../components/customer/Reveal.tsx';
 
 interface TableWithAvail extends DiningTable {
   isAvailable: boolean;
@@ -287,28 +287,28 @@ export const BookTablePage: React.FC<{ navigate: (route: string, state?: any) =>
   if (confirmedBooking) {
     return (
       <div className="max-w-2xl mx-auto px-4 py-12 space-y-6">
-        <div className="bg-white rounded-3xl border border-stone-200 shadow-2xl p-8 text-center space-y-6 animate-in zoom-in-95">
-          <div className="w-16 h-16 bg-emerald-100 text-emerald-700 rounded-2xl mx-auto flex items-center justify-center shadow-xs">
+        <div className="surface-raised !rounded-2xl p-6 sm:p-8 text-center space-y-6 animate-in zoom-in-95">
+          <div className="w-16 h-16 bg-[var(--success-soft)] border border-[var(--success-border)] text-[var(--success)] rounded-full mx-auto flex items-center justify-center shadow-[var(--shadow-xs)] ring-8 ring-[var(--success-soft)]/50">
             <CheckCircle2 className="w-8 h-8" />
           </div>
 
           <div className="space-y-2">
-            <span className="text-xs font-bold uppercase tracking-widest text-amber-800">
+            <span className="lux-eyebrow text-[var(--brand-text)] justify-center">
               Reservation {confirmedBooking.status === 'CONFIRMED' ? 'Confirmed' : 'Submitted'}
             </span>
-            <h2 className="font-serif text-3xl font-bold text-stone-900">
+            <h2 className="lux-display text-[clamp(1.9rem,4vw,2.6rem)] text-stone-900">
               {confirmedBooking.status === 'CONFIRMED' ? 'Your Table is Reserved!' : 'Reservation Request Received!'}
             </h2>
-            <p className="text-sm text-stone-500 max-w-md mx-auto">
+            <p className="text-sm text-stone-600 max-w-md mx-auto">
               We look forward to hosting you at ABC Restaurant. Your table is reserved for a 30-minute dining holding slot.
             </p>
           </div>
 
           {/* Reference Card */}
-          <div className="p-6 rounded-2xl bg-amber-50/80 border border-amber-200/80 text-left space-y-4">
-            <div className="flex justify-between items-center border-b border-amber-200/60 pb-3">
+          <div className="p-5 sm:p-6 rounded-2xl bg-[var(--brand-soft)] border border-[var(--brand-border)] text-left space-y-4">
+            <div className="flex flex-wrap gap-2 justify-between items-center border-b border-dashed border-[var(--brand-border)] pb-3">
               <div>
-                <span className="text-[11px] text-amber-800 font-medium">Booking Reference</span>
+                <span className="label-caps !text-[var(--brand-text)]">Booking Reference</span>
                 <p className="font-mono font-bold text-xl text-stone-900">
                   {confirmedBooking.bookingReference}
                 </p>
@@ -318,16 +318,16 @@ export const BookTablePage: React.FC<{ navigate: (route: string, state?: any) =>
               </span>
             </div>
 
-            <div className="grid grid-cols-2 gap-4 text-xs">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
               <div>
-                <span className="text-stone-400 block font-medium">Date & Time Slot</span>
+                <span className="text-stone-500 block font-medium">Date & Time Slot</span>
                 <span className="font-semibold text-stone-800 text-sm mt-0.5 block">
                   {formatDate(confirmedBooking.bookingDate)} at {formatTime(confirmedBooking.startTime)} - {formatTime(confirmedBooking.endTime)}
                 </span>
                 <span className="text-[10px] text-amber-800 font-medium">(30-Min Table Holding)</span>
               </div>
               <div>
-                <span className="text-stone-400 block font-medium">Table & Capacity</span>
+                <span className="text-stone-500 block font-medium">Table & Capacity</span>
                 <span className="font-semibold text-stone-800 text-sm mt-0.5 block">
                   {confirmedBooking.tableName || confirmedBooking.tableNumber} ({confirmedBooking.guestCount} Guests)
                 </span>
@@ -335,7 +335,7 @@ export const BookTablePage: React.FC<{ navigate: (route: string, state?: any) =>
             </div>
 
             {confirmedBooking.specialRequest && (
-              <div className="text-xs text-stone-600 pt-2 border-t border-amber-200/60">
+              <div className="text-xs text-stone-600 pt-2 border-t border-dashed border-[var(--brand-border)]">
                 <span className="font-semibold text-stone-800">Special Notes: </span>
                 {confirmedBooking.specialRequest}
               </div>
@@ -346,13 +346,13 @@ export const BookTablePage: React.FC<{ navigate: (route: string, state?: any) =>
           <div className="flex flex-wrap justify-center gap-3 pt-2">
             <button
               onClick={() => navigate('my-bookings')}
-              className="px-6 py-3 rounded-xl bg-amber-700 hover:bg-amber-800 text-white font-bold text-sm shadow-md transition-all cursor-pointer"
+              className="lux-btn lux-btn-wine"
             >
               View My Bookings
             </button>
             <button
               onClick={() => navigate('menu')}
-              className="px-6 py-3 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-800 font-semibold text-sm transition-all cursor-pointer"
+              className="lux-btn lux-btn-outline"
             >
               Pre-Order Food
             </button>
@@ -362,7 +362,7 @@ export const BookTablePage: React.FC<{ navigate: (route: string, state?: any) =>
                 setSelectedTable(null);
                 checkAvail(false);
               }}
-              className="px-6 py-3 rounded-xl bg-white border border-stone-200 text-stone-600 hover:bg-stone-50 font-medium text-sm transition-all cursor-pointer"
+              className="btn btn-ghost !min-h-12"
             >
               Book Another Table
             </button>
@@ -377,30 +377,40 @@ export const BookTablePage: React.FC<{ navigate: (route: string, state?: any) =>
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-8 space-y-10">
       {/* Header Banner */}
-      <PageHero
-        eyebrow="ABC Restaurant Reservations"
-        title={
-          <>
-            Reserve your <em className="font-normal text-champagne">dining table</em>
-          </>
-        }
-        description="Select your preferred dining date (within 1 month), meal time slot (30-minute holding), and party size. Our live conflict prevention engine guarantees instant confirmation."
-        image={luxImage(LUX_IMAGES.diningRoom, 1800)}
-      />
+      <section className="lux-bleed relative overflow-hidden bg-ivory border-b border-[var(--border-subtle)]">
+        <img src={luxImage(LUX_IMAGES.diningRoom, 1800)} alt="" aria-hidden="true" onError={hideOnError} className="absolute inset-0 w-full h-full object-cover lux-kenburns" />
+        <div className="absolute inset-0 bg-gradient-to-r from-ivory/95 via-ivory/85 to-ivory/55 md:via-ivory/75 md:to-ivory/15" />
+        <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-ivory/80 to-transparent" />
+        <div className="absolute inset-x-0 bottom-0 lux-hairline" />
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14 lg:py-16">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8">
+            <div className="max-w-2xl animate-[lux-rise_0.8s_var(--ease-lux)]">
+              <p className="lux-eyebrow text-[var(--brand-text)]">ABC Restaurant Reservations</p>
+              <h1 className="lux-display text-[clamp(2.25rem,5.5vw,4.25rem)] mt-4 text-stone-900 text-balance">
+                Reserve your <em className="font-normal text-[var(--brand-text)]">dining table</em>
+              </h1>
+              <p className="mt-4 text-sm sm:text-base text-stone-600 leading-relaxed max-w-xl">
+                Select your preferred dining date (within 1 month), meal time slot (30-minute holding), and party size. Our live conflict prevention engine guarantees instant confirmation.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Left Column: Form Controls */}
         <div className="lg:col-span-1 space-y-6">
-          <div className="bg-white p-6 rounded-2xl border border-stone-200/80 shadow-xs space-y-5">
+          <div className="surface !rounded-2xl p-5 sm:p-6 space-y-5">
             <div className="flex items-center justify-between border-b border-stone-100 pb-3">
-              <h3 className="font-serif font-bold text-lg text-stone-900">
+              <h3 className="section-title">
                 Reservation Details
               </h3>
               <button
                 type="button"
                 onClick={() => checkAvail(false)}
-                className="p-1.5 text-stone-400 hover:text-amber-800 rounded-lg hover:bg-stone-50 transition-colors cursor-pointer"
+                className="p-1.5 text-stone-500 hover:text-[var(--brand-text)] rounded-lg hover:bg-[var(--brand-soft)] transition-colors cursor-pointer"
                 title="Refresh Availability"
+                aria-label="Refresh availability"
               >
                 <RotateCcw className={`w-4 h-4 ${refreshing ? 'animate-spin text-amber-800' : ''}`} />
               </button>
@@ -414,11 +424,11 @@ export const BookTablePage: React.FC<{ navigate: (route: string, state?: any) =>
                   Select Date (Within 1 Month)
                 </label>
                 {isToday ? (
-                  <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
+                  <span className="badge badge-success !text-[10px] font-bold">
                     Today
                   </span>
                 ) : (
-                  <span className="text-[10px] font-semibold text-stone-500 bg-stone-100 px-2 py-0.5 rounded-full">
+                  <span className="badge !text-[10px]">
                     Max: 30 Days
                   </span>
                 )}
@@ -429,7 +439,7 @@ export const BookTablePage: React.FC<{ navigate: (route: string, state?: any) =>
                 max={max1MonthStr}
                 value={bookingDate}
                 onChange={(e) => handleDateChange(e.target.value)}
-                className="w-full px-3.5 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-sm font-medium text-stone-900 focus:ring-2 focus:ring-amber-500/30 focus:border-amber-600 transition-all font-mono"
+                className="field !rounded-xl !min-h-11 text-sm font-medium text-stone-900 font-mono"
               />
               <p className="text-[11px] text-stone-500 flex items-center gap-1">
                 <Info className="w-3 h-3 text-amber-700 shrink-0" />
@@ -444,7 +454,7 @@ export const BookTablePage: React.FC<{ navigate: (route: string, state?: any) =>
                   <Clock className="w-3.5 h-3.5 text-amber-700" />
                   Select Time Slot (30-Min Holding)
                 </span>
-                <span className="text-[11px] font-semibold text-amber-900 bg-amber-50 px-2 py-0.5 rounded-md border border-amber-200">
+                <span className="badge badge-brand !text-[11px] font-semibold">
                   {formatTime(startTime)}
                 </span>
               </label>
@@ -469,10 +479,10 @@ export const BookTablePage: React.FC<{ navigate: (route: string, state?: any) =>
                         title={isPast ? 'Time slot has passed for today' : `Book ${formatTime(slot)} (30m holding)`}
                         className={`min-h-11 py-2 px-1 text-xs rounded-xl border transition-all text-center relative ${
                           isSelected
-                            ? 'bg-amber-700 text-white font-bold border-amber-700 shadow-xs'
+                            ? 'bg-[var(--brand)] text-white font-bold border-[var(--brand)] shadow-[var(--shadow-xs)] ring-2 ring-[var(--brand-ring-soft)]'
                             : isPast
-                            ? 'bg-stone-100/80 text-stone-400 border-stone-200 line-through opacity-45 cursor-not-allowed'
-                            : 'bg-stone-50 text-stone-700 font-semibold border-stone-200 hover:bg-stone-100 hover:border-amber-300 cursor-pointer'
+                            ? 'bg-[var(--surface-muted)] text-stone-400 border-dashed border-stone-200 line-through cursor-not-allowed'
+                            : 'bg-white text-stone-700 font-semibold border-stone-200 hover:bg-[var(--brand-soft)] hover:border-[var(--brand-border)] hover:text-[var(--brand-text)] cursor-pointer'
                         }`}
                       >
                         {formatTime(slot)}
@@ -485,7 +495,7 @@ export const BookTablePage: React.FC<{ navigate: (route: string, state?: any) =>
               {/* Dinner Service */}
               <div className="space-y-1.5 pt-1">
                 <div className="flex items-center gap-1.5 text-[11px] font-bold text-stone-500 uppercase tracking-wider">
-                  <Moon className="w-3 h-3 text-indigo-600" />
+                  <Moon className="w-3 h-3 text-[var(--brand)]" />
                   <span>Dinner Service</span>
                 </div>
                 <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-3 xl:grid-cols-4 gap-1.5">
@@ -502,10 +512,10 @@ export const BookTablePage: React.FC<{ navigate: (route: string, state?: any) =>
                         title={isPast ? 'Time slot has passed for today' : `Book ${formatTime(slot)} (30m holding)`}
                         className={`min-h-11 py-2 px-1 text-xs rounded-xl border transition-all text-center relative ${
                           isSelected
-                            ? 'bg-amber-700 text-white font-bold border-amber-700 shadow-xs'
+                            ? 'bg-[var(--brand)] text-white font-bold border-[var(--brand)] shadow-[var(--shadow-xs)] ring-2 ring-[var(--brand-ring-soft)]'
                             : isPast
-                            ? 'bg-stone-100/80 text-stone-400 border-stone-200 line-through opacity-45 cursor-not-allowed'
-                            : 'bg-stone-50 text-stone-700 font-semibold border-stone-200 hover:bg-stone-100 hover:border-amber-300 cursor-pointer'
+                            ? 'bg-[var(--surface-muted)] text-stone-400 border-dashed border-stone-200 line-through cursor-not-allowed'
+                            : 'bg-white text-stone-700 font-semibold border-stone-200 hover:bg-[var(--brand-soft)] hover:border-[var(--brand-border)] hover:text-[var(--brand-text)] cursor-pointer'
                         }`}
                       >
                         {formatTime(slot)}
@@ -516,7 +526,7 @@ export const BookTablePage: React.FC<{ navigate: (route: string, state?: any) =>
               </div>
 
               {isToday && (
-                <p className="text-[10px] text-stone-400 italic">
+                <p className="text-[10px] text-stone-500 italic">
                   * Time slots earlier than current time are disabled for today.
                 </p>
               )}
@@ -528,16 +538,16 @@ export const BookTablePage: React.FC<{ navigate: (route: string, state?: any) =>
                 <Users className="w-3.5 h-3.5 text-amber-700" />
                 Number of Guests
               </label>
-              <div className="flex items-center gap-1.5">
+              <div className="grid grid-cols-3 sm:grid-cols-5 gap-1.5">
                 {[1, 2, 4, 6, 8].map((count) => (
                   <button
                     key={count}
                     type="button"
                     onClick={() => setGuestCount(count)}
-                    className={`flex-1 py-2 text-xs font-bold rounded-xl border transition-all cursor-pointer ${
+                    className={`min-h-10 py-2 px-1 text-xs font-bold rounded-xl border transition-all cursor-pointer ${
                       guestCount === count
-                        ? 'bg-amber-700 text-white border-amber-700 shadow-xs'
-                        : 'bg-stone-50 text-stone-700 border-stone-200 hover:bg-stone-100'
+                        ? 'bg-[var(--brand)] text-white border-[var(--brand)] shadow-[var(--shadow-xs)] ring-2 ring-[var(--brand-ring-soft)]'
+                        : 'bg-white text-stone-700 border-stone-200 hover:bg-[var(--brand-soft)] hover:border-[var(--brand-border)]'
                     }`}
                   >
                     {count} {count === 1 ? 'Guest' : 'Guests'}
@@ -556,7 +566,7 @@ export const BookTablePage: React.FC<{ navigate: (route: string, state?: any) =>
                 placeholder="Enter Special Requests or Occasion Notes"
                 value={specialRequest}
                 onChange={(e) => setSpecialRequest(e.target.value)}
-                className="w-full px-3.5 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-xs text-stone-900 focus:ring-2 focus:ring-amber-500/30 focus:border-amber-600 transition-all resize-none"
+                className="field !rounded-xl !py-2.5 text-xs text-stone-900 resize-none"
               />
             </div>
 
@@ -569,23 +579,23 @@ export const BookTablePage: React.FC<{ navigate: (route: string, state?: any) =>
 
         {/* Right Column: Live Table Floor Plan */}
         <div className="lg:col-span-2 space-y-6">
-          <div className="bg-white p-6 rounded-2xl border border-stone-200/80 shadow-xs space-y-6">
+          <div className="surface !rounded-2xl p-4 sm:p-6 space-y-6">
             <div className="flex flex-wrap items-center justify-between gap-3 border-b border-stone-100 pb-4">
               <div>
-                <span className="text-xs font-bold uppercase tracking-widest text-amber-800">
+                <span className="label-caps !text-[var(--brand-text)]">
                   Floor Plan & Availability
                 </span>
-                <h3 className="font-serif font-bold text-xl text-stone-900">
+                <h3 className="section-title !text-xl mt-0.5">
                   ABC Restaurant Dining Room
                 </h3>
               </div>
-              <div className="text-xs font-medium text-stone-600 bg-stone-100 px-3 py-1.5 rounded-xl flex items-center gap-1.5">
+              <div className="text-xs font-medium text-stone-600 bg-[var(--brand-soft)] border border-[var(--brand-border)] px-3 py-1.5 rounded-full flex flex-wrap items-center gap-1.5">
                 <CalendarIcon className="w-3.5 h-3.5 text-amber-700" />
                 <span>{formatDate(bookingDate)}</span>
                 <span>•</span>
                 <Clock className="w-3.5 h-3.5 text-amber-700" />
                 <span className="font-bold text-stone-900">{formatTime(startTime)}</span>
-                <span className="text-[10px] text-stone-400">(30m)</span>
+                <span className="text-[10px] text-stone-500">(30m)</span>
               </div>
             </div>
 
@@ -605,13 +615,13 @@ export const BookTablePage: React.FC<{ navigate: (route: string, state?: any) =>
               <div>
                 {selectedTable ? (
                   <div>
-                    <span className="text-xs text-stone-400 font-medium">Selected:</span>
+                    <span className="label-caps">Selected</span>
                     <p className="font-bold text-sm text-stone-900">
                       {selectedTable.tableNumber} — {selectedTable.location} ({selectedTable.capacity} Seats)
                     </p>
                   </div>
                 ) : (
-                  <p className="text-xs text-amber-800 font-medium">
+                  <p className="text-xs text-[var(--brand-text)] font-medium">
                     Please select an available table above to proceed.
                   </p>
                 )}
@@ -620,7 +630,7 @@ export const BookTablePage: React.FC<{ navigate: (route: string, state?: any) =>
               <button
                 disabled={!selectedTable || submitting || isSlotInPast(bookingDate, startTime) || bookingDate > max1MonthStr}
                 onClick={handleInitiateBooking}
-                className="px-8 py-3.5 rounded-xl bg-amber-700 hover:bg-amber-800 disabled:opacity-50 disabled:pointer-events-none text-white font-bold text-sm shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
+                className="lux-btn lux-btn-wine disabled:opacity-50 disabled:pointer-events-none"
               >
                 Proceed to Reservation
                 <ArrowRight className="w-4 h-4" />
@@ -642,7 +652,7 @@ export const BookTablePage: React.FC<{ navigate: (route: string, state?: any) =>
             Please review your dining reservation details before confirming:
           </p>
 
-          <div className="p-4 rounded-xl bg-amber-50/70 border border-amber-200/70 space-y-3 text-xs">
+          <div className="p-4 rounded-2xl bg-[var(--brand-soft)] border border-[var(--brand-border)] space-y-3 text-xs">
             <div className="flex justify-between">
               <span className="text-stone-500">Restaurant:</span>
               <span className="font-semibold text-stone-900">ABC Restaurant & Fine Dining</span>
@@ -655,7 +665,7 @@ export const BookTablePage: React.FC<{ navigate: (route: string, state?: any) =>
             </div>
             <div className="flex justify-between">
               <span className="text-stone-500">Holding Duration:</span>
-              <span className="font-semibold text-amber-900">30 Minutes</span>
+              <span className="font-semibold text-[var(--brand-text)]">30 Minutes</span>
             </div>
             <div className="flex justify-between">
               <span className="text-stone-500">Party Size:</span>
@@ -668,7 +678,7 @@ export const BookTablePage: React.FC<{ navigate: (route: string, state?: any) =>
               </span>
             </div>
             {specialRequest && (
-              <div className="flex justify-between border-t border-amber-200/60 pt-2">
+              <div className="flex justify-between gap-3 border-t border-dashed border-[var(--brand-border)] pt-2">
                 <span className="text-stone-500">Special Request:</span>
                 <span className="font-medium text-stone-800 text-right max-w-[240px]">
                   {specialRequest}
@@ -680,14 +690,14 @@ export const BookTablePage: React.FC<{ navigate: (route: string, state?: any) =>
           <div className="flex justify-end gap-3 pt-3 border-t border-stone-100">
             <button
               onClick={() => setConfirmModalOpen(false)}
-              className="px-4 py-2.5 text-sm font-medium text-stone-600 hover:text-stone-900 rounded-xl cursor-pointer"
+              className="btn btn-ghost"
             >
               Cancel
             </button>
             <button
               disabled={submitting}
               onClick={handleConfirmReservation}
-              className="px-6 py-2.5 text-sm font-bold text-white bg-amber-700 hover:bg-amber-800 rounded-xl shadow-md transition-all flex items-center gap-2 cursor-pointer disabled:opacity-50"
+              className="btn btn-primary"
             >
               {submitting ? 'Confirming Reservation...' : 'Confirm & Reserve Table (30m Holding)'}
             </button>

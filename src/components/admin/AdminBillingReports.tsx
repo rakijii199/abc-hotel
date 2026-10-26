@@ -49,11 +49,11 @@ export const AdminBillingReports: React.FC = () => {
       {/* Date Filter Bar */}
       <form
         onSubmit={handleFilterSubmit}
-        className="bg-white p-4 rounded-3xl border border-stone-200 shadow-xs flex flex-wrap items-center justify-between gap-3 text-xs"
+        className="bg-white p-4 rounded-2xl border border-stone-200 shadow-[var(--shadow-card)] flex flex-wrap items-center justify-between gap-3 text-xs"
       >
         <div className="flex items-center gap-2">
           <Calendar className="w-4 h-4 text-amber-800" />
-          <span className="font-bold text-stone-900">Billing Financial Reports</span>
+          <span className="section-title text-lg">Billing Financial Reports</span>
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
@@ -63,7 +63,7 @@ export const AdminBillingReports: React.FC = () => {
               type="date"
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
-              className="px-3 py-1.5 bg-stone-50 border border-stone-300 rounded-xl font-mono"
+              className="px-3 py-1.5 bg-white border border-stone-300 rounded-xl font-mono"
             />
           </div>
 
@@ -73,7 +73,7 @@ export const AdminBillingReports: React.FC = () => {
               type="date"
               value={endDate}
               onChange={(e) => setEndDate(e.target.value)}
-              className="px-3 py-1.5 bg-stone-50 border border-stone-300 rounded-xl font-mono"
+              className="px-3 py-1.5 bg-white border border-stone-300 rounded-xl font-mono"
             />
           </div>
 
@@ -91,7 +91,7 @@ export const AdminBillingReports: React.FC = () => {
               setEndDate('');
               fetchReports();
             }}
-            className="p-2 bg-stone-100 hover:bg-stone-200 text-stone-700 rounded-xl cursor-pointer"
+            className="p-2 bg-white border border-stone-200 hover:bg-[var(--brand-soft)] hover:border-[var(--brand-border)] hover:text-[var(--brand-text)] text-stone-700 rounded-xl cursor-pointer transition-colors"
             title="Reset Filters"
           >
             <RotateCcw className="w-4 h-4" />
@@ -100,7 +100,7 @@ export const AdminBillingReports: React.FC = () => {
       </form>
 
       {loading ? (
-        <div className="py-12 bg-white rounded-3xl border border-stone-200 flex items-center justify-center">
+        <div className="py-12 bg-white rounded-2xl border border-stone-200 shadow-[var(--shadow-card)] flex items-center justify-center">
           <Spinner size="lg" text="Calculating financial metrics..." />
         </div>
       ) : !reports ? null : (
@@ -108,30 +108,30 @@ export const AdminBillingReports: React.FC = () => {
           {/* Key Metric Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {/* Total Revenue */}
-            <div className="bg-gradient-to-tr from-amber-900 to-stone-900 text-white p-5 rounded-3xl shadow-md space-y-2">
+            <div className="stat-card p-5 space-y-2 border-[var(--brand-border)] bg-gradient-to-br from-white to-[var(--brand-soft)]">
               <div className="flex items-center justify-between">
-                <span className="text-[10px] uppercase font-bold text-amber-300 tracking-wider">
+                <span className="label-caps !text-amber-800">
                   Total Paid Revenue
                 </span>
-                <DollarSign className="w-5 h-5 text-amber-400" />
+                <DollarSign className="w-5 h-5 text-amber-700" />
               </div>
-              <div className="font-serif font-extrabold text-3xl font-mono">
+              <div className="font-extrabold text-3xl font-mono text-[var(--brand-text)]">
                 {formatCurrency(reports.totalSales || 0)}
               </div>
-              <p className="text-[11px] text-amber-200/80">
+              <p className="text-[11px] text-stone-600">
                 From {reports.paidBillsCount || 0} paid invoices
               </p>
             </div>
 
             {/* Total Invoices */}
-            <div className="bg-white p-5 rounded-3xl border border-stone-200/90 shadow-2xs space-y-2">
+            <div className="stat-card p-5 space-y-2">
               <div className="flex items-center justify-between">
-                <span className="text-[10px] uppercase font-bold text-stone-400 tracking-wider">
+                <span className="label-caps">
                   Total Bills Issued
                 </span>
                 <Receipt className="w-5 h-5 text-stone-500" />
               </div>
-              <div className="font-serif font-extrabold text-3xl text-stone-900 font-mono">
+              <div className="font-extrabold text-3xl text-stone-900 font-mono">
                 {reports.totalBills || 0}
               </div>
               <p className="text-[11px] text-stone-500">
@@ -140,28 +140,28 @@ export const AdminBillingReports: React.FC = () => {
             </div>
 
             {/* GST Collected */}
-            <div className="bg-white p-5 rounded-3xl border border-stone-200/90 shadow-2xs space-y-2">
+            <div className="stat-card p-5 space-y-2">
               <div className="flex items-center justify-between">
-                <span className="text-[10px] uppercase font-bold text-stone-400 tracking-wider">
+                <span className="label-caps">
                   GST Tax Collected
                 </span>
                 <PieChart className="w-5 h-5 text-amber-800" />
               </div>
-              <div className="font-serif font-extrabold text-3xl text-amber-900 font-mono">
+              <div className="font-extrabold text-3xl text-amber-900 font-mono">
                 {formatCurrency(reports.totalGst || 0)}
               </div>
               <p className="text-[11px] text-stone-500">5% Govt GST Tax</p>
             </div>
 
             {/* Service Charges */}
-            <div className="bg-white p-5 rounded-3xl border border-stone-200/90 shadow-2xs space-y-2">
+            <div className="stat-card p-5 space-y-2">
               <div className="flex items-center justify-between">
-                <span className="text-[10px] uppercase font-bold text-stone-400 tracking-wider">
+                <span className="label-caps">
                   Service Charges
                 </span>
                 <TrendingUp className="w-5 h-5 text-emerald-600" />
               </div>
-              <div className="font-serif font-extrabold text-3xl text-emerald-800 font-mono">
+              <div className="font-extrabold text-3xl text-emerald-800 font-mono">
                 {formatCurrency(reports.totalServiceCharge || 0)}
               </div>
               <p className="text-[11px] text-stone-500">5% Service Fee</p>
@@ -169,13 +169,13 @@ export const AdminBillingReports: React.FC = () => {
           </div>
 
           {/* Payment Method Breakdown */}
-          <div className="bg-white p-6 rounded-3xl border border-stone-200 shadow-xs space-y-4">
-            <h3 className="font-serif font-bold text-lg text-stone-900 border-b border-stone-100 pb-3">
+          <div className="bg-white p-6 rounded-2xl border border-stone-200 shadow-[var(--shadow-card)] space-y-4">
+            <h3 className="section-title border-b border-stone-100 pb-3">
               Collection Breakdown by Payment Mode
             </h3>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
-              <div className="p-4 bg-amber-50/60 rounded-2xl border border-amber-200/80 space-y-1">
+              <div className="p-4 bg-[var(--brand-soft)] rounded-2xl border border-[var(--brand-border)] space-y-1">
                 <div className="flex items-center justify-between font-bold text-amber-950">
                   <span>Cash Collection</span>
                   <DollarSign className="w-4 h-4 text-amber-800" />
@@ -186,7 +186,7 @@ export const AdminBillingReports: React.FC = () => {
                 <p className="text-[10px] text-amber-800">Collected in register till</p>
               </div>
 
-              <div className="p-4 bg-emerald-50/60 rounded-2xl border border-emerald-200/80 space-y-1">
+              <div className="p-4 bg-[var(--success-soft)] rounded-2xl border border-[var(--success-border)] space-y-1">
                 <div className="flex items-center justify-between font-bold text-emerald-950">
                   <span>UPI QR Collection</span>
                   <Smartphone className="w-4 h-4 text-emerald-700" />
@@ -197,7 +197,7 @@ export const AdminBillingReports: React.FC = () => {
                 <p className="text-[10px] text-emerald-800">PhonePe / GPay / Paytm</p>
               </div>
 
-              <div className="p-4 bg-stone-50 rounded-2xl border border-stone-200 space-y-1">
+              <div className="p-4 bg-[var(--surface-muted)] rounded-2xl border border-stone-200 space-y-1">
                 <div className="flex items-center justify-between font-bold text-stone-900">
                   <span>Card Payments</span>
                   <CreditCard className="w-4 h-4 text-stone-600" />

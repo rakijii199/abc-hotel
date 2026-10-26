@@ -44,15 +44,15 @@ export const SystemTestsPage: React.FC = () => {
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
       {/* Header */}
-      <div className="bg-stone-900 text-white rounded-3xl p-8 shadow-xl flex flex-wrap items-center justify-between gap-4">
+      <div className="surface ambient text-stone-900 rounded-3xl p-8 flex flex-wrap items-center justify-between gap-4">
         <div>
-          <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-emerald-400">
+          <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-emerald-700">
             <ShieldCheck className="w-4 h-4" /> Automated QA Test Suite
           </div>
           <h1 className="font-serif text-3xl font-bold mt-1">
             Verification & Integrity Runner
           </h1>
-          <p className="text-stone-400 text-xs mt-1">
+          <p className="text-stone-600 text-xs mt-1">
             Real-time execution of unit, business logic, password validation, double-booking lock, and order state machine test cases.
           </p>
         </div>

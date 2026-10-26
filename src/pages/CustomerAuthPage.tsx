@@ -20,7 +20,7 @@ import { RecaptchaVerifier, signInWithPhoneNumber, ConfirmationResult } from 'fi
 import { auth } from '../firebase/config.ts';
 import { useAuth } from '../context/AuthContext.tsx';
 import { useToast } from '../context/ToastContext.tsx';
-import { PageHero, LUX_IMAGES, luxImage } from '../components/customer/Reveal.tsx';
+import { LUX_IMAGES, luxImage } from '../components/customer/Reveal.tsx';
 
 interface CustomerAuthPageProps {
   navigate: (route: string, state?: any, replace?: boolean) => void;
@@ -293,34 +293,35 @@ export const CustomerAuthPage: React.FC<CustomerAuthPageProps> = ({
   };
 
   return (
-    <div className="relative min-h-[calc(100svh-4rem)] flex items-center justify-center p-4 py-10 sm:p-6 lg:p-10 bg-ink overflow-hidden lux-grain">
+    <div className="relative min-h-[calc(100svh-4rem)] flex items-center justify-center p-4 py-10 sm:p-6 lg:p-10 ambient overflow-hidden">
       <img
-        src={luxImage(LUX_IMAGES.interior, 1800)}
+        src={luxImage(LUX_IMAGES.hotel, 2000)}
         alt=""
         aria-hidden="true"
-        className="absolute inset-0 w-full h-full object-cover opacity-35 lux-kenburns"
+        className="absolute inset-0 w-full h-full object-cover lux-kenburns"
         onError={(e) => (e.currentTarget.style.visibility = 'hidden')}
       />
-      <div className="absolute inset-0 bg-gradient-to-br from-ink/80 via-ink/50 to-wine/40" />
-      <div className="absolute -bottom-40 -left-40 w-[560px] h-[560px] rounded-full bg-wine/30 blur-[140px] pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-r from-ivory/75 via-ivory/35 to-ivory/10" />
+      <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-ivory/80 to-transparent" />
+      <div className="absolute -bottom-40 -left-40 w-[560px] h-[560px] rounded-full bg-champagne/30 blur-[140px] pointer-events-none" />
 
       {/* Invisible Firebase Recaptcha Container */}
       <div id="recaptcha-container"></div>
 
-      <div className="relative max-w-xl w-full bg-[#fffdf9]/95 backdrop-blur-xl rounded-[1.5rem] shadow-[0_50px_120px_-30px_rgba(0,0,0,0.9)] overflow-hidden border border-white/15 animate-[lux-rise_0.7s_var(--ease-lux)]">
+      <div className="relative max-w-xl w-full glass-strong !bg-white/90 rounded-[1.5rem] overflow-hidden animate-[lux-rise_0.7s_var(--ease-lux)]">
         {/* Header Banner */}
-        <div className="bg-ink/85 backdrop-blur-xl text-white p-5 sm:p-8 text-center relative border-b border-gold/20">
-          <div className="relative w-12 h-12 flex items-center justify-center border border-gold/60 text-champagne mx-auto mb-3">
-            <span className="absolute inset-[3px] border border-gold/25" />
+        <div className="bg-gradient-to-b from-[var(--brand-soft)] to-white p-5 sm:p-8 text-center relative border-b border-[var(--border-subtle)]">
+          <div className="relative w-12 h-12 flex items-center justify-center border border-[var(--brand)] text-[var(--brand-text)] bg-white mx-auto mb-3">
+            <span className="absolute inset-[3px] border border-[var(--brand-border)]" />
             <span className="font-display font-semibold text-[15px] tracking-[0.06em]">ABC</span>
           </div>
-          <h2 className="lux-display text-2xl sm:text-3xl tracking-[0.16em] text-ivory">ABC HOTEL</h2>
-          <p className="text-[11px] sm:text-xs text-stone-300 tracking-wider uppercase font-semibold mt-0.5 sm:mt-1">
+          <h2 className="lux-display text-2xl sm:text-3xl tracking-[0.16em] text-stone-900">ABC HOTEL</h2>
+          <p className="text-[11px] sm:text-xs text-[var(--brand-text)] tracking-wider uppercase font-semibold mt-0.5 sm:mt-1">
             Privilege Customer Dining & Order Portal
           </p>
 
           {/* Mode Switcher Tabs */}
-          <div className="flex bg-black/40 p-1 rounded-2xl mt-4 sm:mt-6 border border-white/10">
+          <div className="flex bg-stone-100 p-1 rounded-2xl mt-4 sm:mt-6 border border-[var(--border-subtle)]">
             <button
               onClick={() => {
                 setMode('login');
@@ -329,7 +330,7 @@ export const CustomerAuthPage: React.FC<CustomerAuthPageProps> = ({
                 navigate('login', { returnTo, message }, true);
               }}
               className={`flex-1 py-2 sm:py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer min-h-[40px] flex items-center justify-center ${
-                mode === 'login' ? 'bg-gradient-to-br from-champagne to-gold text-ink shadow-md' : 'text-stone-300 hover:text-white'
+                mode === 'login' ? 'bg-white text-[var(--brand-text)] shadow-[var(--shadow-card)] ring-1 ring-[var(--brand-border)]' : 'text-stone-600 hover:text-stone-900'
               }`}
             >
               <span>Login</span>
@@ -342,7 +343,7 @@ export const CustomerAuthPage: React.FC<CustomerAuthPageProps> = ({
                 navigate('register', { returnTo, message }, true);
               }}
               className={`flex-1 py-2 sm:py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer min-h-[40px] flex items-center justify-center ${
-                mode === 'register' ? 'bg-gradient-to-br from-champagne to-gold text-ink shadow-md' : 'text-stone-300 hover:text-white'
+                mode === 'register' ? 'bg-white text-[var(--brand-text)] shadow-[var(--shadow-card)] ring-1 ring-[var(--brand-border)]' : 'text-stone-600 hover:text-stone-900'
               }`}
             >
               <span>Register</span>
@@ -354,7 +355,7 @@ export const CustomerAuthPage: React.FC<CustomerAuthPageProps> = ({
         <div className="p-4 sm:p-8 space-y-5 sm:space-y-6">
           {/* Informational Message Banner if passed via route state */}
           {message && (
-            <div className="p-3.5 sm:p-4 rounded-2xl bg-amber-50/90 border border-amber-300/80 text-amber-950 text-xs font-medium flex items-center gap-2.5 shadow-2xs animate-in fade-in">
+            <div className="p-3.5 sm:p-4 rounded-2xl bg-[var(--brand-soft)] border border-[var(--brand-border)] text-stone-800 text-xs font-medium flex items-center gap-2.5 shadow-[var(--shadow-xs)] animate-in fade-in">
               <Info className="w-4 h-4 text-amber-700 shrink-0" />
               <span>{message}</span>
             </div>
@@ -362,7 +363,7 @@ export const CustomerAuthPage: React.FC<CustomerAuthPageProps> = ({
 
           {/* Unregistered Phone Prompt Alert */}
           {unregisteredNotice && (
-            <div className="p-3.5 sm:p-4 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 space-y-2 text-xs animate-in fade-in">
+            <div className="p-3.5 sm:p-4 rounded-2xl bg-[var(--warning-soft)] border border-[var(--warning-border)] text-amber-900 space-y-2 text-xs animate-in fade-in">
               <div className="flex items-center gap-2 font-bold text-amber-800">
                 <AlertCircle className="w-4 h-4 text-amber-600" />
                 <span>Account Not Found</span>
@@ -377,7 +378,7 @@ export const CustomerAuthPage: React.FC<CustomerAuthPageProps> = ({
                   setUnregisteredNotice(false);
                   navigate('register', { returnTo, message }, true);
                 }}
-                className="mt-1 px-4 py-2 bg-amber-700 hover:bg-amber-800 text-white rounded-xl font-bold text-xs shadow-xs cursor-pointer min-h-[40px]"
+                className="btn btn-primary mt-1 !whitespace-normal"
               >
                 Continue to Customer Registration →
               </button>
@@ -401,7 +402,7 @@ export const CustomerAuthPage: React.FC<CustomerAuthPageProps> = ({
                         value={fullName}
                         onChange={(e) => setFullName(e.target.value)}
                         placeholder="Enter Full Name"
-                        className="w-full pl-10 pr-3.5 py-3 bg-stone-50 border border-stone-200 rounded-xl text-base sm:text-xs text-stone-900 focus:border-amber-600 focus:bg-white transition-all outline-none"
+                        className="w-full pl-10 pr-3.5 py-3 bg-white border border-[var(--border-subtle)] rounded-xl text-base sm:text-xs text-stone-900 focus:border-[var(--brand)] focus:ring-2 focus:ring-[var(--brand-ring-soft)] transition-all outline-none"
                         required
                       />
                     </div>
@@ -410,7 +411,7 @@ export const CustomerAuthPage: React.FC<CustomerAuthPageProps> = ({
                   <div className="space-y-1.5">
                     <label className="text-xs font-bold text-stone-700 flex items-center justify-between">
                       <span>Email Address</span>
-                      <span className="text-stone-400 font-normal text-[11px]">(Optional)</span>
+                      <span className="text-stone-500 font-normal text-[11px]">(Optional)</span>
                     </label>
                     <div className="relative">
                       <Mail className="w-4 h-4 text-stone-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
@@ -419,7 +420,7 @@ export const CustomerAuthPage: React.FC<CustomerAuthPageProps> = ({
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         placeholder="Enter Email Address"
-                        className="w-full pl-10 pr-3.5 py-3 bg-stone-50 border border-stone-200 rounded-xl text-base sm:text-xs text-stone-900 focus:border-amber-600 focus:bg-white transition-all outline-none"
+                        className="w-full pl-10 pr-3.5 py-3 bg-white border border-[var(--border-subtle)] rounded-xl text-base sm:text-xs text-stone-900 focus:border-[var(--brand)] focus:ring-2 focus:ring-[var(--brand-ring-soft)] transition-all outline-none"
                       />
                     </div>
                   </div>
@@ -437,7 +438,7 @@ export const CustomerAuthPage: React.FC<CustomerAuthPageProps> = ({
                     <select
                       value={countryCode}
                       onChange={(e) => setCountryCode(e.target.value)}
-                      className="w-full py-3 px-1.5 sm:px-2 bg-stone-50 border border-stone-200 rounded-xl text-xs text-stone-900 font-medium focus:border-amber-600 focus:bg-white outline-none cursor-pointer"
+                      className="w-full py-3 px-1.5 sm:px-2 bg-white border border-[var(--border-subtle)] rounded-xl text-xs text-stone-900 font-medium focus:border-[var(--brand)] outline-none cursor-pointer"
                     >
                       {COUNTRY_CODES.map((c) => (
                         <option key={c.code} value={c.code}>
@@ -481,7 +482,7 @@ export const CustomerAuthPage: React.FC<CustomerAuthPageProps> = ({
           {/* Step 2: Verification Code Input */}
           {step === 'otp' && (
             <form onSubmit={handleVerifyOTP} className="space-y-5 animate-in fade-in">
-              <div className="p-3.5 sm:p-4 rounded-2xl bg-amber-50/70 border border-amber-200/80 flex items-center justify-between">
+              <div className="p-3.5 sm:p-4 rounded-2xl bg-[var(--brand-soft)] border border-[var(--brand-border)] flex items-center justify-between gap-2">
                 <div>
                   <p className="text-[11px] text-stone-500 font-medium">Verification sent to</p>
                   <p className="text-sm font-bold text-stone-900 font-mono">
@@ -491,7 +492,7 @@ export const CustomerAuthPage: React.FC<CustomerAuthPageProps> = ({
                 <button
                   type="button"
                   onClick={handleChangePhone}
-                  className="text-xs font-bold text-amber-800 hover:underline flex items-center gap-1 cursor-pointer py-1.5 px-2"
+                  className="text-xs font-bold text-[var(--brand-text)] hover:underline flex items-center gap-1 cursor-pointer py-1.5 px-2"
                 >
                   <Edit2 className="w-3.5 h-3.5" />
                   <span>Change</span>
@@ -510,7 +511,7 @@ export const CustomerAuthPage: React.FC<CustomerAuthPageProps> = ({
                   onChange={(e) => setOtp(e.target.value.replace(/[^\d]/g, ''))}
                   placeholder="Enter 6-digit OTP code"
                   maxLength={6}
-                  className="w-full py-3.5 px-4 bg-stone-50 border border-amber-300 rounded-xl text-center text-xl font-mono tracking-[0.4em] font-bold text-stone-900 focus:border-amber-600 focus:bg-white outline-none shadow-inner"
+                  className="w-full py-3.5 px-4 bg-white border border-[var(--brand-border)] rounded-xl text-center text-xl font-mono tracking-[0.4em] font-bold text-stone-900 focus:border-[var(--brand)] focus:ring-2 focus:ring-[var(--brand-ring-soft)] outline-none shadow-inner"
                   autoFocus
                   required
                 />
@@ -522,7 +523,7 @@ export const CustomerAuthPage: React.FC<CustomerAuthPageProps> = ({
                 className="lux-btn lux-btn-wine w-full disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <span>{loading ? 'Verifying OTP...' : mode === 'register' ? 'Verify OTP & Complete Registration' : 'Verify OTP & Login'}</span>
-                <CheckCircle2 className="w-4 h-4 text-amber-400" />
+                <CheckCircle2 className="w-4 h-4" />
               </button>
 
               {/* Resend OTP Footer */}
@@ -539,7 +540,7 @@ export const CustomerAuthPage: React.FC<CustomerAuthPageProps> = ({
                   type="button"
                   onClick={handleResendOTP}
                   disabled={!canResend || loading}
-                  className="font-bold text-amber-800 hover:text-amber-900 disabled:opacity-40 cursor-pointer flex items-center gap-1 min-h-[40px] px-2"
+                  className="font-bold text-[var(--brand-text)] hover:underline disabled:opacity-40 cursor-pointer flex items-center gap-1 min-h-[40px] px-2"
                 >
                   <RefreshCw className="w-3.5 h-3.5" />
                   <span>Resend OTP</span>
@@ -555,7 +556,7 @@ export const CustomerAuthPage: React.FC<CustomerAuthPageProps> = ({
               onClick={() => navigate('staff-login')}
               className="inline-flex items-center gap-2 text-xs font-semibold text-stone-600 hover:text-stone-900 cursor-pointer transition-colors min-h-[44px] px-3"
             >
-              <Lock className="w-3.5 h-3.5 text-stone-400" />
+              <Lock className="w-3.5 h-3.5 text-[var(--brand)]" />
               <span>Are you an employee? <strong>Login as Staff →</strong></span>
             </button>
           </div>

@@ -51,21 +51,17 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         {toasts.map((t) => (
           <div
             key={t.id}
-            className={`pointer-events-auto flex items-start gap-3 p-4 rounded-xl shadow-xl border backdrop-blur-md transition-all animate-in slide-in-from-bottom-5 ${
-              t.type === 'success'
-                ? 'bg-emerald-900/95 text-white border-emerald-700'
-                : t.type === 'error'
-                ? 'bg-rose-900/95 text-white border-rose-700'
-                : 'bg-stone-900/95 text-white border-stone-700'
+            className={`glass-strong pointer-events-auto flex items-start gap-3 p-4 rounded-2xl text-stone-800 border-l-4 animate-in fade-in slide-in-from-bottom-5 ${
+              t.type === 'success' ? '!border-l-emerald-600' : t.type === 'error' ? '!border-l-rose-600' : '!border-l-[var(--brand)]'
             }`}
           >
-            {t.type === 'success' && <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />}
-            {t.type === 'error' && <AlertCircle className="w-5 h-5 text-rose-400 shrink-0 mt-0.5" />}
-            {t.type === 'info' && <Info className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />}
+            {t.type === 'success' && <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />}
+            {t.type === 'error' && <AlertCircle className="w-5 h-5 text-rose-600 shrink-0 mt-0.5" />}
+            {t.type === 'info' && <Info className="w-5 h-5 text-[var(--brand)] shrink-0 mt-0.5" />}
             <div className="flex-1 text-sm font-medium leading-relaxed">{t.message}</div>
             <button
               onClick={() => removeToast(t.id)}
-              className="-m-2 w-9 h-9 shrink-0 flex items-center justify-center rounded-lg text-stone-400 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+              className="-m-2 w-9 h-9 shrink-0 flex items-center justify-center rounded-lg text-stone-400 hover:text-stone-800 hover:bg-stone-900/5 transition-colors cursor-pointer"
               aria-label="Dismiss notification"
             >
               <X className="w-4 h-4" />

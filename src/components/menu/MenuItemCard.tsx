@@ -77,12 +77,12 @@ export const MenuItemCard: React.FC<MenuItemCardProps> = ({ item }) => {
         }}
         tabIndex={0}
         aria-label={`${item.name}, ${formatCurrency(item.price)}${item.available ? '' : ', sold out'}. View details`}
-        className={`group relative h-full bg-[#fffdf9] border border-stone-200/80 flex flex-col overflow-hidden cursor-pointer transition-[transform,box-shadow,border-color] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-1 hover:border-amber-300/70 hover:shadow-[0_30px_60px_-30px_rgba(26,23,21,0.45)] ${
+        className={`group surface lift relative h-full !rounded-2xl flex flex-col overflow-hidden cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-ring-soft)] ${
           !item.available ? 'opacity-75' : ''
         }`}
       >
         {/* Dish Image Container */}
-        <div className="relative aspect-[4/3.4] overflow-hidden bg-stone-100">
+        <div className="relative aspect-[4/3.4] overflow-hidden bg-stone-100 lux-zoom">
           <RestaurantImage
             src={item.imageUrl}
             alt={item.name}
@@ -91,7 +91,7 @@ export const MenuItemCard: React.FC<MenuItemCardProps> = ({ item }) => {
             }`}
           />
 
-          <div className="absolute inset-0 bg-gradient-to-t from-ink/55 via-transparent to-ink/10 pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-t from-ink/35 via-transparent to-transparent pointer-events-none" />
 
           {/* Top Badges */}
           <div className="absolute top-3 left-3 right-3 flex justify-between items-start gap-2">
@@ -103,21 +103,21 @@ export const MenuItemCard: React.FC<MenuItemCardProps> = ({ item }) => {
             />
 
             {!item.available && (
-              <span className="px-2.5 py-1 rounded-full text-[10px] uppercase tracking-wider font-bold bg-ink/85 text-ivory backdrop-blur-sm shrink-0">
+              <span className="badge badge-danger !bg-white/95 uppercase tracking-wider !text-[10px] font-bold shadow-[var(--shadow-xs)] shrink-0">
                 Sold Out
               </span>
             )}
           </div>
 
           {/* Quick Prep Time Pill */}
-          <div className="absolute bottom-3 left-3 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-ink/70 backdrop-blur-md text-ivory text-[10.5px] font-medium">
-            <Clock className="w-3 h-3 text-gold" />
+          <div className="absolute bottom-3 left-3 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/90 backdrop-blur-md text-stone-800 text-[10.5px] font-semibold shadow-[var(--shadow-xs)]">
+            <Clock className="w-3 h-3 text-[var(--brand)]" />
             <span>{item.prepTimeMinutes} mins</span>
           </div>
 
           {/* Quick Preview Action */}
           <div className="absolute bottom-3 right-3 opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500">
-            <span className="h-7 px-3 rounded-full bg-ivory/95 text-ink text-[10px] font-bold uppercase tracking-wider flex items-center gap-1.5">
+            <span className="h-7 px-3 rounded-full bg-white/95 text-[var(--brand-text)] text-[10px] font-bold uppercase tracking-wider flex items-center gap-1.5 shadow-[var(--shadow-xs)]">
               <Eye className="w-3.5 h-3.5" /> Details
             </span>
           </div>
@@ -130,8 +130,8 @@ export const MenuItemCard: React.FC<MenuItemCardProps> = ({ item }) => {
               {item.categoryName || 'Dishes'}
             </span>
             <span
-              className={`shrink-0 inline-flex items-center gap-1.5 text-[10px] font-semibold ${
-                item.vegetarian ? 'text-emerald-700' : 'text-rose-700'
+              className={`badge shrink-0 !text-[10px] ${
+                item.vegetarian ? 'badge-success' : 'badge-danger'
               }`}
             >
               <span
@@ -145,16 +145,16 @@ export const MenuItemCard: React.FC<MenuItemCardProps> = ({ item }) => {
               {item.vegetarian ? 'Vegetarian' : 'Non-Vegetarian'}
             </span>
           </div>
-          <h3 className="lux-display !font-medium text-[1.6rem] !leading-[1.1] text-stone-900 mt-2.5 transition-colors group-hover:text-wine">
+          <h3 className="lux-display !font-medium text-[1.6rem] !leading-[1.1] text-stone-900 mt-2.5 transition-colors group-hover:text-[var(--brand-text)]">
             {item.name}
           </h3>
-          <p className="text-[13px] text-stone-500 line-clamp-2 leading-relaxed mt-2 mb-5">
+          <p className="text-[13px] text-stone-600 line-clamp-2 leading-relaxed mt-2 mb-5">
             {item.description}
           </p>
 
           {/* Pricing & Add To Cart Button */}
           <div className="mt-auto pt-4 border-t border-stone-200/70 flex items-center justify-between gap-3">
-            <span className="text-lg font-semibold text-stone-900 font-mono">
+            <span className="text-lg font-bold text-[var(--brand-text)] font-mono">
               {priceLabel}
             </span>
 
@@ -162,7 +162,7 @@ export const MenuItemCard: React.FC<MenuItemCardProps> = ({ item }) => {
               quantity > 0 ? (
                 <div
                   onClick={(e) => e.stopPropagation()}
-                  className="flex items-center h-10 bg-ink text-ivory rounded-full overflow-hidden"
+                  className="flex items-center h-10 bg-[var(--brand)] text-white rounded-full overflow-hidden shadow-[var(--shadow-xs)]"
                 >
                   <button
                     onClick={handleDecrement}
@@ -183,7 +183,7 @@ export const MenuItemCard: React.FC<MenuItemCardProps> = ({ item }) => {
               ) : (
                 <button
                   onClick={handleAdd}
-                  className="h-10 flex items-center gap-1.5 px-4 text-[10.5px] font-bold uppercase tracking-[0.14em] text-ink border border-ink/80 hover:bg-ink hover:text-ivory active:scale-[0.97] rounded-full transition-all duration-300 cursor-pointer"
+                  className="h-10 flex items-center gap-1.5 px-4 text-[10.5px] font-bold uppercase tracking-[0.14em] text-[var(--brand-text)] bg-[var(--brand-soft)] border border-[var(--brand-border)] hover:bg-[var(--brand)] hover:border-[var(--brand)] hover:text-white active:scale-[0.97] rounded-full transition-all duration-300 cursor-pointer"
                   aria-label={configurable ? `Customize and add ${item.name}` : `Add ${item.name} to cart`}
                 >
                   <Plus className="w-3.5 h-3.5" />
@@ -191,7 +191,7 @@ export const MenuItemCard: React.FC<MenuItemCardProps> = ({ item }) => {
                 </button>
               )
             ) : (
-              <span className="text-xs text-stone-400 italic">Unavailable</span>
+              <span className="badge">Unavailable</span>
             )}
           </div>
         </div>
@@ -235,7 +235,7 @@ export const DishDetailModal: React.FC<{
   return (
     <Modal isOpen={isOpen} onClose={onClose} title={item.name} maxWidth="max-w-2xl">
       <div className="space-y-5">
-        <div className="relative aspect-16/9 rounded-xl overflow-hidden bg-stone-100 shadow-md">
+        <div className="relative aspect-16/9 rounded-2xl overflow-hidden bg-stone-100 shadow-[var(--shadow-card)]">
           <RestaurantImage src={item.imageUrl} alt={item.name} className="w-full h-full object-cover" />
           <div className="absolute top-3 left-3">
             <DietaryBadge
@@ -252,7 +252,7 @@ export const DishDetailModal: React.FC<{
             <span className="text-[10px] uppercase tracking-[0.24em] font-bold text-amber-700">
               {item.categoryName}
             </span>
-            <span className="text-2xl font-semibold font-mono text-stone-900">
+            <span className="text-2xl font-bold font-mono text-[var(--brand-text)]">
               {onCustomized ? `From ${formatCurrency(startingPrice(item))}` : formatCurrency(item.price)}
             </span>
           </div>
@@ -260,22 +260,22 @@ export const DishDetailModal: React.FC<{
         </div>
 
         {/* Nutritional & Preparation Specs */}
-        <div className="grid grid-cols-3 gap-3 p-3.5 bg-stone-50 rounded-xl border border-stone-200/70 text-center">
+        <div className="grid grid-cols-3 gap-3 p-3.5 bg-[var(--surface-muted)] rounded-xl border border-[var(--border-subtle)] text-center">
           <div>
-            <span className="text-[11px] text-stone-400 block font-medium">Prep Time</span>
+            <span className="text-[11px] text-stone-500 block font-medium">Prep Time</span>
             <span className="text-xs font-bold text-stone-800 flex items-center justify-center gap-1 mt-0.5">
               <Clock className="w-3.5 h-3.5 text-amber-600" />
               {item.prepTimeMinutes} Mins
             </span>
           </div>
           <div>
-            <span className="text-[11px] text-stone-400 block font-medium">Energy</span>
+            <span className="text-[11px] text-stone-500 block font-medium">Energy</span>
             <span className="text-xs font-bold text-stone-800 mt-0.5 block">
               {item.calories ? `${item.calories} kcal` : 'Chef Fresh'}
             </span>
           </div>
           <div>
-            <span className="text-[11px] text-stone-400 block font-medium">Spice Meter</span>
+            <span className="text-[11px] text-stone-500 block font-medium">Spice Meter</span>
             <span className="text-xs font-bold text-stone-800 flex items-center justify-center gap-1 mt-0.5">
               <Flame className="w-3.5 h-3.5 text-orange-600" />
               {item.spiceLevel}
@@ -314,7 +314,7 @@ export const DishDetailModal: React.FC<{
             quantity > 0 ? (
               <div className="flex items-center gap-3">
                 <span className="text-xs text-stone-500 font-medium">In Cart:</span>
-                <div className="flex items-center bg-ink text-ivory rounded-full overflow-hidden">
+                <div className="flex items-center bg-[var(--brand)] text-white rounded-full overflow-hidden shadow-[var(--shadow-xs)]">
                   <button
                     onClick={onDecrement}
                     className="p-3 hover:bg-white/10 transition-colors cursor-pointer"
@@ -345,7 +345,7 @@ export const DishDetailModal: React.FC<{
               </button>
             )
           ) : (
-            <span className="px-4 py-2 text-sm font-medium text-rose-600 bg-rose-50 rounded-xl">
+            <span className="badge badge-danger !px-4 !py-2 !text-sm">
               Currently Sold Out
             </span>
           )}

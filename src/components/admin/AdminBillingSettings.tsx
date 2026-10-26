@@ -44,7 +44,7 @@ export const AdminBillingSettings: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="p-8 bg-white rounded-3xl border border-stone-200 flex items-center justify-center">
+      <div className="p-8 bg-white rounded-2xl border border-stone-200 shadow-[var(--shadow-card)] flex items-center justify-center">
         <Spinner size="lg" text="Loading hotel billing configuration..." />
       </div>
     );
@@ -54,13 +54,13 @@ export const AdminBillingSettings: React.FC = () => {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      <div className="bg-white p-6 rounded-3xl border border-stone-200 shadow-sm space-y-6">
+      <div className="bg-white p-6 rounded-2xl border border-stone-200 shadow-[var(--shadow-card)] space-y-6">
         <div className="flex items-center gap-3 border-b border-stone-100 pb-4">
-          <div className="w-10 h-10 rounded-2xl bg-amber-900 text-amber-300 flex items-center justify-center font-bold">
+          <div className="w-10 h-10 rounded-2xl bg-[var(--brand-soft)] text-amber-800 border border-[var(--brand-border)] flex items-center justify-center font-bold">
             <Building2 className="w-5 h-5" />
           </div>
           <div>
-            <h2 className="font-serif font-bold text-xl text-stone-900">Hotel Details & Tax Settings</h2>
+            <h2 className="page-title">Hotel Details & Tax Settings</h2>
             <p className="text-xs text-stone-500">
               Configure legal entity information, GSTIN, FSSAI numbers, tax rates, and printed invoice footer.
             </p>
@@ -74,7 +74,7 @@ export const AdminBillingSettings: React.FC = () => {
               type="text"
               value={settings.hotelName}
               onChange={(e) => setSettings({ ...settings, hotelName: e.target.value })}
-              className="w-full px-3.5 py-2.5 bg-stone-50 border border-stone-300 rounded-xl font-medium focus:outline-hidden focus:border-amber-800"
+              className="w-full px-3.5 py-2.5 bg-white border border-stone-300 rounded-xl font-medium focus:outline-hidden focus:border-amber-800"
               required
             />
           </div>
@@ -85,7 +85,7 @@ export const AdminBillingSettings: React.FC = () => {
               type="text"
               value={settings.hotelLogoUrl}
               onChange={(e) => setSettings({ ...settings, hotelLogoUrl: e.target.value })}
-              className="w-full px-3.5 py-2.5 bg-stone-50 border border-stone-300 rounded-xl font-mono text-[11px] focus:outline-hidden focus:border-amber-800"
+              className="w-full px-3.5 py-2.5 bg-white border border-stone-300 rounded-xl font-mono text-[11px] focus:outline-hidden focus:border-amber-800"
             />
           </div>
 
@@ -95,7 +95,7 @@ export const AdminBillingSettings: React.FC = () => {
               type="text"
               value={settings.address}
               onChange={(e) => setSettings({ ...settings, address: e.target.value })}
-              className="w-full px-3.5 py-2.5 bg-stone-50 border border-stone-300 rounded-xl font-medium focus:outline-hidden focus:border-amber-800"
+              className="w-full px-3.5 py-2.5 bg-white border border-stone-300 rounded-xl font-medium focus:outline-hidden focus:border-amber-800"
               required
             />
           </div>
@@ -106,7 +106,7 @@ export const AdminBillingSettings: React.FC = () => {
               type="text"
               value={settings.phone}
               onChange={(e) => setSettings({ ...settings, phone: e.target.value })}
-              className="w-full px-3.5 py-2.5 bg-stone-50 border border-stone-300 rounded-xl font-mono focus:outline-hidden focus:border-amber-800"
+              className="w-full px-3.5 py-2.5 bg-white border border-stone-300 rounded-xl font-mono focus:outline-hidden focus:border-amber-800"
               required
             />
           </div>
@@ -117,7 +117,7 @@ export const AdminBillingSettings: React.FC = () => {
               type="email"
               value={settings.email}
               onChange={(e) => setSettings({ ...settings, email: e.target.value })}
-              className="w-full px-3.5 py-2.5 bg-stone-50 border border-stone-300 rounded-xl font-mono focus:outline-hidden focus:border-amber-800"
+              className="w-full px-3.5 py-2.5 bg-white border border-stone-300 rounded-xl font-mono focus:outline-hidden focus:border-amber-800"
               required
             />
           </div>
@@ -128,7 +128,7 @@ export const AdminBillingSettings: React.FC = () => {
               type="text"
               value={settings.gstin}
               onChange={(e) => setSettings({ ...settings, gstin: e.target.value })}
-              className="w-full px-3.5 py-2.5 bg-stone-50 border border-stone-300 rounded-xl font-mono focus:outline-hidden focus:border-amber-800 uppercase"
+              className="w-full px-3.5 py-2.5 bg-white border border-stone-300 rounded-xl font-mono focus:outline-hidden focus:border-amber-800 uppercase"
             />
           </div>
 
@@ -138,7 +138,7 @@ export const AdminBillingSettings: React.FC = () => {
               type="text"
               value={settings.fssaiNumber}
               onChange={(e) => setSettings({ ...settings, fssaiNumber: e.target.value })}
-              className="w-full px-3.5 py-2.5 bg-stone-50 border border-stone-300 rounded-xl font-mono focus:outline-hidden focus:border-amber-800"
+              className="w-full px-3.5 py-2.5 bg-white border border-stone-300 rounded-xl font-mono focus:outline-hidden focus:border-amber-800"
             />
           </div>
         </div>
@@ -151,10 +151,10 @@ export const AdminBillingSettings: React.FC = () => {
               type="text"
               value={settings.invoicePrefix}
               onChange={(e) => setSettings({ ...settings, invoicePrefix: e.target.value })}
-              className="w-full px-3.5 py-2.5 bg-stone-50 border border-stone-300 rounded-xl font-mono font-bold uppercase"
+              className="w-full px-3.5 py-2.5 bg-white border border-stone-300 rounded-xl font-mono font-bold uppercase"
               required
             />
-            <p className="text-[10px] text-stone-400 mt-1">e.g. "INV" generates INV-2026-000101</p>
+            <p className="text-[10px] text-stone-500 mt-1">e.g. "INV" generates INV-2026-000101</p>
           </div>
 
           <div>
@@ -166,7 +166,7 @@ export const AdminBillingSettings: React.FC = () => {
               step="0.5"
               value={settings.gstPercent}
               onChange={(e) => setSettings({ ...settings, gstPercent: parseFloat(e.target.value) || 0 })}
-              className="w-full px-3.5 py-2.5 bg-stone-50 border border-stone-300 rounded-xl font-mono font-bold"
+              className="w-full px-3.5 py-2.5 bg-white border border-stone-300 rounded-xl font-mono font-bold"
               required
             />
           </div>
@@ -180,7 +180,7 @@ export const AdminBillingSettings: React.FC = () => {
               step="0.5"
               value={settings.serviceFeePercent}
               onChange={(e) => setSettings({ ...settings, serviceFeePercent: parseFloat(e.target.value) || 0 })}
-              className="w-full px-3.5 py-2.5 bg-stone-50 border border-stone-300 rounded-xl font-mono font-bold"
+              className="w-full px-3.5 py-2.5 bg-white border border-stone-300 rounded-xl font-mono font-bold"
               required
             />
           </div>
@@ -194,7 +194,7 @@ export const AdminBillingSettings: React.FC = () => {
               type="text"
               value={settings.invoiceFooter}
               onChange={(e) => setSettings({ ...settings, invoiceFooter: e.target.value })}
-              className="w-full px-3.5 py-2.5 bg-stone-50 border border-stone-300 rounded-xl font-serif italic text-stone-800"
+              className="w-full px-3.5 py-2.5 bg-white border border-stone-300 rounded-xl font-serif italic text-stone-800"
             />
           </div>
 
@@ -204,7 +204,7 @@ export const AdminBillingSettings: React.FC = () => {
               rows={2}
               value={settings.termsAndConditions}
               onChange={(e) => setSettings({ ...settings, termsAndConditions: e.target.value })}
-              className="w-full p-3 bg-stone-50 border border-stone-300 rounded-xl text-stone-700 text-xs"
+              className="w-full p-3 bg-white border border-stone-300 rounded-xl text-stone-700 text-xs"
             />
           </div>
         </div>
@@ -213,9 +213,9 @@ export const AdminBillingSettings: React.FC = () => {
           <button
             type="submit"
             disabled={saving}
-            className="py-3 px-6 bg-gradient-to-r from-amber-800 to-amber-950 hover:from-amber-900 hover:to-black text-white font-bold rounded-2xl text-xs flex items-center gap-2 shadow-md transition-all cursor-pointer disabled:opacity-50"
+            className="py-3 px-6 bg-amber-800 hover:bg-amber-900 text-white font-bold rounded-2xl text-xs flex items-center gap-2 shadow-md transition-all cursor-pointer disabled:opacity-50"
           >
-            <Save className="w-4 h-4 text-amber-300" />
+            <Save className="w-4 h-4 text-amber-200" />
             <span>{saving ? 'Saving Settings...' : 'Save Billing Settings'}</span>
           </button>
         </div>

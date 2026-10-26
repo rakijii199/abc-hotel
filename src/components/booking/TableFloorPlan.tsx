@@ -23,21 +23,24 @@ export const TableFloorPlan: React.FC<{
   return (
     <div className="space-y-4">
       {/* Header Bar with Count & Legend */}
-      <div className="flex flex-wrap items-center justify-between gap-2 bg-stone-50/80 p-3 rounded-xl border border-stone-200/80">
-        <h4 className="font-serif font-bold text-sm sm:text-base text-stone-900 flex items-center gap-2">
+      <div className="flex flex-wrap items-center justify-between gap-2 bg-[var(--surface-muted)] p-3 rounded-xl border border-[var(--border-subtle)]">
+        <h4 className="section-title !text-base flex flex-wrap items-center gap-2">
           <span>Dining Floor Plan</span>
-          <span className="text-[11px] sm:text-xs font-sans font-medium text-emerald-800 bg-emerald-100/70 border border-emerald-300 px-2 py-0.5 rounded-full">
+          <span className="badge badge-success font-lux !text-[11px] sm:!text-xs !whitespace-normal">
             {availableCount} {availableCount === 1 ? 'Table' : 'Tables'} Available ({guestCount} {guestCount === 1 ? 'guest' : 'guests'})
           </span>
         </h4>
 
         {/* Legend */}
-        <div className="flex items-center gap-3 text-[11px] sm:text-xs font-medium">
+        <div className="flex flex-wrap items-center gap-3 text-[11px] sm:text-xs font-medium">
           <span className="flex items-center gap-1.5 text-emerald-800">
             <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-2xs" /> Available
           </span>
+          <span className="flex items-center gap-1.5 text-[var(--brand-text)]" aria-hidden="true">
+            <span className="w-2.5 h-2.5 rounded-full bg-[var(--brand)]" /> Selected
+          </span>
           <span className="flex items-center gap-1.5 text-stone-500">
-            <span className="w-2.5 h-2.5 rounded-full bg-stone-300" /> Booked / Blocked
+            <span className="w-2.5 h-2.5 rounded-full border border-dashed border-stone-400 bg-stone-200" /> Booked / Blocked
           </span>
         </div>
       </div>
@@ -56,17 +59,17 @@ export const TableFloorPlan: React.FC<{
               onClick={() => onSelectTable(table)}
               className={`p-3.5 sm:p-4 rounded-2xl border text-left transition-all relative overflow-hidden flex flex-col justify-between min-h-[130px] ${
                 isSelected
-                  ? 'bg-amber-50/90 border-amber-600 ring-2 ring-amber-600/30 shadow-md'
+                  ? 'bg-[var(--brand-soft)] border-[var(--brand)] ring-2 ring-[var(--brand-ring-soft)] shadow-[var(--shadow-raised)] -translate-y-0.5'
                   : table.isAvailable
-                  ? 'bg-white border-stone-200 hover:border-amber-400 hover:shadow-md cursor-pointer'
-                  : 'bg-stone-100/80 border-stone-200/80 opacity-75 cursor-not-allowed'
+                  ? 'bg-white border-stone-200 shadow-[var(--shadow-xs)] hover:border-[var(--brand-border)] hover:shadow-[var(--shadow-raised)] hover:-translate-y-0.5 cursor-pointer'
+                  : 'bg-[var(--surface-muted)] border-dashed border-stone-300 opacity-80 cursor-not-allowed'
               }`}
             >
               <div className="space-y-2">
                 {/* Row 1: Table Number */}
                 <div className="flex items-center gap-1.5">
-                  <Armchair className={`w-4 h-4 shrink-0 ${isSelected ? 'text-amber-800' : table.isAvailable ? 'text-amber-700' : 'text-stone-400'}`} />
-                  <span className="font-serif font-bold text-base text-stone-900 whitespace-nowrap leading-none">
+                  <Armchair className={`w-4 h-4 shrink-0 ${isSelected ? 'text-[var(--brand)]' : table.isAvailable ? 'text-[var(--brand)]' : 'text-stone-400'}`} />
+                  <span className="font-display font-bold text-lg text-stone-900 whitespace-nowrap leading-none">
                     {table.tableNumber}
                   </span>
                 </div>
@@ -92,9 +95,9 @@ export const TableFloorPlan: React.FC<{
               </div>
 
               {/* Row 3: Availability Status */}
-              <div className="pt-2 border-t border-stone-100 flex items-center justify-between mt-2">
+              <div className="pt-2 border-t border-stone-200/70 flex items-center justify-between gap-2 mt-2">
                 {table.isAvailable ? (
-                  <span className="inline-flex items-center gap-1 text-xs font-bold text-emerald-700">
+                  <span className={`inline-flex items-center gap-1 text-xs font-bold ${isSelected ? 'text-[var(--brand-text)]' : 'text-emerald-700'}`}>
                     <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
                     <span className="whitespace-nowrap">{isSelected ? 'Selected Table' : 'Available'}</span>
                   </span>
@@ -115,7 +118,7 @@ export const TableFloorPlan: React.FC<{
                 )}
 
                 {isSelected && (
-                  <span className="w-5 h-5 rounded-full bg-amber-700 text-white flex items-center justify-center text-xs font-bold shrink-0">
+                  <span className="w-5 h-5 rounded-full bg-[var(--brand)] text-white flex items-center justify-center text-xs font-bold shrink-0">
                     ✓
                   </span>
                 )}
@@ -137,11 +140,11 @@ export const BookingCard: React.FC<{
   const isEligibleForCancel = canCancel && (booking.status === 'CONFIRMED' || booking.status === 'PENDING');
 
   return (
-    <div className="bg-white rounded-2xl border border-stone-200/90 p-5 shadow-xs hover:shadow-md transition-all flex flex-col justify-between space-y-4">
+    <div className="surface lift !rounded-2xl p-5 flex flex-col justify-between space-y-4">
       {/* Top Row: Reference + Status Badge */}
       <div>
-        <div className="flex items-center justify-between gap-2 pb-3 border-b border-stone-100">
-          <span className="text-xs font-mono font-bold text-amber-900 bg-amber-50 px-2.5 py-1 rounded-lg border border-amber-200/80">
+        <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-stone-100">
+          <span className="text-xs font-mono font-bold text-[var(--brand-text)] bg-[var(--brand-soft)] px-2.5 py-1 rounded-lg border border-[var(--brand-border)]">
             {booking.bookingReference}
           </span>
           <span
@@ -153,15 +156,15 @@ export const BookingCard: React.FC<{
 
         {/* Table Name & Seating */}
         <div className="pt-3">
-          <h4 className="font-serif font-bold text-lg text-stone-900 flex items-center gap-1.5">
-            <Armchair className="w-4 h-4 text-amber-800 shrink-0" />
+          <h4 className="section-title !text-lg flex items-center gap-1.5">
+            <Armchair className="w-4 h-4 text-[var(--brand)] shrink-0" />
             <span>{booking.tableName || booking.tableNumber || 'Dining Table'}</span>
           </h4>
         </div>
       </div>
 
       {/* Structured Details with Full Visibility (No Truncation) */}
-      <div className="bg-stone-50/70 p-3.5 rounded-xl border border-stone-200/70 space-y-2.5 text-xs">
+      <div className="bg-[var(--surface-muted)] p-3.5 rounded-xl border border-[var(--border-subtle)] space-y-2.5 text-xs">
         {/* Date Row */}
         <div className="flex items-center justify-between gap-2">
           <span className="text-stone-500 font-medium flex items-center gap-1.5 shrink-0">
@@ -203,15 +206,15 @@ export const BookingCard: React.FC<{
 
       {/* Special Notes */}
       {booking.specialRequest && (
-        <div className="p-2.5 bg-amber-50/60 rounded-xl text-xs text-amber-950 border border-amber-200/60">
-          <span className="font-bold text-amber-900">Special Request: </span>
+        <div className="p-2.5 bg-[var(--brand-soft)] rounded-xl text-xs text-stone-800 border border-[var(--brand-border)]">
+          <span className="font-bold text-[var(--brand-text)]">Special Request: </span>
           <span>{booking.specialRequest}</span>
         </div>
       )}
 
       {/* Action Footer */}
-      <div className="pt-2 border-t border-stone-100 flex items-center justify-between">
-        <span className="text-[11px] text-stone-400 font-medium">
+      <div className="pt-2 border-t border-stone-100 flex flex-wrap items-center justify-between gap-2">
+        <span className="text-[11px] text-stone-500 font-medium">
           {booking.status === 'CONFIRMED'
             ? '✓ Table Locked'
             : booking.status === 'CANCELLED'
@@ -222,7 +225,7 @@ export const BookingCard: React.FC<{
         {isEligibleForCancel && onCancel ? (
           <button
             onClick={() => onCancel(booking.id)}
-            className="px-4 py-2 text-xs font-bold text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200 rounded-xl transition-all cursor-pointer shadow-2xs"
+            className="btn btn-secondary !text-rose-700 hover:!bg-rose-50 hover:!border-rose-200"
           >
             Cancel Reservation
           </button>

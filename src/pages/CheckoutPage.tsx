@@ -396,10 +396,10 @@ export const CheckoutPage: React.FC<{
       {/* Header */}
       <div className="flex flex-wrap items-center justify-between gap-2 border-b border-stone-200 pb-3">
         <div>
-          <span className="text-[10px] font-extrabold uppercase tracking-widest text-amber-800">
+          <span className="text-[10px] font-extrabold uppercase tracking-widest text-[var(--brand-text)]">
             Step 2 of 2 • Dining & Payment
           </span>
-          <h1 className="font-serif text-xl sm:text-2xl font-bold text-stone-900 leading-tight">
+          <h1 className="page-title">
             Checkout & Order Finalization
           </h1>
         </div>
@@ -411,7 +411,7 @@ export const CheckoutPage: React.FC<{
 
       {/* Warning Banner if previously failed attempt */}
       {failedOrderRef && (
-        <div className="p-3 bg-amber-50 border border-amber-300 rounded-2xl flex items-center justify-between gap-3 text-xs text-amber-950 shadow-2xs animate-in fade-in duration-200">
+        <div className="p-3 bg-[var(--warning-soft)] border border-[var(--warning-border)] rounded-2xl flex flex-wrap items-center justify-between gap-3 text-xs text-amber-950 shadow-[var(--shadow-xs)] animate-in fade-in duration-200">
           <div className="flex items-center gap-2">
             <AlertCircle className="w-4 h-4 text-amber-700 shrink-0" />
             <span className="font-bold">Pending Order #{failedOrderRef.orderNumber}</span>
@@ -436,16 +436,16 @@ export const CheckoutPage: React.FC<{
           {/* ========================================================================= */}
           {/* SECTION 1: DINING SERVICE TYPE & LOCATION                                */}
           {/* ========================================================================= */}
-          <div className="bg-white p-4 sm:p-5 rounded-3xl border border-stone-200 shadow-xs space-y-3">
-            <div className="flex items-center justify-between border-b border-stone-100 pb-2">
-              <h2 className="font-serif font-bold text-sm sm:text-base text-stone-900 flex items-center gap-2">
+          <div className="surface !rounded-2xl p-4 sm:p-5 space-y-3">
+            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-stone-100 pb-2.5">
+              <h2 className="section-title !text-lg flex items-center gap-2">
                 <Utensils className="w-4 h-4 text-amber-700" />
                 <span>1. Dining Service Type & Location</span>
               </h2>
-              <span className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-md border ${
+              <span className={`badge uppercase tracking-wider !text-[10px] font-bold ${
                 isOnlinePaymentMandatory
-                  ? 'bg-rose-50 text-rose-800 border-rose-200'
-                  : 'bg-emerald-50 text-emerald-800 border-emerald-200'
+                  ? 'badge-danger'
+                  : 'badge-success'
               }`}>
                 {isOnlinePaymentMandatory ? 'Online Payment Mandatory' : 'Pay at Exit Available'}
               </span>
@@ -459,8 +459,8 @@ export const CheckoutPage: React.FC<{
                 onClick={() => setOrderType('Dine-in')}
                 className={`py-2.5 px-3 rounded-2xl border text-center transition-all flex flex-col items-center justify-center gap-1 cursor-pointer ${
                   orderType === 'Dine-in'
-                    ? 'bg-amber-50 border-amber-600 text-amber-900 font-bold ring-2 ring-amber-600/30 shadow-2xs'
-                    : 'bg-stone-50 border-stone-200 text-stone-600 hover:bg-stone-100 font-medium'
+                    ? 'bg-[var(--brand-soft)] border-[var(--brand)] text-[var(--brand-text)] font-bold ring-2 ring-[var(--brand-ring-soft)] shadow-[var(--shadow-xs)]'
+                    : 'bg-white border-stone-200 text-stone-600 hover:border-[var(--brand-border)] hover:bg-[var(--brand-soft)]/40 font-medium'
                 }`}
               >
                 <Utensils className="w-4 h-4 text-amber-700" />
@@ -477,10 +477,10 @@ export const CheckoutPage: React.FC<{
                 onClick={() => !isQrSession && setOrderType('Takeaway')}
                 className={`py-2.5 px-3 rounded-2xl border text-center transition-all flex flex-col items-center justify-center gap-1 ${
                   isQrSession
-                    ? 'opacity-40 bg-stone-100 border-stone-200 text-stone-400 cursor-not-allowed'
+                    ? 'opacity-50 bg-[var(--surface-muted)] border-stone-200 text-stone-500 cursor-not-allowed'
                     : orderType === 'Takeaway'
-                    ? 'bg-amber-50 border-amber-600 text-amber-900 font-bold ring-2 ring-amber-600/30 shadow-2xs cursor-pointer'
-                    : 'bg-stone-50 border-stone-200 text-stone-600 hover:bg-stone-100 font-medium cursor-pointer'
+                    ? 'bg-[var(--brand-soft)] border-[var(--brand)] text-[var(--brand-text)] font-bold ring-2 ring-[var(--brand-ring-soft)] shadow-[var(--shadow-xs)] cursor-pointer'
+                    : 'bg-white border-stone-200 text-stone-600 hover:border-[var(--brand-border)] hover:bg-[var(--brand-soft)]/40 font-medium cursor-pointer'
                 }`}
                 title={isQrSession ? 'Disabled for Table QR Code session' : ''}
               >
@@ -498,10 +498,10 @@ export const CheckoutPage: React.FC<{
                 onClick={() => !isQrSession && setOrderType('Room Service')}
                 className={`py-2.5 px-3 rounded-2xl border text-center transition-all flex flex-col items-center justify-center gap-1 ${
                   isQrSession
-                    ? 'opacity-40 bg-stone-100 border-stone-200 text-stone-400 cursor-not-allowed'
+                    ? 'opacity-50 bg-[var(--surface-muted)] border-stone-200 text-stone-500 cursor-not-allowed'
                     : orderType === 'Room Service'
-                    ? 'bg-amber-50 border-amber-600 text-amber-900 font-bold ring-2 ring-amber-600/30 shadow-2xs cursor-pointer'
-                    : 'bg-stone-50 border-stone-200 text-stone-600 hover:bg-stone-100 font-medium cursor-pointer'
+                    ? 'bg-[var(--brand-soft)] border-[var(--brand)] text-[var(--brand-text)] font-bold ring-2 ring-[var(--brand-ring-soft)] shadow-[var(--shadow-xs)] cursor-pointer'
+                    : 'bg-white border-stone-200 text-stone-600 hover:border-[var(--brand-border)] hover:bg-[var(--brand-soft)]/40 font-medium cursor-pointer'
                 }`}
                 title={isQrSession ? 'Disabled for Table QR Code session' : ''}
               >
@@ -519,10 +519,10 @@ export const CheckoutPage: React.FC<{
                 onClick={() => !isQrSession && setOrderType('Delivery')}
                 className={`py-2.5 px-3 rounded-2xl border text-center transition-all flex flex-col items-center justify-center gap-1 ${
                   isQrSession
-                    ? 'opacity-40 bg-stone-100 border-stone-200 text-stone-400 cursor-not-allowed'
+                    ? 'opacity-50 bg-[var(--surface-muted)] border-stone-200 text-stone-500 cursor-not-allowed'
                     : orderType === 'Delivery'
-                    ? 'bg-amber-50 border-amber-600 text-amber-900 font-bold ring-2 ring-amber-600/30 shadow-2xs cursor-pointer'
-                    : 'bg-stone-50 border-stone-200 text-stone-600 hover:bg-stone-100 font-medium cursor-pointer'
+                    ? 'bg-[var(--brand-soft)] border-[var(--brand)] text-[var(--brand-text)] font-bold ring-2 ring-[var(--brand-ring-soft)] shadow-[var(--shadow-xs)] cursor-pointer'
+                    : 'bg-white border-stone-200 text-stone-600 hover:border-[var(--brand-border)] hover:bg-[var(--brand-soft)]/40 font-medium cursor-pointer'
                 }`}
                 title={isQrSession ? 'Disabled for Table QR Code session' : ''}
               >
@@ -538,7 +538,7 @@ export const CheckoutPage: React.FC<{
             {orderType === 'Dine-in' && (
               <div className="pt-1 space-y-2">
                 {myBookings.length > 0 && (
-                  <div className="p-2.5 bg-amber-50/70 border border-amber-200/70 rounded-xl text-xs flex flex-wrap items-center justify-between gap-2">
+                  <div className="p-2.5 bg-[var(--brand-soft)] border border-[var(--brand-border)] rounded-xl text-xs flex flex-wrap items-center justify-between gap-2">
                     <span className="font-bold text-amber-950">Link Confirmed Table:</span>
                     <select
                       value={bookingReference}
@@ -547,7 +547,7 @@ export const CheckoutPage: React.FC<{
                         setBookingReference(e.target.value);
                         if (sel) setTableNumber(sel.tableNumber || 'Table 03');
                       }}
-                      className="p-1.5 bg-white border border-amber-300 rounded-lg text-xs font-medium"
+                      className="p-1.5 bg-white border border-[var(--brand-border)] rounded-lg text-xs font-medium max-w-full"
                     >
                       {myBookings.map((b) => (
                         <option key={b.id} value={b.bookingReference}>
@@ -558,7 +558,7 @@ export const CheckoutPage: React.FC<{
                   </div>
                 )}
 
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2">
                   <label className="text-xs font-bold text-stone-700 shrink-0">Table / Seating Area:</label>
                   <input
                     type="text"
@@ -567,15 +567,15 @@ export const CheckoutPage: React.FC<{
                     onChange={(e) => !isQrSession && setTableNumber(e.target.value)}
                     readOnly={isQrSession}
                     disabled={isQrSession}
-                    className={`flex-1 px-3 py-1.5 rounded-xl text-xs ${
+                    className={`flex-1 min-w-0 px-3 py-2 rounded-xl text-xs ${
                       isQrSession
-                        ? 'bg-amber-100/60 border border-amber-300 font-bold text-amber-950 cursor-not-allowed'
-                        : 'bg-stone-50 border border-stone-200'
+                        ? 'bg-[var(--brand-soft)] border border-[var(--brand-border)] font-bold text-[var(--brand-text)] cursor-not-allowed'
+                        : 'bg-white border border-[var(--border-subtle)]'
                     }`}
                     required
                   />
                   {isQrSession && (
-                    <span className="text-[10px] font-extrabold uppercase bg-amber-800 text-white px-2 py-1 rounded-lg shrink-0">
+                    <span className="badge badge-brand uppercase !text-[10px] font-extrabold shrink-0">
                       🔒 QR Locked
                     </span>
                   )}
@@ -591,7 +591,7 @@ export const CheckoutPage: React.FC<{
                   placeholder="Enter Room Number"
                   value={roomNumber}
                   onChange={(e) => setRoomNumber(e.target.value)}
-                  className="flex-1 px-3 py-1.5 bg-stone-50 border border-stone-200 rounded-xl text-xs"
+                  className="flex-1 min-w-0 px-3 py-2 bg-white border border-[var(--border-subtle)] rounded-xl text-xs"
                   required
                 />
               </div>
@@ -610,7 +610,7 @@ export const CheckoutPage: React.FC<{
                       setEditingAddressObj(null);
                       setAddressModalOpen(true);
                     }}
-                    className="text-[11px] font-bold text-amber-900 hover:text-white bg-amber-100 hover:bg-amber-800 px-3 py-1.5 rounded-xl border border-amber-300 transition-all flex items-center gap-1 cursor-pointer shadow-2xs"
+                    className="text-[11px] font-bold text-[var(--brand-text)] hover:text-white bg-[var(--brand-soft)] hover:bg-[var(--brand)] px-3 py-1.5 rounded-xl border border-[var(--brand-border)] hover:border-[var(--brand)] transition-all flex items-center gap-1 cursor-pointer shadow-[var(--shadow-xs)]"
                   >
                     <Plus className="w-3.5 h-3.5" />
                     <span>Add New Address</span>
@@ -632,23 +632,23 @@ export const CheckoutPage: React.FC<{
                             }}
                             className={`p-3.5 rounded-2xl border transition-all relative flex flex-col justify-between gap-2 cursor-pointer ${
                               isSelected
-                                ? 'bg-amber-50/90 border-amber-600 ring-2 ring-amber-600/30 shadow-2xs'
-                                : 'bg-stone-50/70 border-stone-200 hover:bg-stone-100'
+                                ? 'bg-[var(--brand-soft)] border-[var(--brand)] text-stone-900 ring-2 ring-[var(--brand-ring-soft)] shadow-[var(--shadow-xs)]'
+                                : 'bg-white border-stone-200 text-stone-700 hover:border-[var(--brand-border)] hover:bg-[var(--brand-soft)]/40'
                             }`}
                           >
                             <div className="flex items-start justify-between gap-2">
                               <div className="flex items-center gap-1.5">
                                 <span className={`px-2 py-0.5 rounded-md text-[9px] font-extrabold uppercase ${
                                   addr.tag === 'Home'
-                                    ? 'bg-amber-100 text-amber-900 border border-amber-300'
+                                    ? 'bg-[var(--brand-soft)] text-[var(--brand-text)] border border-[var(--brand-border)]'
                                     : addr.tag === 'Work'
-                                    ? 'bg-purple-100 text-purple-900 border border-purple-300'
-                                    : 'bg-blue-100 text-blue-900 border border-blue-300'
+                                    ? 'bg-[var(--info-soft)] text-[var(--info)] border border-[var(--info-border)]'
+                                    : 'bg-[var(--surface-muted)] text-stone-700 border border-[var(--border-subtle)]'
                                 }`}>
                                   {addr.tag}
                                 </span>
                                 {isSelected && (
-                                  <span className="text-[10px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full flex items-center gap-1 border border-emerald-300">
+                                  <span className="badge badge-success !text-[10px] font-bold">
                                     <Check className="w-3 h-3" /> Selected
                                   </span>
                                 )}
@@ -663,7 +663,7 @@ export const CheckoutPage: React.FC<{
                                     setAddressModalOpen(true);
                                   }}
                                   title="Edit address"
-                                  className="p-1 rounded-lg bg-stone-200/80 hover:bg-amber-700 hover:text-white text-stone-700 transition-colors cursor-pointer"
+                                  className="p-1.5 rounded-lg bg-white border border-[var(--border-subtle)] hover:bg-[var(--brand)] hover:border-[var(--brand)] hover:text-white text-stone-700 transition-colors cursor-pointer"
                                 >
                                   <Edit2 className="w-3.5 h-3.5" />
                                 </button>
@@ -675,7 +675,7 @@ export const CheckoutPage: React.FC<{
                                       handleDeleteAddress(addr.id);
                                     }}
                                     title="Delete address"
-                                    className="p-1 rounded-lg bg-stone-200/80 hover:bg-rose-700 hover:text-white text-stone-700 transition-colors cursor-pointer"
+                                    className="p-1.5 rounded-lg bg-white border border-[var(--border-subtle)] hover:bg-rose-700 hover:border-rose-700 hover:text-white text-stone-700 transition-colors cursor-pointer"
                                   >
                                     <Trash2 className="w-3.5 h-3.5" />
                                   </button>
@@ -693,7 +693,7 @@ export const CheckoutPage: React.FC<{
                     </div>
                   </div>
                 ) : (
-                  <div className="p-4 rounded-2xl bg-amber-50/60 border border-amber-200 text-center space-y-2">
+                  <div className="p-4 rounded-2xl bg-[var(--brand-soft)] border border-dashed border-[var(--brand-border)] text-center space-y-2">
                     <p className="text-xs text-amber-900 font-medium">No saved delivery address yet.</p>
                     <button
                       type="button"
@@ -701,7 +701,7 @@ export const CheckoutPage: React.FC<{
                         setEditingAddressObj(null);
                         setAddressModalOpen(true);
                       }}
-                      className="px-4 py-2 bg-amber-800 hover:bg-amber-900 text-white text-xs font-bold rounded-xl transition-all cursor-pointer shadow-2xs inline-flex items-center gap-1.5"
+                      className="btn btn-primary"
                     >
                       <Plus className="w-4 h-4" />
                       <span>Add Delivery Address</span>
@@ -715,9 +715,9 @@ export const CheckoutPage: React.FC<{
           {/* ========================================================================= */}
           {/* SECTION 2: SELECT PAYMENT METHOD                                          */}
           {/* ========================================================================= */}
-          <div className="bg-white p-4 sm:p-5 rounded-3xl border border-stone-200 shadow-xs space-y-3.5">
-            <div className="flex items-center justify-between border-b border-stone-100 pb-2">
-              <h2 className="font-serif font-bold text-sm sm:text-base text-stone-900 flex items-center gap-2">
+          <div className="surface !rounded-2xl p-4 sm:p-5 space-y-3.5">
+            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-stone-100 pb-2.5">
+              <h2 className="section-title !text-lg flex items-center gap-2">
                 <CreditCard className="w-4 h-4 text-amber-700" />
                 <span>Select Payment Method</span>
               </h2>
@@ -734,8 +734,8 @@ export const CheckoutPage: React.FC<{
                 onClick={() => setSelectedPayment('PHONEPE')}
                 className={`p-3.5 rounded-2xl border text-left transition-all flex items-center justify-between gap-3 cursor-pointer ${
                   selectedPayment === 'PHONEPE'
-                    ? 'bg-purple-50/90 border-purple-500 text-purple-950 ring-2 ring-purple-500/30 shadow-xs'
-                    : 'bg-stone-50/70 border-stone-200 text-stone-700 hover:bg-stone-100'
+                    ? 'bg-[var(--brand-soft)] border-[var(--brand)] text-stone-900 ring-2 ring-[var(--brand-ring-soft)] shadow-[var(--shadow-xs)]'
+                    : 'bg-white border-stone-200 text-stone-700 hover:border-[var(--brand-border)] hover:bg-[var(--brand-soft)]/40'
                 }`}
               >
                 <div className="flex items-center gap-3">
@@ -753,7 +753,7 @@ export const CheckoutPage: React.FC<{
                   </div>
                 </div>
                 {selectedPayment === 'PHONEPE' && (
-                  <div className="w-5 h-5 rounded-full bg-purple-700 text-white flex items-center justify-center shrink-0">
+                  <div className="w-5 h-5 rounded-full bg-[var(--brand)] text-white flex items-center justify-center shrink-0">
                     <Check className="w-3.5 h-3.5" />
                   </div>
                 )}
@@ -765,8 +765,8 @@ export const CheckoutPage: React.FC<{
                 onClick={() => setSelectedPayment('GPAY')}
                 className={`p-3.5 rounded-2xl border text-left transition-all flex items-center justify-between gap-3 cursor-pointer ${
                   selectedPayment === 'GPAY'
-                    ? 'bg-blue-50/90 border-blue-500 text-blue-950 ring-2 ring-blue-500/30 shadow-xs'
-                    : 'bg-stone-50/70 border-stone-200 text-stone-700 hover:bg-stone-100'
+                    ? 'bg-[var(--brand-soft)] border-[var(--brand)] text-stone-900 ring-2 ring-[var(--brand-ring-soft)] shadow-[var(--shadow-xs)]'
+                    : 'bg-white border-stone-200 text-stone-700 hover:border-[var(--brand-border)] hover:bg-[var(--brand-soft)]/40'
                 }`}
               >
                 <div className="flex items-center gap-3">
@@ -784,7 +784,7 @@ export const CheckoutPage: React.FC<{
                   </div>
                 </div>
                 {selectedPayment === 'GPAY' && (
-                  <div className="w-5 h-5 rounded-full bg-blue-600 text-white flex items-center justify-center shrink-0">
+                  <div className="w-5 h-5 rounded-full bg-[var(--brand)] text-white flex items-center justify-center shrink-0">
                     <Check className="w-3.5 h-3.5" />
                   </div>
                 )}
@@ -796,18 +796,18 @@ export const CheckoutPage: React.FC<{
                 onClick={() => setSelectedPayment('QR')}
                 className={`p-3.5 rounded-2xl border text-left transition-all flex items-center justify-between gap-3 cursor-pointer ${
                   selectedPayment === 'QR'
-                    ? 'bg-amber-50/90 border-amber-600 text-amber-950 ring-2 ring-amber-600/30 shadow-xs'
-                    : 'bg-stone-50/70 border-stone-200 text-stone-700 hover:bg-stone-100'
+                    ? 'bg-[var(--brand-soft)] border-[var(--brand)] text-stone-900 ring-2 ring-[var(--brand-ring-soft)] shadow-[var(--shadow-xs)]'
+                    : 'bg-white border-stone-200 text-stone-700 hover:border-[var(--brand-border)] hover:bg-[var(--brand-soft)]/40'
                 }`}
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-xl bg-amber-800 text-white flex items-center justify-center shadow-sm shrink-0">
+                  <div className="w-9 h-9 rounded-xl bg-[var(--brand)] text-white flex items-center justify-center shadow-sm shrink-0">
                     <QrCode className="w-4 h-4" />
                   </div>
                   <div>
                     <div className="flex items-center gap-1.5">
                       <p className="font-bold text-xs sm:text-sm text-stone-900">Scan QR Code</p>
-                      <span className="text-[9px] font-extrabold uppercase tracking-wider bg-amber-100 text-amber-900 px-1.5 py-0.2 rounded-sm border border-amber-300">
+                      <span className="text-[9px] font-extrabold uppercase tracking-wider bg-[var(--brand-soft)] text-[var(--brand-text)] px-1.5 py-0.2 rounded-sm border border-[var(--brand-border)]">
                         UPI QR
                       </span>
                     </div>
@@ -815,7 +815,7 @@ export const CheckoutPage: React.FC<{
                   </div>
                 </div>
                 {selectedPayment === 'QR' && (
-                  <div className="w-5 h-5 rounded-full bg-amber-800 text-white flex items-center justify-center shrink-0">
+                  <div className="w-5 h-5 rounded-full bg-[var(--brand)] text-white flex items-center justify-center shrink-0">
                     <Check className="w-3.5 h-3.5" />
                   </div>
                 )}
@@ -827,36 +827,36 @@ export const CheckoutPage: React.FC<{
                 onClick={() => setSelectedPayment('CARD')}
                 className={`p-3.5 rounded-2xl border text-left transition-all flex items-center justify-between gap-3 cursor-pointer ${
                   selectedPayment === 'CARD'
-                    ? 'bg-stone-900 text-white border-stone-900 ring-2 ring-stone-900/30 shadow-xs'
-                    : 'bg-stone-50/70 border-stone-200 text-stone-700 hover:bg-stone-100'
+                    ? 'bg-[var(--brand-soft)] border-[var(--brand)] text-stone-900 ring-2 ring-[var(--brand-ring-soft)] shadow-[var(--shadow-xs)]'
+                    : 'bg-white border-stone-200 text-stone-700 hover:border-[var(--brand-border)] hover:bg-[var(--brand-soft)]/40'
                 }`}
               >
                 <div className="flex items-center gap-3">
                   <div className={`w-9 h-9 rounded-xl flex items-center justify-center shadow-sm shrink-0 ${
-                    selectedPayment === 'CARD' ? 'bg-amber-400 text-stone-950' : 'bg-stone-800 text-white'
+                    selectedPayment === 'CARD' ? 'bg-[var(--brand)] text-white' : 'bg-white border border-stone-200 text-stone-700'
                   }`}>
                     <CreditCard className="w-4 h-4" />
                   </div>
                   <div>
                     <div className="flex items-center gap-1.5">
-                      <p className={`font-bold text-xs sm:text-sm ${selectedPayment === 'CARD' ? 'text-white' : 'text-stone-900'}`}>
+                      <p className="font-bold text-xs sm:text-sm text-stone-900">
                         Credit / Debit Card
                       </p>
                       <span className={`text-[9px] font-extrabold uppercase tracking-wider px-1.5 py-0.2 rounded-sm border ${
                         selectedPayment === 'CARD'
-                          ? 'bg-stone-800 text-amber-300 border-stone-700'
-                          : 'bg-stone-200 text-stone-700 border-stone-300'
+                          ? 'bg-white text-[var(--brand-text)] border-[var(--brand-border)]'
+                          : 'bg-stone-100 text-stone-700 border-stone-200'
                       }`}>
                         Visa / Master
                       </span>
                     </div>
-                    <p className={`text-[11px] mt-0.5 ${selectedPayment === 'CARD' ? 'text-stone-300' : 'text-stone-500'}`}>
+                    <p className={`text-[11px] mt-0.5 ${selectedPayment === 'CARD' ? 'text-stone-600' : 'text-stone-500'}`}>
                       Pay securely using a card.
                     </p>
                   </div>
                 </div>
                 {selectedPayment === 'CARD' && (
-                  <div className="w-5 h-5 rounded-full bg-amber-400 text-stone-950 flex items-center justify-center shrink-0">
+                  <div className="w-5 h-5 rounded-full bg-[var(--brand)] text-white flex items-center justify-center shrink-0">
                     <Check className="w-3.5 h-3.5 font-bold" />
                   </div>
                 )}
@@ -865,10 +865,10 @@ export const CheckoutPage: React.FC<{
 
             {/* DIRECT CARD INPUT FIELDS (Only displayed when Card is selected) */}
             {selectedPayment === 'CARD' && (
-              <div className="p-4 bg-stone-50 rounded-2xl border border-stone-200/90 space-y-3 animate-in fade-in duration-200">
+              <div className="p-4 bg-[var(--surface-muted)] rounded-2xl border border-[var(--border-subtle)] space-y-3 animate-in fade-in duration-200">
                 <div className="flex items-center justify-between border-b border-stone-200/60 pb-2">
                   <div className="flex items-center gap-2">
-                    <CreditCard className="w-4 h-4 text-amber-800" />
+                    <CreditCard className="w-4 h-4 text-[var(--brand)]" />
                     <span className="font-bold text-xs text-stone-900">Enter Card Information</span>
                   </div>
                   <div className="flex items-center gap-1.5 text-[10px] text-stone-500">
@@ -889,7 +889,7 @@ export const CheckoutPage: React.FC<{
                         const val = e.target.value.replace(/\D/g, '').replace(/(.{4})/g, '$1 ').trim();
                         setCardNumber(val);
                       }}
-                      className="w-full px-3 py-2 bg-white border border-stone-300 rounded-xl font-mono text-xs focus:border-amber-700 focus:outline-hidden"
+                      className="field !rounded-xl font-mono text-xs"
                       required={selectedPayment === 'CARD'}
                     />
                   </div>
@@ -907,7 +907,7 @@ export const CheckoutPage: React.FC<{
                           if (val.length === 2 && !val.includes('/')) val += '/';
                           setCardExpiry(val);
                         }}
-                        className="w-full px-3 py-2 bg-white border border-stone-300 rounded-xl font-mono text-xs focus:border-amber-700 focus:outline-hidden"
+                        className="field !rounded-xl font-mono text-xs"
                         required={selectedPayment === 'CARD'}
                       />
                     </div>
@@ -920,7 +920,7 @@ export const CheckoutPage: React.FC<{
                         maxLength={4}
                         value={cardCvv}
                         onChange={(e) => setCardCvv(e.target.value.replace(/\D/g, ''))}
-                        className="w-full px-3 py-2 bg-white border border-stone-300 rounded-xl font-mono text-xs focus:border-amber-700 focus:outline-hidden"
+                        className="field !rounded-xl font-mono text-xs"
                         required={selectedPayment === 'CARD'}
                       />
                     </div>
@@ -933,7 +933,7 @@ export const CheckoutPage: React.FC<{
                       placeholder="Enter Cardholder Name"
                       value={cardHolder}
                       onChange={(e) => setCardHolder(e.target.value)}
-                      className="w-full px-3 py-2 bg-white border border-stone-300 rounded-xl text-xs uppercase focus:border-amber-700 focus:outline-hidden"
+                      className="field !rounded-xl text-xs uppercase"
                       required={selectedPayment === 'CARD'}
                     />
                   </div>
@@ -953,25 +953,25 @@ export const CheckoutPage: React.FC<{
                 }}
                 className={`w-full p-4 rounded-2xl border text-left transition-all flex items-center justify-between gap-3 ${
                   isOnlinePaymentMandatory
-                    ? 'bg-stone-100/70 border-stone-200 opacity-60 cursor-not-allowed text-stone-400'
+                    ? 'bg-[var(--surface-muted)] border-stone-200 opacity-60 cursor-not-allowed text-stone-500'
                     : selectedPayment === 'PAY_AT_EXIT'
-                    ? 'bg-emerald-50 border-emerald-600 text-emerald-950 ring-2 ring-emerald-600/30 shadow-xs cursor-pointer'
-                    : 'bg-stone-50/70 border-stone-200 text-stone-700 hover:bg-stone-100 cursor-pointer'
+                    ? 'bg-[var(--brand-soft)] border-[var(--brand)] text-stone-900 ring-2 ring-[var(--brand-ring-soft)] shadow-[var(--shadow-xs)] cursor-pointer'
+                    : 'bg-white border-stone-200 text-stone-700 hover:border-[var(--brand-border)] hover:bg-[var(--brand-soft)]/40 cursor-pointer'
                 }`}
               >
                 <div className="flex items-center gap-3">
                   <div className={`w-10 h-10 rounded-xl flex items-center justify-center shadow-2xs shrink-0 ${
-                    isOnlinePaymentMandatory ? 'bg-stone-300 text-stone-500' : 'bg-emerald-700 text-white'
+                    isOnlinePaymentMandatory ? 'bg-stone-200 text-stone-500' : 'bg-[var(--success-soft)] border border-[var(--success-border)] text-[var(--success)]'
                   }`}>
                     {isOnlinePaymentMandatory ? <Ban className="w-5 h-5" /> : <LogOut className="w-5 h-5" />}
                   </div>
                   <div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-2">
                       <p className="font-bold text-sm text-stone-900">Pay at Exit</p>
-                      <span className={`text-[9px] font-extrabold uppercase tracking-wider px-2 py-0.2 rounded-md border ${
+                      <span className={`badge uppercase tracking-wider !text-[9px] font-extrabold !whitespace-normal ${
                         isOnlinePaymentMandatory
-                          ? 'text-rose-700 bg-rose-50 border-rose-200'
-                          : 'text-emerald-800 bg-emerald-100 border-emerald-300'
+                          ? 'badge-danger'
+                          : 'badge-success'
                       }`}>
                         {isOnlinePaymentMandatory ? `Disabled for ${orderType}` : 'Place Order Now • Pay Later'}
                       </span>
@@ -984,7 +984,7 @@ export const CheckoutPage: React.FC<{
                   </div>
                 </div>
                 {selectedPayment === 'PAY_AT_EXIT' && !isOnlinePaymentMandatory && (
-                  <div className="w-5 h-5 rounded-full bg-emerald-700 text-white flex items-center justify-center shrink-0">
+                  <div className="w-5 h-5 rounded-full bg-[var(--brand)] text-white flex items-center justify-center shrink-0">
                     <Check className="w-3.5 h-3.5 font-bold" />
                   </div>
                 )}
@@ -995,12 +995,12 @@ export const CheckoutPage: React.FC<{
 
         {/* Right Column: Order Summary & Dynamic Proceed CTA */}
         <div className="lg:col-span-1 space-y-4 sticky top-20">
-          <div className="bg-white p-4 sm:p-5 rounded-3xl border border-stone-200 shadow-sm space-y-4">
+          <div className="surface-raised !rounded-2xl p-4 sm:p-5 space-y-4">
             <div className="border-b border-stone-100 pb-2.5 flex items-center justify-between">
-              <h3 className="font-serif font-bold text-base text-stone-900">
+              <h3 className="section-title">
                 Review & Pay
               </h3>
-              <span className="text-[10px] font-bold uppercase tracking-wider text-amber-800 bg-amber-50 px-2 py-0.5 rounded-md border border-amber-200">
+              <span className="badge badge-brand uppercase tracking-wider !text-[10px] font-bold">
                 {items.length} {items.length === 1 ? 'Dish' : 'Dishes'}
               </span>
             </div>
@@ -1014,7 +1014,7 @@ export const CheckoutPage: React.FC<{
                   <div key={item.lineId} className="text-xs flex justify-between items-start gap-2 text-stone-700 py-0.5 border-b border-stone-50 last:border-0">
                     <span className="min-w-0">
                       <span className="block truncate max-w-[190px]">
-                        <strong className="text-amber-900 mr-1">{item.quantity}×</strong>
+                        <strong className="text-[var(--brand-text)] mr-1">{item.quantity}×</strong>
                         {item.menuItem.name}
                       </span>
                       {choices && <span className="block text-[11px] text-stone-500 truncate max-w-[190px]">{choices}</span>}
@@ -1046,14 +1046,14 @@ export const CheckoutPage: React.FC<{
                 <span>Service Fee</span>
                 <span className="font-mono">{formatCurrency(serviceCharge)}</span>
               </div>
-              <div className="flex justify-between text-base font-bold text-stone-900 pt-2.5 border-t border-stone-200">
-                <span className="font-serif">Grand Total</span>
-                <span className="font-serif text-xl font-bold text-amber-950">{formatCurrency(total)}</span>
+              <div className="flex justify-between items-baseline text-base font-bold text-stone-900 pt-3 border-t border-dashed border-[var(--brand-border)]">
+                <span className="font-display text-lg">Grand Total</span>
+                <span className="font-display text-2xl font-bold text-[var(--brand-text)]">{formatCurrency(total)}</span>
               </div>
             </div>
 
             {paymentStatusMessage && (
-              <div className="p-2.5 bg-amber-50 border border-amber-200 rounded-xl text-center text-[11px] font-semibold text-amber-900 animate-pulse">
+              <div className="p-2.5 bg-[var(--warning-soft)] border border-[var(--warning-border)] rounded-xl text-center text-[11px] font-semibold text-amber-900 animate-pulse">
                 {paymentStatusMessage}
               </div>
             )}
@@ -1062,23 +1062,13 @@ export const CheckoutPage: React.FC<{
             <button
               type="submit"
               disabled={submitting}
-              className={`w-full py-3.5 px-4 rounded-2xl text-white font-bold text-xs sm:text-sm shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 ${
-                selectedPayment === 'PAY_AT_EXIT'
-                  ? 'bg-emerald-700 hover:bg-emerald-800'
-                  : selectedPayment === 'PHONEPE'
-                  ? 'bg-purple-700 hover:bg-purple-800'
-                  : selectedPayment === 'GPAY'
-                  ? 'bg-blue-600 hover:bg-blue-700'
-                  : selectedPayment === 'QR'
-                  ? 'bg-amber-800 hover:bg-amber-900'
-                  : 'bg-stone-900 hover:bg-black'
-              }`}
+              className="lux-btn lux-btn-wine w-full !min-h-[3.25rem] !h-auto !py-3 !px-4 !tracking-[0.08em] text-center leading-snug disabled:opacity-50"
             >
               <span>{getProceedButtonText()}</span>
               {submitting ? <RefreshCw className="w-4 h-4 animate-spin" /> : <ArrowRight className="w-4 h-4" />}
             </button>
 
-            <div className="flex items-center gap-1.5 text-[10px] text-stone-400 justify-center">
+            <div className="flex items-center gap-1.5 text-[10px] text-stone-500 justify-center">
               <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
               <span>Instant Bank Verified • Zero Stored Credentials</span>
             </div>

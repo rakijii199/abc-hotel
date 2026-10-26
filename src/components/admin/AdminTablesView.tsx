@@ -277,7 +277,7 @@ export const AdminTablesView: React.FC<AdminTablesViewProps> = ({
       {/* Top Header & New Table Action */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-stone-200/80 pb-3">
         <div>
-          <h2 className="font-serif text-2xl font-bold text-stone-900">
+          <h2 className="page-title">
             Table Configuration
           </h2>
           <p className="text-xs text-stone-500 mt-0.5">
@@ -299,35 +299,35 @@ export const AdminTablesView: React.FC<AdminTablesViewProps> = ({
 
       {/* Overview Metrics Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5">
-        <div className="p-3.5 rounded-2xl bg-white border border-stone-200/80 shadow-2xs space-y-0.5">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-stone-400">Total Tables</span>
-          <p className="font-serif font-bold text-xl text-stone-900">{totalTables}</p>
+        <div className="stat-card p-3.5 space-y-1">
+          <span className="label-caps">Total Tables</span>
+          <p className="font-serif font-bold text-2xl leading-tight text-[var(--brand-text)] tabular-nums">{totalTables}</p>
         </div>
 
-        <div className="p-3.5 rounded-2xl bg-emerald-50/60 border border-emerald-200/80 shadow-2xs space-y-0.5">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-800">Available</span>
-          <p className="font-serif font-bold text-xl text-emerald-950">{availableTables}</p>
+        <div className="stat-card p-3.5 space-y-1">
+          <span className="label-caps flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-[var(--success)]" aria-hidden="true"></span>Available</span>
+          <p className="font-serif font-bold text-2xl leading-tight text-[var(--success)] tabular-nums">{availableTables}</p>
         </div>
 
-        <div className="p-3.5 rounded-2xl bg-amber-50/60 border border-amber-200/80 shadow-2xs space-y-0.5">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-amber-900">Occupied</span>
-          <p className="font-serif font-bold text-xl text-amber-950">{occupiedTables}</p>
+        <div className="stat-card p-3.5 space-y-1">
+          <span className="label-caps flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-[var(--warning)]" aria-hidden="true"></span>Occupied</span>
+          <p className="font-serif font-bold text-2xl leading-tight text-[var(--warning)] tabular-nums">{occupiedTables}</p>
         </div>
 
-        <div className="p-3.5 rounded-2xl bg-indigo-50/60 border border-indigo-200/80 shadow-2xs space-y-0.5">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-indigo-900">Reserved</span>
-          <p className="font-serif font-bold text-xl text-indigo-950">{reservedTables}</p>
+        <div className="stat-card p-3.5 space-y-1">
+          <span className="label-caps flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-[var(--info)]" aria-hidden="true"></span>Reserved</span>
+          <p className="font-serif font-bold text-2xl leading-tight text-[var(--info)] tabular-nums">{reservedTables}</p>
         </div>
 
-        <div className="p-3.5 rounded-2xl bg-stone-100 border border-stone-200/80 shadow-2xs space-y-0.5 col-span-2 sm:col-span-1">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-stone-500">Inactive</span>
-          <p className="font-serif font-bold text-xl text-stone-700">{inactiveTables}</p>
+        <div className="stat-card p-3.5 space-y-1 col-span-2 sm:col-span-1">
+          <span className="label-caps flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-stone-400" aria-hidden="true"></span>Inactive</span>
+          <p className="font-serif font-bold text-2xl leading-tight text-stone-600 tabular-nums">{inactiveTables}</p>
         </div>
       </div>
 
       {/* Search Bar & Status Filter Pills */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 bg-white p-2.5 rounded-2xl border border-stone-200/80 shadow-2xs">
-        <div className="flex-1 relative flex items-center bg-stone-50 rounded-xl border border-stone-200 px-3 py-1.5">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 bg-white p-2.5 rounded-2xl border border-stone-200/80 shadow-[var(--shadow-card)]">
+        <div className="flex-1 relative flex items-center bg-white rounded-xl border border-stone-200 px-3 py-1.5 focus-within:border-amber-700 focus-within:ring-3 focus-within:ring-[var(--brand-ring-soft)] transition-shadow">
           <Search className="w-3.5 h-3.5 text-stone-400 shrink-0" />
           <input
             type="text"
@@ -348,10 +348,10 @@ export const AdminTablesView: React.FC<AdminTablesViewProps> = ({
             <button
               key={st}
               onClick={() => setStatusFilter(st)}
-              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
+              className={`px-3 py-1.5 rounded-full border text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
                 statusFilter === st
-                  ? 'bg-amber-800 text-white shadow-2xs'
-                  : 'bg-stone-100 hover:bg-stone-200 text-stone-700'
+                  ? 'bg-amber-800 border-amber-800 text-white shadow-2xs'
+                  : 'bg-white border-stone-200 hover:bg-[var(--brand-soft)] hover:border-[var(--brand-border)] hover:text-[var(--brand-text)] text-stone-700'
               }`}
             >
               {st}
@@ -367,26 +367,26 @@ export const AdminTablesView: React.FC<AdminTablesViewProps> = ({
           return (
             <div
               key={tbl.id}
-              className={`bg-white rounded-2xl border p-4 shadow-2xs flex flex-col justify-between space-y-3 hover:shadow-md transition-all ${
+              className={`bg-white rounded-2xl border p-4 shadow-[var(--shadow-card)] flex flex-col justify-between space-y-3 lift ${
                 isInactive ? 'border-stone-300 opacity-75 bg-stone-50/50' : 'border-stone-200/90'
               }`}
             >
               <div className="space-y-2">
                 {/* Row 1: Table Number & Status Badge */}
                 <div className="flex items-center justify-between gap-2">
-                  <h3 className="font-serif font-bold text-lg text-stone-900 leading-none truncate">
+                  <h3 className="section-title text-lg leading-none truncate">
                     {tbl.tableNumber}
                   </h3>
 
                   <span
-                    className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border uppercase tracking-wider shrink-0 ${
+                    className={`badge uppercase tracking-wider shrink-0 ${
                       tbl.status === 'AVAILABLE'
-                        ? 'bg-emerald-50 text-emerald-800 border-emerald-300'
+                        ? 'badge-success'
                         : tbl.status === 'OCCUPIED'
-                        ? 'bg-amber-100 text-amber-900 border-amber-300'
+                        ? 'badge-warning'
                         : tbl.status === 'RESERVED'
-                        ? 'bg-indigo-50 text-indigo-800 border-indigo-200'
-                        : 'bg-stone-100 text-stone-600 border-stone-300'
+                        ? 'badge-info'
+                        : ''
                     }`}
                   >
                     {tbl.status}
@@ -407,7 +407,7 @@ export const AdminTablesView: React.FC<AdminTablesViewProps> = ({
                 </div>
 
                 {/* Clean QR Thumbnail & View Button */}
-                <div className="p-2.5 bg-stone-50 rounded-xl border border-stone-200/80 flex items-center justify-between gap-2">
+                <div className="p-2.5 bg-[var(--surface-muted)] rounded-xl border border-stone-200/80 flex items-center justify-between gap-2">
                   <div className="flex items-center gap-2.5 min-w-0">
                     <img
                       src={getQrImageUrl(tbl)}
@@ -415,7 +415,7 @@ export const AdminTablesView: React.FC<AdminTablesViewProps> = ({
                       className="w-11 h-11 rounded-lg border border-stone-200 bg-white p-0.5 shadow-2xs shrink-0"
                     />
                     <div className="min-w-0">
-                      <span className="text-[10px] font-bold text-stone-400 uppercase tracking-wider block">
+                      <span className="text-[10px] font-bold text-stone-500 uppercase tracking-wider block">
                         Table Reference
                       </span>
                       <p className="text-[11px] text-stone-700 font-mono font-medium truncate">
@@ -440,14 +440,14 @@ export const AdminTablesView: React.FC<AdminTablesViewProps> = ({
                 <div className="flex items-center gap-1">
                   <button
                     onClick={() => handleDownloadQr(tbl)}
-                    className="p-1.5 bg-stone-100 hover:bg-amber-100 text-stone-700 hover:text-amber-900 rounded-lg text-xs transition-colors cursor-pointer"
+                    className="p-1.5 bg-stone-100 hover:bg-[var(--brand-soft)] text-stone-700 hover:text-[var(--brand-text)] rounded-lg text-xs transition-colors cursor-pointer"
                     title="Download PNG"
                   >
                     <Download className="w-3.5 h-3.5" />
                   </button>
                   <button
                     onClick={() => handlePrintQr(tbl)}
-                    className="p-1.5 bg-stone-100 hover:bg-amber-100 text-stone-700 hover:text-amber-900 rounded-lg text-xs transition-colors cursor-pointer"
+                    className="p-1.5 bg-stone-100 hover:bg-[var(--brand-soft)] text-stone-700 hover:text-[var(--brand-text)] rounded-lg text-xs transition-colors cursor-pointer"
                     title="Print Table Stand"
                   >
                     <Printer className="w-3.5 h-3.5" />
@@ -460,7 +460,7 @@ export const AdminTablesView: React.FC<AdminTablesViewProps> = ({
                     data-locked={!canEdit || undefined}
                     title={canEdit ? undefined : 'View access — changes are disabled for your account'}
                     onClick={() => openEditModal(tbl)}
-                    className="px-2.5 py-1 bg-stone-100 hover:bg-amber-100 text-stone-700 hover:text-amber-900 rounded-lg text-xs font-bold transition-colors cursor-pointer flex items-center gap-1"
+                    className="px-2.5 py-1 bg-stone-100 hover:bg-[var(--brand-soft)] text-stone-700 hover:text-[var(--brand-text)] rounded-lg text-xs font-bold transition-colors cursor-pointer flex items-center gap-1"
                   >
                     <Edit2 className="w-3 h-3" />
                     <span>Edit</span>
@@ -485,7 +485,7 @@ export const AdminTablesView: React.FC<AdminTablesViewProps> = ({
       {filteredTables.length === 0 && (
         <div className="p-10 text-center bg-white rounded-2xl border border-dashed border-stone-300">
           <SquareDashedBottom className="w-8 h-8 mx-auto text-stone-400 mb-2" />
-          <h3 className="font-serif font-bold text-base text-stone-800">No Dining Tables Found</h3>
+          <h3 className="section-title text-base">No Dining Tables Found</h3>
           <p className="text-xs text-stone-500 mt-0.5 max-w-xs mx-auto">
             Adjust your search or filter, or configure a new table.
           </p>
@@ -508,7 +508,7 @@ export const AdminTablesView: React.FC<AdminTablesViewProps> = ({
                 placeholder="e.g. Table 05 or Terrace VIP"
                 value={tableNumber}
                 onChange={(e) => setTableNumber(e.target.value)}
-                className="w-full px-3.5 py-2 bg-stone-50 border border-stone-300 rounded-xl text-xs text-stone-900 focus:border-amber-700 focus:outline-hidden"
+                className="w-full px-3.5 py-2 bg-white border border-stone-300 rounded-xl text-xs text-stone-900 focus:border-amber-700 focus:outline-hidden"
               />
             </div>
 
@@ -522,7 +522,7 @@ export const AdminTablesView: React.FC<AdminTablesViewProps> = ({
                   required
                   value={capacity}
                   onChange={(e) => setCapacity(Number(e.target.value))}
-                  className="w-full px-3.5 py-2 bg-stone-50 border border-stone-300 rounded-xl text-xs text-stone-900 focus:border-amber-700 focus:outline-hidden"
+                  className="w-full px-3.5 py-2 bg-white border border-stone-300 rounded-xl text-xs text-stone-900 focus:border-amber-700 focus:outline-hidden"
                 />
               </div>
 
@@ -531,7 +531,7 @@ export const AdminTablesView: React.FC<AdminTablesViewProps> = ({
                 <select
                   value={location}
                   onChange={(e) => setLocation(e.target.value as TableLocation)}
-                  className="w-full px-3.5 py-2 bg-stone-50 border border-stone-300 rounded-xl text-xs text-stone-900 focus:border-amber-700 focus:outline-hidden"
+                  className="w-full px-3.5 py-2 bg-white border border-stone-300 rounded-xl text-xs text-stone-900 focus:border-amber-700 focus:outline-hidden"
                 >
                   <option value="Center Terrace">Center Terrace</option>
                   <option value="Window View">Window View</option>
@@ -547,7 +547,7 @@ export const AdminTablesView: React.FC<AdminTablesViewProps> = ({
               <select
                 value={status}
                 onChange={(e) => setStatus(e.target.value as TableStatus)}
-                className="w-full px-3.5 py-2 bg-stone-50 border border-stone-300 rounded-xl text-xs text-stone-900 focus:border-amber-700 focus:outline-hidden"
+                className="w-full px-3.5 py-2 bg-white border border-stone-300 rounded-xl text-xs text-stone-900 focus:border-amber-700 focus:outline-hidden"
               >
                 <option value="AVAILABLE">AVAILABLE (Accepts Orders)</option>
                 <option value="OCCUPIED">OCCUPIED (Dining in progress)</option>
@@ -584,9 +584,9 @@ export const AdminTablesView: React.FC<AdminTablesViewProps> = ({
           title={`Table QR Code — ${qrModalTable.tableNumber}`}
         >
           <div className="space-y-4 text-center pt-1">
-            <div className="p-5 bg-stone-50 rounded-2xl border border-stone-200/80 space-y-3 max-w-xs mx-auto">
+            <div className="p-5 bg-[var(--brand-soft)] rounded-2xl border border-[var(--brand-border)] space-y-3 max-w-xs mx-auto">
               <div>
-                <h3 className="font-bold text-xl text-stone-900">
+                <h3 className="section-title text-xl">
                   {qrModalTable.tableNumber}
                 </h3>
                 <p className="text-xs text-stone-500 font-medium mt-0.5">
@@ -613,9 +613,9 @@ export const AdminTablesView: React.FC<AdminTablesViewProps> = ({
               <button
                 type="button"
                 onClick={() => handleDownloadQr(qrModalTable)}
-                className="py-2 px-3.5 rounded-xl bg-stone-900 hover:bg-stone-950 text-white font-bold text-xs shadow-2xs transition-all flex items-center gap-1.5 cursor-pointer"
+                className="py-2 px-3.5 rounded-xl bg-white border border-stone-300 hover:bg-[var(--brand-soft)] hover:border-[var(--brand-border)] text-stone-800 hover:text-[var(--brand-text)] font-bold text-xs shadow-2xs transition-all flex items-center gap-1.5 cursor-pointer"
               >
-                <Download className="w-3.5 h-3.5 text-amber-400" />
+                <Download className="w-3.5 h-3.5 text-amber-700" />
                 <span>Download PNG</span>
               </button>
 

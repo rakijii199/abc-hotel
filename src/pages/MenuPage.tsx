@@ -21,7 +21,7 @@ import { MenuItemCard } from '../components/menu/MenuItemCard.tsx';
 import { Spinner, EmptyState } from '../components/common/Footer.tsx';
 import { useCart } from '../context/CartContext.tsx';
 import { formatCurrency } from '../utils/formatters.ts';
-import { PageHero, LUX_IMAGES, luxImage } from '../components/customer/Reveal.tsx';
+import { LUX_IMAGES, luxImage, hideOnError } from '../components/customer/Reveal.tsx';
 
 export const MenuPage: React.FC<{ navigate: (route: string) => void }> = ({ navigate }) => {
   const { itemCount, total } = useCart();
@@ -159,32 +159,42 @@ export const MenuPage: React.FC<{ navigate: (route: string) => void }> = ({ navi
   return (
     <div className="pb-28">
       {/* Header Banner */}
-      <PageHero
-        eyebrow="ABC Hotel Fine Dining Menu"
-        title={
-          <>
-            Gourmet cuisine <em className="font-normal text-champagne">&amp; artisanal delicacies</em>
-          </>
-        }
-        description="Crafted with passion using heirloom recipes, single-origin spices, and organic produce. Prepared fresh to order."
-        image={luxImage(LUX_IMAGES.plated, 1800)}
-      />
+      <section className="lux-bleed relative overflow-hidden bg-ivory border-b border-[var(--border-subtle)]">
+        <img src={luxImage(LUX_IMAGES.plated, 1800)} alt="" aria-hidden="true" onError={hideOnError} className="absolute inset-0 w-full h-full object-cover lux-kenburns" />
+        <div className="absolute inset-0 bg-gradient-to-r from-ivory/95 via-ivory/85 to-ivory/55 md:via-ivory/75 md:to-ivory/15" />
+        <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-ivory/80 to-transparent" />
+        <div className="absolute inset-x-0 bottom-0 lux-hairline" />
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14 lg:py-16">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8">
+            <div className="max-w-2xl animate-[lux-rise_0.8s_var(--ease-lux)]">
+              <p className="lux-eyebrow text-[var(--brand-text)]">ABC Hotel Fine Dining Menu</p>
+              <h1 className="lux-display text-[clamp(2.25rem,5.5vw,4.25rem)] mt-4 text-stone-900 text-balance">
+                Gourmet cuisine <em className="font-normal text-[var(--brand-text)]">&amp; artisanal delicacies</em>
+              </h1>
+              <p className="mt-4 text-sm sm:text-base text-stone-600 leading-relaxed max-w-xl">
+                Crafted with passion using heirloom recipes, single-origin spices, and organic produce. Prepared fresh to order.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* Filter and Search Bar */}
-      <div className="relative md:sticky md:top-[4.5rem] z-30 bg-ivory/90 backdrop-blur-xl border-b border-stone-200/80 shadow-[0_12px_30px_-24px_rgba(26,23,21,0.4)]">
+      <div className="relative md:sticky md:top-[4.5rem] z-30 glass !rounded-none !border-x-0 !border-t-0 border-b border-stone-200/80">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Category Tabs */}
-          <div className="flex items-center gap-6 sm:gap-8 overflow-x-auto scrollbar-none -mx-4 px-4 sm:mx-0 sm:px-0" role="tablist" aria-label="Menu categories">
+          <div className="flex items-center gap-2 overflow-x-auto scrollbar-none -mx-4 px-4 sm:mx-0 sm:px-0 py-3" role="tablist" aria-label="Menu categories">
             <button
               role="tab"
               aria-selected={selectedCategory === 'all'}
               onClick={() => setSelectedCategory('all')}
-              className={`relative py-4 text-[11px] font-bold uppercase tracking-[0.2em] whitespace-nowrap transition-colors cursor-pointer ${
-                selectedCategory === 'all' ? 'text-stone-900' : 'text-stone-400 hover:text-stone-700'
+              className={`relative shrink-0 h-9 px-4 rounded-full border text-[11px] font-bold uppercase tracking-[0.16em] whitespace-nowrap transition-all cursor-pointer ${
+                selectedCategory === 'all'
+                  ? 'bg-[var(--brand)] border-[var(--brand)] text-white shadow-[var(--shadow-xs)]'
+                  : 'bg-white border-stone-200 text-stone-600 hover:border-[var(--brand-border)] hover:bg-[var(--brand-soft)] hover:text-[var(--brand-text)]'
               }`}
             >
-              All Dishes <span className="font-mono text-stone-400">({items.length})</span>
-              <span className={`absolute left-0 right-0 bottom-0 h-[2px] bg-wine transition-transform duration-500 origin-left ${selectedCategory === 'all' ? 'scale-x-100' : 'scale-x-0'}`} />
+              All Dishes <span className={`font-mono ${selectedCategory === 'all' ? 'text-white/75' : 'text-stone-400'}`}>({items.length})</span>
             </button>
 
             {categories.map((cat) => (
@@ -193,18 +203,19 @@ export const MenuPage: React.FC<{ navigate: (route: string) => void }> = ({ navi
                 role="tab"
                 aria-selected={selectedCategory === cat.id}
                 onClick={() => setSelectedCategory(cat.id)}
-                className={`relative py-4 text-[11px] font-bold uppercase tracking-[0.2em] whitespace-nowrap transition-colors cursor-pointer ${
-                  selectedCategory === cat.id ? 'text-stone-900' : 'text-stone-400 hover:text-stone-700'
+                className={`relative shrink-0 h-9 px-4 rounded-full border text-[11px] font-bold uppercase tracking-[0.16em] whitespace-nowrap transition-all cursor-pointer ${
+                  selectedCategory === cat.id
+                    ? 'bg-[var(--brand)] border-[var(--brand)] text-white shadow-[var(--shadow-xs)]'
+                    : 'bg-white border-stone-200 text-stone-600 hover:border-[var(--brand-border)] hover:bg-[var(--brand-soft)] hover:text-[var(--brand-text)]'
                 }`}
               >
                 {cat.name}
-                <span className={`absolute left-0 right-0 bottom-0 h-[2px] bg-wine transition-transform duration-500 origin-left ${selectedCategory === cat.id ? 'scale-x-100' : 'scale-x-0'}`} />
               </button>
             ))}
           </div>
 
           {/* Search & Sort Controls */}
-          <div className="flex flex-col md:flex-row gap-3 justify-between items-stretch md:items-center py-3 border-t border-stone-200/70">
+          <div className="flex flex-col md:flex-row gap-3 justify-between items-stretch md:items-center pb-3">
             {/* Search Input */}
             <div className="relative flex-1 max-w-full md:max-w-sm">
               <Search className="w-4 h-4 text-stone-400 absolute left-4 top-1/2 -translate-y-1/2" />
@@ -235,8 +246,8 @@ export const MenuPage: React.FC<{ navigate: (route: string) => void }> = ({ navi
                 aria-pressed={vegOnly}
                 className={`shrink-0 justify-center h-11 px-4 text-xs font-semibold rounded-full border transition-all flex items-center gap-1.5 cursor-pointer ${
                   vegOnly
-                    ? 'bg-emerald-700 text-white border-emerald-700'
-                    : 'bg-white text-stone-700 border-stone-200 hover:border-stone-400'
+                    ? 'bg-[var(--success-soft)] text-[var(--success)] border-[var(--success-border)] ring-2 ring-emerald-600/15'
+                    : 'bg-white text-stone-700 border-stone-200 hover:border-[var(--brand-border)]'
                 }`}
               >
                 <Leaf className="w-3.5 h-3.5 shrink-0" />
@@ -249,8 +260,8 @@ export const MenuPage: React.FC<{ navigate: (route: string) => void }> = ({ navi
                 aria-pressed={spicyOnly}
                 className={`shrink-0 justify-center h-11 px-4 text-xs font-semibold rounded-full border transition-all flex items-center gap-1.5 cursor-pointer ${
                   spicyOnly
-                    ? 'bg-wine text-white border-wine'
-                    : 'bg-white text-stone-700 border-stone-200 hover:border-stone-400'
+                    ? 'bg-[var(--danger-soft)] text-[var(--danger)] border-[var(--danger-border)] ring-2 ring-rose-600/15'
+                    : 'bg-white text-stone-700 border-stone-200 hover:border-[var(--brand-border)]'
                 }`}
               >
                 <Flame className="w-3.5 h-3.5 shrink-0" />
@@ -277,26 +288,26 @@ export const MenuPage: React.FC<{ navigate: (route: string) => void }> = ({ navi
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 sm:pt-10 space-y-6 sm:space-y-8">
         {/* QR Code Table Session Active Banner */}
         {qrTableInfo && !qrTableInactive && (
-          <div className="p-4 sm:p-5 bg-ink text-ivory rounded-2xl border border-gold/30 flex flex-wrap items-center justify-between gap-3 animate-[lux-rise_0.6s_var(--ease-lux)]">
+          <div className="surface relative overflow-hidden p-4 sm:p-5 !border-[var(--brand-border)] bg-gradient-to-r from-[var(--brand-soft)] via-white to-white flex flex-wrap items-center justify-between gap-3 animate-[lux-rise_0.6s_var(--ease-lux)]">
             <div className="flex items-center gap-4">
-              <div className="w-11 h-11 rounded-full border border-gold/50 text-gold flex items-center justify-center shrink-0">
+              <div className="w-11 h-11 rounded-full bg-white border border-[var(--brand-border)] text-[var(--brand)] flex items-center justify-center shrink-0 shadow-[var(--shadow-xs)]">
                 <QrCode className="w-5 h-5" strokeWidth={1.5} />
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="text-[10px] uppercase font-bold tracking-[0.24em] text-gold">
+                  <span className="text-[10px] uppercase font-bold tracking-[0.24em] text-[var(--brand-text)]">
                     Table QR Session Active
                   </span>
-                  <span className="px-2 py-0.5 bg-emerald-500/15 text-emerald-300 font-bold text-[9px] uppercase rounded-full border border-emerald-400/30">
+                  <span className="badge badge-success !text-[9px] uppercase font-bold">
                     Verified
                   </span>
                 </div>
-                <h3 className="lux-display text-2xl text-ivory mt-1">
+                <h3 className="lux-display text-2xl text-stone-900 mt-1">
                   Ordering for {qrTableInfo.number} {qrTableInfo.location ? `(${qrTableInfo.location})` : ''}
                 </h3>
               </div>
             </div>
-            <span className="text-[10px] uppercase tracking-[0.2em] font-bold text-champagne px-3.5 py-2 rounded-full border border-gold/40 shrink-0">
+            <span className="badge badge-brand !px-3.5 !py-1.5 text-[10px] uppercase tracking-[0.2em] font-bold shrink-0">
               Dine-in Locked
             </span>
           </div>
@@ -304,13 +315,13 @@ export const MenuPage: React.FC<{ navigate: (route: string) => void }> = ({ navi
 
         {/* Inactive Table Warning Banner */}
         {qrTableInactive && (
-          <div className="p-4 bg-rose-950 text-white rounded-2xl border border-rose-800/80 flex items-center gap-3" role="alert">
-            <AlertCircle className="w-6 h-6 text-rose-300 shrink-0" />
+          <div className="p-4 bg-[var(--danger-soft)] rounded-2xl border border-[var(--danger-border)] flex items-center gap-3 shadow-[var(--shadow-xs)]" role="alert">
+            <AlertCircle className="w-6 h-6 text-[var(--danger)] shrink-0" />
             <div>
-              <h3 className="font-bold text-sm text-white">
+              <h3 className="font-bold text-sm text-rose-900">
                 {qrTableInfo?.number} is Currently Unavailable
               </h3>
-              <p className="text-xs text-rose-200 mt-0.5">
+              <p className="text-xs text-rose-800 mt-0.5">
                 This table is deactivated or undergoing maintenance. Please speak to restaurant staff for table reassignment.
               </p>
             </div>
@@ -345,7 +356,7 @@ export const MenuPage: React.FC<{ navigate: (route: string) => void }> = ({ navi
             </div>
             <button
               onClick={resetFilters}
-              className="lux-link text-stone-900 font-semibold text-xs shrink-0 cursor-pointer"
+              className="lux-link text-[var(--brand-text)] font-semibold text-xs shrink-0 cursor-pointer"
             >
               Reset All
             </button>
@@ -356,8 +367,8 @@ export const MenuPage: React.FC<{ navigate: (route: string) => void }> = ({ navi
         {loading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 sm:gap-6" aria-busy="true" aria-label="Fetching fresh menu items">
             {Array.from({ length: 8 }).map((_, i) => (
-              <div key={i} className="bg-[#fffdf9] border border-stone-200/70 overflow-hidden animate-pulse">
-                <div className="aspect-[4/3.4] bg-stone-200/60" />
+              <div key={i} className="surface overflow-hidden">
+                <div className="aspect-[4/3.4] skeleton" />
                 <div className="p-5 space-y-3">
                   <div className="h-2.5 w-1/3 bg-stone-200/80 rounded-full" />
                   <div className="h-5 w-3/4 bg-stone-200/80 rounded-full" />
@@ -392,17 +403,17 @@ export const MenuPage: React.FC<{ navigate: (route: string) => void }> = ({ navi
 
       {/* Floating Cart Bar if Items Exist in Cart (Mobile-friendly fixed container) */}
       {itemCount > 0 && (
-        <div className="fixed bottom-4 left-3 right-3 sm:left-1/2 sm:-translate-x-1/2 sm:max-w-md sm:w-full z-30 bg-ink/95 backdrop-blur-xl text-ivory p-2.5 pl-4 rounded-full shadow-[0_30px_60px_-20px_rgba(0,0,0,0.6)] border border-gold/25 flex items-center justify-between animate-[lux-rise_0.5s_var(--ease-lux)]">
+        <div className="fixed bottom-4 left-3 right-3 sm:left-1/2 sm:-translate-x-1/2 sm:max-w-md sm:w-full z-30 glass-strong !border-[var(--brand-border)] p-2.5 pl-4 rounded-full flex items-center justify-between animate-[lux-rise_0.5s_var(--ease-lux)]">
           <div className="flex items-center gap-3">
             <div
               key={itemCount}
-              className="w-9 h-9 rounded-full bg-gold text-ink flex items-center justify-center font-extrabold text-xs shrink-0 animate-[lux-pop_0.4s_var(--ease-lux)]"
+              className="w-9 h-9 rounded-full bg-[var(--brand)] text-white flex items-center justify-center font-extrabold text-xs shrink-0 animate-[lux-pop_0.4s_var(--ease-lux)]"
             >
               {itemCount}
             </div>
             <div>
-              <p className="text-[9.5px] uppercase tracking-[0.2em] text-ivory/50">Your Dining Cart</p>
-              <p className="font-mono font-semibold text-sm sm:text-base text-champagne">
+              <p className="text-[9.5px] uppercase tracking-[0.2em] text-stone-500 font-semibold">Your Dining Cart</p>
+              <p className="font-mono font-bold text-sm sm:text-base text-[var(--brand-text)]">
                 {formatCurrency(total)}
               </p>
             </div>
@@ -410,7 +421,7 @@ export const MenuPage: React.FC<{ navigate: (route: string) => void }> = ({ navi
 
           <button
             onClick={() => navigate('cart')}
-            className="lux-btn lux-btn-gold !min-h-[2.75rem] !px-5"
+            className="lux-btn lux-btn-wine !min-h-[2.75rem] !px-5"
           >
             <ShoppingBag className="w-4 h-4" />
             <span>View Cart</span>

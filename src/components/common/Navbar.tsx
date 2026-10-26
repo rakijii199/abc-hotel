@@ -1,7 +1,7 @@
 /**
  * Primary Navigation Bar for ABC Hotel
  * Differentiates Customer, Staff Admin, Hotel Manager, Kitchen, and Delivery Rider workflows
- * Presentation: transparent over the home hero, refined dark glass once scrolled.
+ * Presentation: transparent over the light home hero, ivory glass once scrolled.
  */
 import React, { useEffect, useRef, useState } from 'react';
 import {
@@ -121,15 +121,15 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
 
   const navLink = (active: boolean) =>
     `lux-link py-2 text-[11px] font-semibold uppercase tracking-[0.2em] transition-colors cursor-pointer ${
-      active ? 'text-champagne' : 'text-ivory/75 hover:text-ivory'
+      active ? 'text-[var(--brand-text)]' : 'text-stone-600 hover:text-[var(--brand-text)]'
     }`;
 
   return (
     <header
       className={`${overlay ? 'fixed' : 'sticky'} inset-x-0 top-0 z-40 transition-[background-color,box-shadow,border-color] duration-500 ${
         solid
-          ? 'bg-ink/90 backdrop-blur-xl border-b border-white/[0.06] shadow-[0_10px_40px_-20px_rgba(0,0,0,0.6)]'
-          : 'bg-gradient-to-b from-black/50 to-transparent border-b border-transparent'
+          ? 'bg-[var(--glass-bg-strong)] backdrop-blur-xl backdrop-saturate-150 border-b border-[var(--border-subtle)] shadow-[var(--shadow-xs)]'
+          : 'bg-gradient-to-b from-[rgba(255,253,249,0.6)] to-transparent border-b border-transparent'
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -141,15 +141,15 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
             className="flex items-center gap-3 cursor-pointer group shrink-0 text-left"
             aria-label="ABC Hotel home"
           >
-            <span className="relative w-10 h-10 sm:w-11 sm:h-11 flex items-center justify-center border border-gold/60 text-champagne transition-colors group-hover:border-champagne">
-              <span className="absolute inset-[3px] border border-gold/25" />
+            <span className="relative w-10 h-10 sm:w-11 sm:h-11 flex items-center justify-center border border-gold/70 bg-white/60 text-[var(--brand-text)] transition-colors group-hover:border-[var(--brand)]">
+              <span className="absolute inset-[3px] border border-gold/35" />
               <span className="font-display text-[13px] sm:text-[15px] font-semibold tracking-[0.06em]">ABC</span>
             </span>
             <span className="leading-none hidden min-[360px]:block">
-              <span className="font-display text-lg sm:text-xl font-semibold tracking-[0.18em] text-ivory block">
+              <span className="font-display text-lg sm:text-xl font-semibold tracking-[0.18em] text-stone-900 block">
                 ABC HOTEL
               </span>
-              <span className="text-[8.5px] sm:text-[9px] tracking-[0.32em] uppercase font-semibold text-gold block mt-1">
+              <span className="text-[8.5px] sm:text-[9px] tracking-[0.32em] uppercase font-semibold text-amber-700 block mt-1">
                 {isDelivery
                   ? 'Delivery Staff Portal'
                   : isKitchen
@@ -231,9 +231,9 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
               // Staff Admin / Manager link
               <button
                 onClick={() => handleNav('admin')}
-                className="px-4 py-2 text-xs font-bold rounded-full transition-all flex items-center gap-2 cursor-pointer text-amber-100 bg-amber-900/60 border border-amber-400/40 hover:bg-amber-800/70"
+                className="px-4 py-2 text-xs font-bold rounded-full transition-all flex items-center gap-2 cursor-pointer text-[var(--brand-text)] bg-[var(--brand-soft)] border border-[var(--brand-border)] hover:bg-[var(--brand-soft-hover)]"
               >
-                <Shield className="w-4 h-4 text-amber-300" />
+                <Shield className="w-4 h-4 text-amber-700" />
                 {isManager ? 'Hotel Manager Suite' : 'Staff Operations Suite'}
               </button>
             )}
@@ -246,7 +246,9 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
               <button
                 onClick={() => handleNav('cart')}
                 className={`relative w-10 h-10 flex items-center justify-center rounded-full transition-colors cursor-pointer ${
-                  currentRoute === 'cart' ? 'text-champagne bg-white/10' : 'text-ivory/85 hover:text-ivory hover:bg-white/10'
+                  currentRoute === 'cart'
+                    ? 'text-[var(--brand-text)] bg-[var(--brand-soft)]'
+                    : 'text-stone-700 hover:text-[var(--brand-text)] hover:bg-[var(--brand-soft)]'
                 }`}
                 aria-label={`Shopping cart, ${itemCount} ${itemCount === 1 ? 'item' : 'items'}`}
               >
@@ -254,7 +256,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
                 {itemCount > 0 && (
                   <span
                     key={itemCount}
-                    className="absolute top-0.5 right-0.5 min-w-[18px] h-[18px] px-1 rounded-full bg-gold text-ink text-[10px] font-extrabold flex items-center justify-center ring-2 ring-ink animate-[lux-pop_0.4s_var(--ease-lux)]"
+                    className="absolute top-0.5 right-0.5 min-w-[18px] h-[18px] px-1 rounded-full bg-[var(--brand)] text-white text-[10px] font-extrabold flex items-center justify-center ring-2 ring-[var(--surface)]animate-[lux-pop_0.4s_var(--ease-lux)]"
                   >
                     {itemCount}
                   </span>
@@ -269,12 +271,12 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
                   onClick={() => setUserDropdownOpen(!userDropdownOpen)}
                   aria-haspopup="menu"
                   aria-expanded={userDropdownOpen}
-                  className="flex items-center gap-2 p-1 pl-3.5 rounded-full border border-white/15 hover:border-gold/60 bg-white/[0.04] transition-colors cursor-pointer"
+                  className="flex items-center gap-2 p-1 pl-3.5 rounded-full border border-[var(--border-subtle)] hover:border-[var(--brand-border)] bg-white/70 shadow-[var(--shadow-xs)] transition-colors cursor-pointer"
                 >
-                  <span className="text-xs font-semibold text-ivory max-w-[100px] truncate">
+                  <span className="text-xs font-semibold text-stone-800 max-w-[100px] truncate">
                     {user.firstName}
                   </span>
-                  <ChevronDown className={`w-3.5 h-3.5 text-ivory/60 transition-transform ${userDropdownOpen ? 'rotate-180' : ''}`} />
+                  <ChevronDown className={`w-3.5 h-3.5 text-stone-500 transition-transform ${userDropdownOpen ? 'rotate-180' : ''}`} />
                   <span className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${roleAvatarClass}`}>
                     {user.firstName[0]}
                   </span>
@@ -283,7 +285,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
                 {userDropdownOpen && (
                   <div
                     role="menu"
-                    className="absolute right-0 mt-3 w-64 bg-[#fffdf9] rounded-2xl shadow-[0_30px_60px_-20px_rgba(0,0,0,0.45)] border border-stone-200/80 py-2 z-50 origin-top-right animate-[lux-drop_0.25s_var(--ease-lux)]"
+                    className="absolute right-0 mt-3 w-64 bg-[var(--surface)] rounded-2xl shadow-[var(--shadow-float)] border border-[var(--border-subtle)] py-2 z-50 origin-top-right animate-[lux-drop_0.25s_var(--ease-lux)]"
                   >
                     <div className="px-4 pt-2 pb-3 border-b border-stone-100">
                       <p className="text-[10px] uppercase tracking-[0.2em] text-stone-400 font-semibold">Signed in as</p>
@@ -368,19 +370,19 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
               <div className="hidden md:flex items-center gap-4">
                 <button
                   onClick={() => handleNav('customer-auth')}
-                  className="text-[11px] font-semibold uppercase tracking-[0.2em] text-ivory/80 hover:text-ivory transition-colors cursor-pointer lux-link"
+                  className="text-[11px] font-semibold uppercase tracking-[0.2em] text-stone-600 hover:text-[var(--brand-text)] transition-colors cursor-pointer lux-link"
                 >
                   Sign In
                 </button>
                 <button
                   onClick={() => handleNav('customer-register')}
-                  className="text-[11px] font-semibold uppercase tracking-[0.2em] text-ivory/80 hover:text-ivory transition-colors cursor-pointer lux-link"
+                  className="text-[11px] font-semibold uppercase tracking-[0.2em] text-stone-600 hover:text-[var(--brand-text)] transition-colors cursor-pointer lux-link"
                 >
                   Register
                 </button>
                 <button
                   onClick={() => handleNav('staff-login')}
-                  className="text-[10px] font-semibold uppercase tracking-[0.18em] text-ivory/45 hover:text-ivory/80 transition-colors cursor-pointer flex items-center gap-1.5"
+                  className="text-[10px] font-semibold uppercase tracking-[0.18em] text-stone-500 hover:text-stone-800 transition-colors cursor-pointer flex items-center gap-1.5"
                   title="Login as Staff"
                 >
                   <Shield className="w-3 h-3" />
@@ -412,10 +414,10 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
             ) : (
               <button
                 onClick={() => handleNav('customer-auth')}
-                className="md:hidden flex items-center gap-1.5 px-3 h-9 rounded-full text-[10px] font-bold uppercase tracking-[0.16em] text-ivory border border-white/20 hover:border-gold/70 transition-colors cursor-pointer"
+                className="md:hidden flex items-center gap-1.5 px-3 h-9 rounded-full text-[10px] font-bold uppercase tracking-[0.16em] text-stone-800 bg-white/70 border border-[var(--border-subtle)] hover:border-[var(--brand-border)] transition-colors cursor-pointer"
                 aria-label="Customer Login"
               >
-                <UserIcon className="w-3.5 h-3.5 text-champagne" />
+                <UserIcon className="w-3.5 h-3.5 text-amber-700" />
                 <span>Login</span>
               </button>
             )}
@@ -423,11 +425,11 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
             {/* Mobile Menu Toggle Button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden w-10 h-10 flex items-center justify-center text-ivory hover:bg-white/10 rounded-full transition-colors cursor-pointer"
+              className="md:hidden w-10 h-10 flex items-center justify-center text-stone-800 hover:bg-[var(--brand-soft)] rounded-full transition-colors cursor-pointer"
               aria-label="Toggle navigation menu"
               aria-expanded={mobileMenuOpen}
             >
-              {mobileMenuOpen ? <X className="w-6 h-6 text-champagne" /> : <MenuIcon className="w-6 h-6" strokeWidth={1.5} />}
+              {mobileMenuOpen ? <X className="w-6 h-6 text-[var(--brand-text)]" /> : <MenuIcon className="w-6 h-6" strokeWidth={1.5} />}
             </button>
           </div>
         </div>
@@ -435,7 +437,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
 
       {/* Mobile Drawer */}
       {mobileMenuOpen && (
-        <div className="md:hidden fixed inset-x-0 top-16 sm:top-20 bottom-0 bg-ink z-50 overflow-y-auto pb-10 animate-[lux-drop_0.3s_var(--ease-lux)]">
+        <div className="md:hidden fixed inset-x-0 top-16 sm:top-20 bottom-0 bg-[var(--page-bg)] border-t border-[var(--border-subtle)] z-50 overflow-y-auto pb-10 animate-[lux-drop_0.3s_var(--ease-lux)]">
           <div className="px-5 pt-6 space-y-8">
             {/* Navigation Links */}
             <nav className="space-y-1" aria-label="Mobile">
@@ -451,15 +453,15 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
                     <button
                       key={link.key}
                       onClick={link.onClick}
-                      className={`w-full text-left py-3 flex items-center justify-between border-b border-white/[0.07] cursor-pointer group ${
-                        link.active ? 'text-champagne' : 'text-ivory'
+                      className={`w-full text-left py-3 flex items-center justify-between border-b border-[var(--border-subtle)] cursor-pointer group ${
+                        link.active ? 'text-[var(--brand-text)]' : 'text-stone-900 hover:text-[var(--brand-text)]'
                       }`}
                     >
                       <span className="flex items-baseline gap-4">
-                        <span className="text-[10px] font-semibold text-gold/70 tracking-widest">0{i + 1}</span>
+                        <span className="text-[10px] font-semibold text-amber-700 tracking-widest">0{i + 1}</span>
                         <span className="font-display text-3xl font-medium">{link.label}</span>
                       </span>
-                      <ArrowRight className="w-4 h-4 text-gold/70 group-hover:translate-x-1 transition-transform" />
+                      <ArrowRight className="w-4 h-4 text-amber-700 group-hover:translate-x-1 transition-transform" />
                     </button>
                   ))}
                 </>
@@ -504,11 +506,11 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
 
             {/* Authenticated Actions on Mobile */}
             {isAuthenticated && user && (
-              <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-2">
-                <div className="px-3 py-3 border-b border-white/10 flex items-center justify-between">
+              <div className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface)] shadow-[var(--shadow-card)] p-2">
+                <div className="px-3 py-3 border-b border-[var(--border-subtle)] flex items-center justify-between">
                   <div>
-                    <p className="text-[10px] uppercase tracking-[0.2em] text-ivory/50">Signed in as</p>
-                    <p className="font-display text-xl text-ivory">
+                    <p className="text-[10px] uppercase tracking-[0.2em] text-stone-500">Signed in as</p>
+                    <p className="font-display text-xl text-stone-900">
                       {user.firstName} {user.lastName}
                     </p>
                   </div>
@@ -528,13 +530,13 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
                       <button
                         key={route}
                         onClick={() => handleNav(route)}
-                        className="w-full text-left px-3 py-3 text-sm font-medium text-ivory/85 hover:bg-white/5 flex items-center justify-between rounded-xl cursor-pointer min-h-[44px]"
+                        className="w-full text-left px-3 py-3 text-sm font-medium text-stone-700 hover:bg-[var(--brand-soft)] hover:text-stone-900 flex items-center justify-between rounded-xl cursor-pointer min-h-[44px]"
                       >
                         <span className="flex items-center gap-3">
-                          <Icon className="w-4 h-4 text-gold" strokeWidth={1.75} />
+                          <Icon className="w-4 h-4 text-amber-700" strokeWidth={1.75} />
                           <span>{label}</span>
                         </span>
-                        <ChevronRight className="w-4 h-4 text-ivory/30" />
+                        <ChevronRight className="w-4 h-4 text-stone-400" />
                       </button>
                     ))}
                   </>
@@ -546,7 +548,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
                     setMobileMenuOpen(false);
                     handleNav('login');
                   }}
-                  className="w-full text-left px-3 py-3 text-sm text-rose-300 hover:bg-rose-500/10 flex items-center gap-3 rounded-xl cursor-pointer font-medium min-h-[44px]"
+                  className="w-full text-left px-3 py-3 text-sm text-rose-700 hover:bg-rose-50 flex items-center gap-3 rounded-xl cursor-pointer font-medium min-h-[44px]"
                 >
                   <LogOut className="w-4 h-4" />
                   <span>Log Out</span>
@@ -558,8 +560,8 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
             {!isAuthenticated && (
               <div className="space-y-4">
                 <div>
-                  <p className="lux-eyebrow text-gold">Guest Account</p>
-                  <p className="text-sm text-ivory/60 mt-2 leading-relaxed">
+                  <p className="lux-eyebrow text-amber-700">Guest Account</p>
+                  <p className="text-sm text-stone-600 mt-2 leading-relaxed">
                     Login with phone OTP or register to reserve tables and track orders.
                   </p>
                 </div>
@@ -568,7 +570,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
                   <button onClick={() => handleNav('customer-auth')} className="lux-btn lux-btn-gold w-full !px-3">
                     Customer Login
                   </button>
-                  <button onClick={() => handleNav('customer-register')} className="lux-btn lux-btn-ghost w-full !px-3">
+                  <button onClick={() => handleNav('customer-register')} className="lux-btn lux-btn-outline w-full !px-3">
                     Register
                   </button>
                 </div>
@@ -576,16 +578,16 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
                 {/* Staff Login Flow on Mobile */}
                 <button
                   onClick={() => handleNav('staff-login')}
-                  className="w-full py-3 px-4 rounded-xl border border-white/10 text-ivory/70 hover:text-ivory hover:border-white/25 flex items-center justify-between cursor-pointer min-h-[44px] transition-colors"
+                  className="w-full py-3 px-4 rounded-xl border border-[var(--border-subtle)] bg-[var(--surface)] text-stone-700 hover:text-stone-900 hover:border-[var(--brand-border)] flex items-center justify-between cursor-pointer min-h-[44px] transition-colors"
                 >
                   <span className="flex items-center gap-3">
-                    <Shield className="w-4 h-4 text-amber-300" />
+                    <Shield className="w-4 h-4 text-amber-700" />
                     <span className="text-left">
                       <span className="font-semibold block text-xs">Login as Staff</span>
-                      <span className="text-[10px] text-ivory/45 block leading-tight">Admin, Kitchen & Delivery portal</span>
+                      <span className="text-[10px] text-stone-500 block leading-tight">Admin, Kitchen & Delivery portal</span>
                     </span>
                   </span>
-                  <ChevronRight className="w-4 h-4 text-ivory/30" />
+                  <ChevronRight className="w-4 h-4 text-stone-400" />
                 </button>
               </div>
             )}

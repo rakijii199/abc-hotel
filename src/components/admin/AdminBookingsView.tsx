@@ -153,9 +153,9 @@ export const AdminBookingsView: React.FC<AdminBookingsViewProps> = ({
   return (
     <div className="space-y-2">
       {/* Header & Filter Card */}
-      <div className="bg-white p-3 sm:p-4 rounded-2xl border border-stone-200/80 shadow-2xs space-y-2">
+      <div className="bg-white p-3 sm:p-4 rounded-2xl border border-stone-200/80 shadow-[var(--shadow-card)] space-y-2">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-          <h1 className="font-serif text-lg sm:text-xl font-bold text-stone-900">
+          <h1 className="page-title">
             Table Reservations
           </h1>
 
@@ -175,10 +175,10 @@ export const AdminBookingsView: React.FC<AdminBookingsViewProps> = ({
                   key={st.id}
                   type="button"
                   onClick={() => setStatusFilter(st.id)}
-                  className={`px-2.5 py-1 text-xs font-semibold rounded-xl transition-all whitespace-nowrap cursor-pointer flex items-center gap-1.5 ${
+                  className={`px-2.5 py-1 text-xs font-semibold rounded-full transition-all whitespace-nowrap cursor-pointer flex items-center gap-1.5 ${
                     isSelected
-                      ? 'bg-amber-800 text-white font-bold shadow-2xs'
-                      : 'bg-stone-50 hover:bg-stone-100 text-stone-700 border border-stone-200/80'
+                      ? 'bg-amber-800 text-white font-bold shadow-2xs border border-amber-800'
+                      : 'bg-white hover:bg-[var(--brand-soft)] hover:text-[var(--brand-text)] hover:border-[var(--brand-border)] text-stone-700 border border-stone-200'
                   }`}
                 >
                   <span>{st.label}</span>
@@ -198,7 +198,7 @@ export const AdminBookingsView: React.FC<AdminBookingsViewProps> = ({
         {/* Search & Date Filter Bar (Standard 8px gap) */}
         <div className="grid grid-cols-1 sm:grid-cols-12 gap-2 pt-1 border-t border-stone-100">
           {/* Search Input (sm:col-span-7) */}
-          <div className="sm:col-span-7 flex items-center gap-2 bg-stone-50 px-3 py-1.5 rounded-xl border border-stone-200">
+          <div className="sm:col-span-7 flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-stone-200 focus-within:border-amber-700 focus-within:ring-3 focus-within:ring-[var(--brand-ring-soft)] transition-shadow">
             <Search className="w-3.5 h-3.5 text-stone-400 shrink-0" />
             <input
               type="text"
@@ -210,7 +210,7 @@ export const AdminBookingsView: React.FC<AdminBookingsViewProps> = ({
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery('')}
-                className="text-[10px] text-stone-400 hover:text-stone-600 font-bold cursor-pointer"
+                className="text-[10px] text-stone-500 hover:text-stone-600 font-bold cursor-pointer"
               >
                 ✕
               </button>
@@ -244,7 +244,7 @@ export const AdminBookingsView: React.FC<AdminBookingsViewProps> = ({
 
             {/* Date Filters Popover Dropdown (similar to Dashboard) */}
             {dateFilterOpen && (
-              <div className="absolute right-0 top-full mt-2 w-72 sm:w-80 bg-white rounded-2xl shadow-xl border border-stone-200 z-50 p-3 space-y-2.5 animate-in fade-in zoom-in-95 duration-150">
+              <div className="absolute right-0 top-full mt-2 w-72 sm:w-80 bg-white rounded-2xl shadow-[var(--shadow-float)] border border-stone-200 z-50 p-3 space-y-2.5 animate-in fade-in zoom-in-95 duration-150">
                 {/* Header */}
                 <div className="flex items-center justify-between pb-2 border-b border-stone-100">
                   <span className="font-semibold text-xs text-stone-900 flex items-center gap-1.5">
@@ -275,7 +275,7 @@ export const AdminBookingsView: React.FC<AdminBookingsViewProps> = ({
                           setCustomStartDate(e.target.value);
                           setDatePreset('CUSTOM');
                         }}
-                        className="w-full px-2 py-1 text-xs border border-stone-200 rounded-lg bg-stone-50 text-stone-800 focus:outline-hidden focus:border-amber-700 font-mono"
+                        className="w-full px-2 py-1 text-xs border border-stone-200 rounded-lg bg-white text-stone-800 focus:outline-hidden focus:border-amber-700 font-mono"
                       />
                     </div>
                     <div className="space-y-1">
@@ -287,7 +287,7 @@ export const AdminBookingsView: React.FC<AdminBookingsViewProps> = ({
                           setCustomEndDate(e.target.value);
                           setDatePreset('CUSTOM');
                         }}
-                        className="w-full px-2 py-1 text-xs border border-stone-200 rounded-lg bg-stone-50 text-stone-800 focus:outline-hidden focus:border-amber-700 font-mono"
+                        className="w-full px-2 py-1 text-xs border border-stone-200 rounded-lg bg-white text-stone-800 focus:outline-hidden focus:border-amber-700 font-mono"
                       />
                     </div>
                   </div>
@@ -362,10 +362,10 @@ export const AdminBookingsView: React.FC<AdminBookingsViewProps> = ({
       </div>
 
       {/* Bookings Table */}
-      <div className="bg-white rounded-2xl border border-stone-200/80 shadow-2xs overflow-hidden">
+      <div className="bg-white rounded-2xl border border-stone-200/80 shadow-[var(--shadow-card)] overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-xs text-left">
-            <thead className="bg-stone-50/90 text-stone-500 uppercase font-bold text-[11px] border-b border-stone-200">
+            <thead className="bg-[var(--brand-soft)] text-stone-600 uppercase font-semibold text-[11px] tracking-wide border-b border-[var(--brand-border)]">
               <tr>
                 <th className="py-2.5 px-3">Booking ID</th>
                 <th className="py-2.5 px-3">Customer</th>
@@ -387,7 +387,7 @@ export const AdminBookingsView: React.FC<AdminBookingsViewProps> = ({
                 filteredBookings.map((b) => {
                   const badge = getBookingStatusBadge(b.status);
                   return (
-                    <tr key={b.id} className="hover:bg-amber-50/20 transition-colors">
+                    <tr key={b.id} className="hover:bg-[var(--brand-soft)]/60 transition-colors">
                       <td className="py-2 px-3 font-mono font-bold text-amber-900 text-xs">
                         {b.bookingReference}
                       </td>
@@ -396,7 +396,7 @@ export const AdminBookingsView: React.FC<AdminBookingsViewProps> = ({
                         <p className="font-bold text-stone-900 text-xs">
                           {b.user ? `${b.user.firstName} ${b.user.lastName}` : 'Guest Diner'}
                         </p>
-                        <p className="text-[10px] text-stone-400 font-mono">
+                        <p className="text-[10px] text-stone-500 font-mono">
                           {b.user?.phone || 'No phone'}
                         </p>
                       </td>
@@ -420,7 +420,7 @@ export const AdminBookingsView: React.FC<AdminBookingsViewProps> = ({
 
                       <td className="py-2 px-3">
                         <span
-                          className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${badge.color}`}
+                          className={`badge ${badge.color}`}
                         >
                           {badge.label}
                         </span>
@@ -487,7 +487,7 @@ export const AdminBookingsView: React.FC<AdminBookingsViewProps> = ({
                           {b.status === 'SEATED' && (
                             <button
                               onClick={() => handleExecuteStatus(b.id, 'COMPLETED')}
-                              className="px-2.5 py-1 bg-stone-900 hover:bg-stone-800 text-white font-bold rounded-lg text-[11px] cursor-pointer"
+                              className="px-2.5 py-1 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded-lg text-[11px] cursor-pointer"
                             >
                               Complete
                             </button>
@@ -534,7 +534,7 @@ export const AdminBookingsView: React.FC<AdminBookingsViewProps> = ({
                 </div>
                 <div>
                   <p className="text-stone-400">Account Role</p>
-                  <span className="inline-block px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 font-bold text-[10px]">
+                  <span className="badge badge-brand">
                     {selectedBooking.user?.role || 'CUSTOMER'}
                   </span>
                 </div>
@@ -620,7 +620,7 @@ export const AdminBookingsView: React.FC<AdminBookingsViewProps> = ({
                 {selectedBooking.status === 'SEATED' && (
                   <button
                     onClick={() => handleExecuteStatus(selectedBooking.id, 'COMPLETED')}
-                    className="px-4 py-2 bg-stone-900 hover:bg-stone-800 text-white font-bold rounded-xl cursor-pointer"
+                    className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded-xl cursor-pointer"
                   >
                     Mark Completed
                   </button>

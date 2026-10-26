@@ -102,15 +102,15 @@ export const MyBookingsPage: React.FC<{ navigate: (route: string) => void }> = (
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
       {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-stone-200 pb-4">
+      <div className="flex flex-wrap items-end justify-between gap-4 border-b border-[var(--border-subtle)] pb-5">
         <div>
-          <span className="text-xs font-bold uppercase tracking-widest text-amber-800">
+          <span className="lux-eyebrow text-[var(--brand-text)]">
             Dining Reservations
           </span>
-          <h1 className="font-serif text-3xl font-bold text-stone-900 mt-0.5">
+          <h1 className="lux-display text-[clamp(2rem,4vw,2.75rem)] text-stone-900 mt-2">
             My Table Bookings ({bookings.length})
           </h1>
-          <p className="text-xs text-stone-500 mt-1">
+          <p className="text-xs sm:text-sm text-stone-600 mt-1.5">
             Track your upcoming dining table reservations or reserve a new table.
           </p>
         </div>
@@ -119,15 +119,15 @@ export const MyBookingsPage: React.FC<{ navigate: (route: string) => void }> = (
           <button
             onClick={() => loadBookings()}
             disabled={refreshing}
-            className="p-2.5 rounded-xl border border-stone-200 text-stone-600 hover:text-stone-900 hover:bg-stone-50 transition-all cursor-pointer"
+            className="btn btn-secondary !px-2.5"
             title="Refresh Bookings"
           >
-            <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin text-amber-700' : ''}`} />
+            <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin text-[var(--brand)]' : ''}`} />
           </button>
 
           <button
             onClick={() => navigate('book-table')}
-            className="px-4 py-2.5 bg-amber-700 hover:bg-amber-800 text-white rounded-xl text-xs font-bold shadow-xs flex items-center gap-1.5 cursor-pointer transition-all"
+            className="btn btn-primary"
           >
             <Plus className="w-4 h-4" />
             <span>Reserve New Table</span>
@@ -136,24 +136,24 @@ export const MyBookingsPage: React.FC<{ navigate: (route: string) => void }> = (
       </div>
 
       {/* 3 Clean Interactive Filter Tabs (Past Reservations Removed) */}
-      <div className="flex items-center gap-2 border-b border-stone-200 pb-2 overflow-x-auto text-xs">
+      <div className="flex items-center gap-2 pb-1 overflow-x-auto scrollbar-none text-xs -mx-4 px-4 sm:mx-0 sm:px-0">
         {/* Tab 1: Upcoming */}
         <button
           onClick={() => setActiveTab('UPCOMING')}
-          className={`px-4 py-2.5 text-xs font-bold rounded-xl transition-all cursor-pointer whitespace-nowrap flex items-center gap-2 ${
+          className={`min-h-10 px-4 py-2 text-xs font-bold rounded-full border transition-all cursor-pointer whitespace-nowrap flex items-center gap-2 ${
             activeTab === 'UPCOMING'
-              ? 'bg-amber-700 text-white shadow-xs'
-              : 'text-stone-600 hover:bg-stone-100'
+              ? 'bg-[var(--brand)] border-[var(--brand)] text-white shadow-[var(--shadow-xs)]'
+              : 'bg-white border-stone-200 text-stone-600 hover:border-[var(--brand-border)] hover:bg-[var(--brand-soft)] hover:text-[var(--brand-text)]'
           }`}
         >
           <span>Upcoming Reservations</span>
           <span
             className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold ${
               activeTab === 'UPCOMING'
-                ? 'bg-amber-900/50 text-white'
+                ? 'bg-white/20 text-white'
                 : upcomingBookings.length > 0
-                ? 'bg-amber-100 text-amber-900'
-                : 'bg-stone-200 text-stone-600'
+                ? 'bg-[var(--brand-soft)] text-[var(--brand-text)]'
+                : 'bg-stone-100 text-stone-600'
             }`}
           >
             {upcomingBookings.length}
@@ -163,20 +163,20 @@ export const MyBookingsPage: React.FC<{ navigate: (route: string) => void }> = (
         {/* Tab 2: Cancelled / Declined */}
         <button
           onClick={() => setActiveTab('CANCELLED')}
-          className={`px-4 py-2.5 text-xs font-bold rounded-xl transition-all cursor-pointer whitespace-nowrap flex items-center gap-2 ${
+          className={`min-h-10 px-4 py-2 text-xs font-bold rounded-full border transition-all cursor-pointer whitespace-nowrap flex items-center gap-2 ${
             activeTab === 'CANCELLED'
-              ? 'bg-amber-700 text-white shadow-xs'
-              : 'text-stone-600 hover:bg-stone-100'
+              ? 'bg-[var(--brand)] border-[var(--brand)] text-white shadow-[var(--shadow-xs)]'
+              : 'bg-white border-stone-200 text-stone-600 hover:border-[var(--brand-border)] hover:bg-[var(--brand-soft)] hover:text-[var(--brand-text)]'
           }`}
         >
           <span>Cancelled / Declined</span>
           <span
             className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold ${
               activeTab === 'CANCELLED'
-                ? 'bg-amber-900/50 text-white'
+                ? 'bg-white/20 text-white'
                 : cancelledBookings.length > 0
                 ? 'bg-rose-100 text-rose-800'
-                : 'bg-stone-200 text-stone-600'
+                : 'bg-stone-100 text-stone-600'
             }`}
           >
             {cancelledBookings.length}
@@ -186,10 +186,10 @@ export const MyBookingsPage: React.FC<{ navigate: (route: string) => void }> = (
         {/* Tab 3: All Bookings */}
         <button
           onClick={() => setActiveTab('ALL')}
-          className={`px-4 py-2.5 text-xs font-bold rounded-xl transition-all cursor-pointer whitespace-nowrap flex items-center gap-2 ${
+          className={`min-h-10 px-4 py-2 text-xs font-bold rounded-full border transition-all cursor-pointer whitespace-nowrap flex items-center gap-2 ${
             activeTab === 'ALL'
-              ? 'bg-stone-800 text-white shadow-xs'
-              : 'text-stone-500 hover:bg-stone-100'
+              ? 'bg-[var(--brand)] border-[var(--brand)] text-white shadow-[var(--shadow-xs)]'
+              : 'bg-white border-stone-200 text-stone-600 hover:border-[var(--brand-border)] hover:bg-[var(--brand-soft)] hover:text-[var(--brand-text)]'
           }`}
         >
           <span>All Bookings ({bookings.length})</span>
@@ -242,14 +242,14 @@ export const MyBookingsPage: React.FC<{ navigate: (route: string) => void }> = (
           <div className="flex justify-end gap-3 pt-3 border-t border-stone-100">
             <button
               onClick={() => setCancelTargetId(null)}
-              className="px-4 py-2 font-medium text-stone-600 hover:text-stone-900 cursor-pointer"
+              className="btn btn-ghost"
             >
               Keep Booking
             </button>
             <button
               disabled={cancelling}
               onClick={handleConfirmCancel}
-              className="px-4 py-2 font-bold text-white bg-rose-600 hover:bg-rose-700 rounded-xl transition-colors cursor-pointer shadow-xs"
+              className="btn btn-danger"
             >
               {cancelling ? 'Cancelling...' : 'Confirm Cancellation'}
             </button>

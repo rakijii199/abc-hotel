@@ -664,15 +664,15 @@ export const AdminDailyStaffSummary: React.FC<AdminDailyStaffSummaryProps> = ({
   const getPaymentMethodBadge = (method?: string) => {
     const m = (method || 'Cash').toUpperCase();
     if (m.includes('UPI') || m.includes('GPAY') || m.includes('PHONEPE') || m.includes('PAYTM') || m.includes('QR')) {
-      return { label: 'UPI', style: 'bg-indigo-50 text-indigo-700 border-indigo-200' };
+      return { label: 'UPI', style: 'badge-info' };
     }
     if (m.includes('CARD') || m.includes('CREDIT') || m.includes('DEBIT') || m.includes('POS')) {
-      return { label: 'Card', style: 'bg-purple-50 text-purple-700 border-purple-200' };
+      return { label: 'Card', style: 'badge-brand' };
     }
     if (m.includes('CASH')) {
-      return { label: 'Cash', style: 'bg-emerald-50 text-emerald-800 border-emerald-200' };
+      return { label: 'Cash', style: 'badge-success' };
     }
-    return { label: method || 'Cash', style: 'bg-stone-50 text-stone-700 border-stone-200' };
+    return { label: method || 'Cash', style: '' };
   };
 
   const getTableTitle = () => {
@@ -770,9 +770,9 @@ export const AdminDailyStaffSummary: React.FC<AdminDailyStaffSummaryProps> = ({
       {/* Master Tabs + Sleek Filter Button with Popover (Image 2 Reference)        */}
       {/* Standard 4px & 8px spacing, neater and user-friendly                     */}
       {/* ========================================================================= */}
-      <div className="bg-white p-2 rounded-xl border border-stone-200 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+      <div className="bg-white p-2 rounded-2xl border border-stone-200 shadow-[var(--shadow-card)] flex flex-col sm:flex-row sm:items-center justify-between gap-2">
         {/* Master Tab Switcher */}
-        <div className="bg-stone-100 p-1 rounded-lg flex items-center gap-1 border border-stone-200 text-xs font-semibold shrink-0">
+        <div className="bg-stone-100/80 p-1 rounded-xl flex items-center gap-1 border border-stone-200 text-xs font-semibold shrink-0">
           <button
             onClick={() => setActiveDashboardTab('OPERATIONS')}
             className={`px-3 py-1.5 rounded-md transition-all cursor-pointer flex items-center gap-1.5 ${
@@ -832,7 +832,7 @@ export const AdminDailyStaffSummary: React.FC<AdminDailyStaffSummaryProps> = ({
 
           {/* Reference Image 2: Filters Dropdown Popover */}
           {filterOpen && (
-            <div className="absolute right-0 top-full mt-2 w-72 sm:w-80 bg-white rounded-xl shadow-xl border border-stone-200 z-50 p-3 space-y-2 animate-in fade-in zoom-in-95 duration-150">
+            <div className="absolute right-0 top-full mt-2 w-72 sm:w-80 bg-white rounded-xl shadow-[var(--shadow-float)] border border-stone-200 z-50 p-3 space-y-2 animate-in fade-in zoom-in-95 duration-150">
               {/* Header */}
               <div className="flex items-center justify-between pb-2 border-b border-stone-100">
                 <span className="font-semibold text-xs text-stone-900 flex items-center gap-1.5">
@@ -966,9 +966,9 @@ export const AdminDailyStaffSummary: React.FC<AdminDailyStaffSummaryProps> = ({
           {/* ========================================================================= */}
           <div className="grid grid-cols-2 lg:grid-cols-5 gap-2 [&>*:last-child]:col-span-2 lg:[&>*:last-child]:col-span-1">
             {/* Metric 1: SUCCESSFUL ORDER */}
-            <div className="bg-white p-3 rounded-xl border border-stone-200 shadow-2xs space-y-1 hover:border-emerald-500 transition-colors">
+            <div className="stat-card p-3 space-y-1">
               <div className="flex items-center justify-between text-stone-400">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-stone-500">
+                <span className="label-caps">
                   Successful Orders
                 </span>
                 <div className="w-6 h-6 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center">
@@ -976,7 +976,7 @@ export const AdminDailyStaffSummary: React.FC<AdminDailyStaffSummaryProps> = ({
                 </div>
               </div>
               <div className="flex items-baseline gap-1">
-                <span className="font-serif font-bold text-xl text-stone-900">
+                <span className="font-serif font-bold text-2xl leading-tight text-stone-900 tabular-nums">
                   {displaySuccessfulCount}
                 </span>
                 <span className="text-[11px] text-stone-400 font-medium">
@@ -990,16 +990,16 @@ export const AdminDailyStaffSummary: React.FC<AdminDailyStaffSummaryProps> = ({
             </div>
 
             {/* Metric 2: TOTAL AMOUNT */}
-            <div className="bg-white p-3 rounded-xl border border-stone-200 shadow-2xs space-y-1 hover:border-amber-600 transition-colors">
+            <div className="stat-card p-3 space-y-1">
               <div className="flex items-center justify-between text-stone-400">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-stone-500">
+                <span className="label-caps">
                   Total Amount
                 </span>
                 <div className="w-6 h-6 rounded-lg bg-amber-50 text-amber-700 flex items-center justify-center">
                   <DollarSign className="w-3.5 h-3.5" />
                 </div>
               </div>
-              <p className="font-serif font-bold text-xl text-stone-900">
+              <p className="font-serif font-bold text-2xl leading-tight text-[var(--brand-text)] tabular-nums">
                 {formatCurrency(displayTotalAmount)}
               </p>
               <p className="text-[10px] text-stone-500 truncate">
@@ -1008,9 +1008,9 @@ export const AdminDailyStaffSummary: React.FC<AdminDailyStaffSummaryProps> = ({
             </div>
 
             {/* Metric 3: CANCELLED ORDERS */}
-            <div className="bg-white p-3 rounded-xl border border-stone-200 shadow-2xs space-y-1 hover:border-rose-400 transition-colors">
+            <div className="stat-card p-3 space-y-1">
               <div className="flex items-center justify-between text-stone-400">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-stone-500">
+                <span className="label-caps">
                   Cancelled Orders
                 </span>
                 <div className="w-6 h-6 rounded-lg bg-rose-50 text-rose-700 flex items-center justify-center">
@@ -1018,7 +1018,7 @@ export const AdminDailyStaffSummary: React.FC<AdminDailyStaffSummaryProps> = ({
                 </div>
               </div>
               <div className="flex items-baseline gap-1">
-                <span className="font-serif font-bold text-xl text-stone-900">
+                <span className="font-serif font-bold text-2xl leading-tight text-stone-900 tabular-nums">
                   {displayCancelledCount}
                 </span>
                 <span className="text-[11px] text-rose-600 font-semibold">
@@ -1031,9 +1031,9 @@ export const AdminDailyStaffSummary: React.FC<AdminDailyStaffSummaryProps> = ({
             </div>
 
             {/* Metric 4: ONLINE ORDERS */}
-            <div className="bg-white p-3 rounded-xl border border-stone-200 shadow-2xs space-y-1 hover:border-blue-500 transition-colors">
+            <div className="stat-card p-3 space-y-1">
               <div className="flex items-center justify-between text-stone-400">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-stone-500">
+                <span className="label-caps">
                   Online Orders
                 </span>
                 <div className="w-6 h-6 rounded-lg bg-blue-50 text-blue-700 flex items-center justify-center">
@@ -1041,7 +1041,7 @@ export const AdminDailyStaffSummary: React.FC<AdminDailyStaffSummaryProps> = ({
                 </div>
               </div>
               <div className="flex items-baseline gap-1">
-                <span className="font-serif font-bold text-xl text-stone-900">
+                <span className="font-serif font-bold text-2xl leading-tight text-stone-900 tabular-nums">
                   {displayOnlineCount}
                 </span>
                 <span className="text-[11px] text-stone-400 font-medium">
@@ -1061,9 +1061,9 @@ export const AdminDailyStaffSummary: React.FC<AdminDailyStaffSummaryProps> = ({
             </div>
 
             {/* Metric 5: OFFLINE ORDERS */}
-            <div className="bg-white p-3 rounded-xl border border-stone-200 shadow-2xs space-y-1 hover:border-amber-600 transition-colors">
+            <div className="stat-card p-3 space-y-1">
               <div className="flex items-center justify-between text-stone-400">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-stone-500">
+                <span className="label-caps">
                   Offline Orders
                 </span>
                 <div className="w-6 h-6 rounded-lg bg-amber-50 text-amber-800 flex items-center justify-center">
@@ -1071,7 +1071,7 @@ export const AdminDailyStaffSummary: React.FC<AdminDailyStaffSummaryProps> = ({
                 </div>
               </div>
               <div className="flex items-baseline gap-1">
-                <span className="font-serif font-bold text-xl text-stone-900">
+                <span className="font-serif font-bold text-2xl leading-tight text-stone-900 tabular-nums">
                   {displayOfflineCount}
                 </span>
                 <span className="text-[11px] text-stone-400 font-medium">
@@ -1097,10 +1097,10 @@ export const AdminDailyStaffSummary: React.FC<AdminDailyStaffSummaryProps> = ({
           {/* ========================================================================= */}
           <div className="space-y-2">
             {/* Orders Ledger with Live Filters & Search */}
-            <div className="bg-white rounded-xl border border-stone-200 shadow-2xs overflow-hidden">
+            <div className="bg-white rounded-2xl border border-stone-200 shadow-[var(--shadow-card)] overflow-hidden">
               <div className="p-2.5 sm:p-3 border-b border-stone-100 flex flex-col md:flex-row md:items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
-                  <h3 className="font-serif font-bold text-sm text-stone-900">
+                  <h3 className="section-title text-base">
                     Order Details
                   </h3>
                   {/* Applied Filter Badge & Icon with On-Hover Tooltip */}
@@ -1110,12 +1110,12 @@ export const AdminDailyStaffSummary: React.FC<AdminDailyStaffSummaryProps> = ({
                       <span>{getPresetLabel(selectedPreset)}</span>
                     </div>
                     {/* Tooltip on hover */}
-                    <div className="absolute left-0 top-full mt-1.5 hidden group-hover:flex flex-col z-30 w-60 p-2.5 rounded-lg bg-stone-900 text-white text-[11px] shadow-xl border border-stone-800 pointer-events-none animate-in fade-in zoom-in-95 duration-150">
-                      <div className="flex items-center gap-1.5 text-amber-400 font-bold mb-1">
+                    <div className="absolute left-0 top-full mt-1.5 hidden group-hover:flex flex-col z-30 w-60 p-2.5 rounded-lg bg-white text-stone-700 text-[11px] shadow-[var(--shadow-float)] border border-stone-200 pointer-events-none animate-in fade-in zoom-in-95 duration-150">
+                      <div className="flex items-center gap-1.5 text-amber-800 font-bold mb-1">
                         <Filter className="w-3 h-3" />
                         <span>Active Filter: {getPresetLabel(selectedPreset)}</span>
                       </div>
-                      <p className="text-stone-300 text-[10px] leading-tight">
+                      <p className="text-stone-600 text-[10px] leading-tight">
                         {selectedPreset === 'TODAY'
                           ? `Operating Date: ${formatDisplayDate(selectedDate)}`
                           : `Period: ${formatDisplayDate(customStartDate)} – ${formatDisplayDate(customEndDate)}`}
@@ -1133,20 +1133,20 @@ export const AdminDailyStaffSummary: React.FC<AdminDailyStaffSummaryProps> = ({
                       placeholder="Search order #, customer..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="pl-7 pr-2.5 py-1 rounded-lg border border-stone-200 text-xs w-52 focus:outline-hidden focus:border-amber-700"
+                      className="pl-7 pr-2.5 py-1.5 rounded-lg border border-stone-200 bg-white text-xs w-52 focus:outline-hidden focus:border-amber-700"
                     />
                   </div>
 
                   {/* Filter Pills */}
-                  <div className="flex items-center gap-0.5 bg-stone-100 p-0.5 rounded-lg text-[10px] font-bold flex-wrap">
+                  <div className="flex items-center gap-1 text-[10px] font-bold flex-wrap">
                     {(['ALL', 'PAID', 'ONLINE', 'OFFLINE', 'CANCELLED'] as const).map((f) => (
                       <button
                         key={f}
                         onClick={() => setListFilter(f)}
-                        className={`px-2 py-1 rounded-md transition-all cursor-pointer ${
+                        className={`px-2.5 py-1 rounded-full border transition-all cursor-pointer ${
                           listFilter === f
-                            ? 'bg-amber-800 text-white shadow-2xs'
-                            : 'text-stone-600 hover:text-stone-900'
+                            ? 'bg-amber-800 border-amber-800 text-white shadow-2xs'
+                            : 'bg-white border-stone-200 text-stone-600 hover:text-[var(--brand-text)] hover:border-[var(--brand-border)] hover:bg-[var(--brand-soft)]'
                         }`}
                       >
                         {f === 'ALL'
@@ -1168,7 +1168,7 @@ export const AdminDailyStaffSummary: React.FC<AdminDailyStaffSummaryProps> = ({
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse text-[12px] font-['Poppins',sans-serif]">
                   <thead>
-                    <tr className="h-[32px] bg-stone-50/80 border-b border-stone-200 text-stone-500 font-bold uppercase tracking-wider text-[11px]">
+                    <tr className="h-[32px] bg-[var(--brand-soft)] border-b border-[var(--brand-border)] text-stone-600 font-semibold uppercase tracking-wider text-[11px]">
                       <th className="py-1 px-3 align-middle">Order #</th>
                       <th className="py-1 px-3 align-middle">Date</th>
                       <th className="py-1 px-3 align-middle">Customer</th>
@@ -1203,7 +1203,7 @@ export const AdminDailyStaffSummary: React.FC<AdminDailyStaffSummaryProps> = ({
                           order.status === 'DELIVERED';
 
                         return (
-                          <tr key={order.id} className="h-[32px] hover:bg-amber-50/25 transition-colors border-b border-stone-100/80">
+                          <tr key={order.id} className="h-[32px] hover:bg-[var(--brand-soft)]/60 transition-colors border-b border-stone-100/80">
                             <td className="py-1 px-3 font-mono font-bold text-stone-900 text-[12px] align-middle whitespace-nowrap">
                               {order.orderNumber}
                             </td>
@@ -1218,10 +1218,10 @@ export const AdminDailyStaffSummary: React.FC<AdminDailyStaffSummaryProps> = ({
                             </td>
                             <td className="py-1 px-3 align-middle whitespace-nowrap">
                               <span
-                                className={`px-2 py-0.5 rounded-full font-bold text-[10px] ${
+                                className={`badge ${
                                   order.orderChannel === 'ONLINE'
-                                    ? 'bg-blue-50 text-blue-800 border border-blue-200'
-                                    : 'bg-amber-50 text-amber-900 border border-amber-200'
+                                    ? 'badge-info'
+                                    : 'badge-brand'
                                 }`}
                               >
                                 {order.orderChannel}
@@ -1232,20 +1232,20 @@ export const AdminDailyStaffSummary: React.FC<AdminDailyStaffSummaryProps> = ({
                             </td>
                             <td className="py-1 px-3 align-middle whitespace-nowrap">
                               <span
-                                className={`px-2 py-0.5 rounded-full font-bold text-[10px] border ${payBadge.style}`}
+                                className={`badge ${payBadge.style}`}
                               >
                                 {payBadge.label}
                               </span>
                             </td>
                             <td className="py-1 px-3 align-middle whitespace-nowrap">
                               {isPaid ? (
-                                <span className="px-2.5 py-0.5 rounded-full font-bold text-[10px] bg-emerald-50 text-emerald-700 border border-emerald-200 inline-flex items-center gap-1">
-                                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                                <span className="badge badge-success">
+                                  <span className="w-1.5 h-1.5 rounded-full bg-[var(--success)]"></span>
                                   Paid
                                 </span>
                               ) : (
-                                <span className="px-2.5 py-0.5 rounded-full font-bold text-[10px] bg-amber-50 text-amber-800 border border-amber-200 inline-flex items-center gap-1">
-                                  <span className="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+                                <span className="badge badge-warning">
+                                  <span className="w-1.5 h-1.5 rounded-full bg-[var(--warning)]"></span>
                                   Pending
                                 </span>
                               )}
@@ -1275,16 +1275,16 @@ export const AdminDailyStaffSummary: React.FC<AdminDailyStaffSummaryProps> = ({
           {/* ========================================================================= */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
             {/* Total Amount for Raw Materials */}
-            <div className="bg-white p-3 rounded-xl border border-stone-200 shadow-2xs space-y-1 hover:border-amber-600 transition-colors">
+            <div className="stat-card p-3 space-y-1">
               <div className="flex items-center justify-between text-stone-400">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-stone-500">
+                <span className="label-caps">
                   Total Raw Materials
                 </span>
                 <div className="w-6 h-6 rounded-lg bg-amber-50 text-amber-800 flex items-center justify-center">
                   <Package className="w-3.5 h-3.5" />
                 </div>
               </div>
-              <p className="font-serif font-bold text-xl text-stone-900">
+              <p className="font-serif font-bold text-2xl leading-tight text-stone-900 tabular-nums">
                 {formatCurrency(
                   inventoryTimeView === 'DAILY'
                     ? dailyRawMaterialsAmount
@@ -1297,16 +1297,16 @@ export const AdminDailyStaffSummary: React.FC<AdminDailyStaffSummaryProps> = ({
             </div>
 
             {/* Wastage Amount */}
-            <div className="bg-white p-3 rounded-xl border border-stone-200 shadow-2xs space-y-1 hover:border-rose-400 transition-colors">
+            <div className="stat-card p-3 space-y-1">
               <div className="flex items-center justify-between text-stone-400">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-stone-500">
+                <span className="label-caps">
                   Wastage Amount
                 </span>
                 <div className="w-6 h-6 rounded-lg bg-rose-50 text-rose-700 flex items-center justify-center">
                   <AlertTriangle className="w-3.5 h-3.5" />
                 </div>
               </div>
-              <p className="font-serif font-bold text-xl text-rose-800">
+              <p className="font-serif font-bold text-2xl leading-tight text-rose-800 tabular-nums">
                 {formatCurrency(
                   inventoryTimeView === 'DAILY'
                     ? dailyWastageAmount
@@ -1319,16 +1319,16 @@ export const AdminDailyStaffSummary: React.FC<AdminDailyStaffSummaryProps> = ({
             </div>
 
             {/* Profit */}
-            <div className="bg-white p-3 rounded-xl border border-stone-200 shadow-2xs space-y-1 hover:border-emerald-500 transition-colors">
+            <div className="stat-card p-3 space-y-1">
               <div className="flex items-center justify-between text-stone-400">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-stone-500">
+                <span className="label-caps">
                   Net Profit
                 </span>
                 <div className="w-6 h-6 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center">
                   <TrendingUp className="w-3.5 h-3.5" />
                 </div>
               </div>
-              <p className="font-serif font-bold text-xl text-emerald-800">
+              <p className="font-serif font-bold text-2xl leading-tight text-emerald-800 tabular-nums">
                 {formatCurrency(
                   inventoryTimeView === 'DAILY'
                     ? dailyProfit
@@ -1344,16 +1344,16 @@ export const AdminDailyStaffSummary: React.FC<AdminDailyStaffSummaryProps> = ({
             </div>
 
             {/* Total Revenue / Sales */}
-            <div className="bg-white p-3 rounded-xl border border-stone-200 shadow-2xs space-y-1 hover:border-stone-400 transition-colors">
+            <div className="stat-card p-3 space-y-1">
               <div className="flex items-center justify-between text-stone-400">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-stone-500">
+                <span className="label-caps">
                   Total Sales
                 </span>
                 <div className="w-6 h-6 rounded-lg bg-stone-100 text-stone-700 flex items-center justify-center">
                   <Receipt className="w-3.5 h-3.5" />
                 </div>
               </div>
-              <p className="font-serif font-bold text-xl text-stone-900">
+              <p className="font-serif font-bold text-2xl leading-tight text-stone-900 tabular-nums">
                 {formatCurrency(
                   inventoryTimeView === 'DAILY'
                     ? moneyReceived
@@ -1372,10 +1372,10 @@ export const AdminDailyStaffSummary: React.FC<AdminDailyStaffSummaryProps> = ({
           {inventoryTimeView === 'DAILY' ? (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
               {/* Daily Raw Materials Consumption Breakdown */}
-              <div className="bg-white rounded-xl border border-stone-200 shadow-2xs overflow-hidden">
+              <div className="bg-white rounded-2xl border border-stone-200 shadow-[var(--shadow-card)] overflow-hidden">
                 <div className="p-2.5 sm:p-3 border-b border-stone-100 flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <h4 className="font-serif font-bold text-sm text-stone-900">
+                    <h4 className="section-title text-base">
                       Raw Materials Consumed
                     </h4>
                     {/* Applied Filter Badge & Icon with On-Hover Tooltip */}
@@ -1385,12 +1385,12 @@ export const AdminDailyStaffSummary: React.FC<AdminDailyStaffSummaryProps> = ({
                         <span>{getPresetLabel(selectedPreset)}</span>
                       </div>
                       {/* Tooltip on hover */}
-                      <div className="absolute left-0 top-full mt-1.5 hidden group-hover:flex flex-col z-30 w-60 p-2.5 rounded-lg bg-stone-900 text-white text-[11px] shadow-xl border border-stone-800 pointer-events-none animate-in fade-in zoom-in-95 duration-150">
-                        <div className="flex items-center gap-1.5 text-amber-400 font-bold mb-1">
+                      <div className="absolute left-0 top-full mt-1.5 hidden group-hover:flex flex-col z-30 w-60 p-2.5 rounded-lg bg-white text-stone-700 text-[11px] shadow-[var(--shadow-float)] border border-stone-200 pointer-events-none animate-in fade-in zoom-in-95 duration-150">
+                        <div className="flex items-center gap-1.5 text-amber-800 font-bold mb-1">
                           <Filter className="w-3 h-3" />
                           <span>Active Filter: {getPresetLabel(selectedPreset)}</span>
                         </div>
-                        <p className="text-stone-300 text-[10px] leading-tight">
+                        <p className="text-stone-600 text-[10px] leading-tight">
                           {selectedPreset === 'TODAY'
                             ? `Operating Date: ${formatDisplayDate(selectedDate)}`
                             : `Period: ${formatDisplayDate(customStartDate)} – ${formatDisplayDate(customEndDate)}`}
@@ -1406,7 +1406,7 @@ export const AdminDailyStaffSummary: React.FC<AdminDailyStaffSummaryProps> = ({
                 <div className="overflow-x-auto">
                   <table className="w-full text-left border-collapse text-[12px] font-['Poppins',sans-serif]">
                     <thead>
-                      <tr className="h-[32px] bg-stone-50/80 border-b border-stone-200 text-stone-500 font-bold uppercase text-[11px]">
+                      <tr className="h-[32px] bg-[var(--brand-soft)] border-b border-[var(--brand-border)] text-stone-600 font-semibold uppercase text-[11px]">
                         <th className="py-1 px-3 align-middle">Raw Material</th>
                         <th className="py-1 px-3 align-middle">Qty Used</th>
                         <th className="py-1 px-3 text-right align-middle">Cost</th>
@@ -1440,10 +1440,10 @@ export const AdminDailyStaffSummary: React.FC<AdminDailyStaffSummaryProps> = ({
               </div>
 
               {/* Daily Wastage Log */}
-              <div className="bg-white rounded-xl border border-stone-200 shadow-2xs overflow-hidden">
+              <div className="bg-white rounded-2xl border border-stone-200 shadow-[var(--shadow-card)] overflow-hidden">
                 <div className="p-2.5 sm:p-3 border-b border-stone-100 flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <h4 className="font-serif font-bold text-sm text-stone-900">
+                    <h4 className="section-title text-base">
                       Kitchen Wastage Records
                     </h4>
                     {/* Applied Filter Badge & Icon with On-Hover Tooltip */}
@@ -1453,12 +1453,12 @@ export const AdminDailyStaffSummary: React.FC<AdminDailyStaffSummaryProps> = ({
                         <span>{getPresetLabel(selectedPreset)}</span>
                       </div>
                       {/* Tooltip on hover */}
-                      <div className="absolute left-0 top-full mt-1.5 hidden group-hover:flex flex-col z-30 w-60 p-2.5 rounded-lg bg-stone-900 text-white text-[11px] shadow-xl border border-stone-800 pointer-events-none animate-in fade-in zoom-in-95 duration-150">
-                        <div className="flex items-center gap-1.5 text-rose-400 font-bold mb-1">
+                      <div className="absolute left-0 top-full mt-1.5 hidden group-hover:flex flex-col z-30 w-60 p-2.5 rounded-lg bg-white text-stone-700 text-[11px] shadow-[var(--shadow-float)] border border-stone-200 pointer-events-none animate-in fade-in zoom-in-95 duration-150">
+                        <div className="flex items-center gap-1.5 text-rose-700 font-bold mb-1">
                           <Filter className="w-3 h-3" />
                           <span>Active Filter: {getPresetLabel(selectedPreset)}</span>
                         </div>
-                        <p className="text-stone-300 text-[10px] leading-tight">
+                        <p className="text-stone-600 text-[10px] leading-tight">
                           {selectedPreset === 'TODAY'
                             ? `Operating Date: ${formatDisplayDate(selectedDate)}`
                             : `Period: ${formatDisplayDate(customStartDate)} – ${formatDisplayDate(customEndDate)}`}
@@ -1474,7 +1474,7 @@ export const AdminDailyStaffSummary: React.FC<AdminDailyStaffSummaryProps> = ({
                 <div className="overflow-x-auto">
                   <table className="w-full text-left border-collapse text-[12px] font-['Poppins',sans-serif]">
                     <thead>
-                      <tr className="h-[32px] bg-stone-50/80 border-b border-stone-200 text-stone-500 font-bold uppercase text-[11px]">
+                      <tr className="h-[32px] bg-[var(--brand-soft)] border-b border-[var(--brand-border)] text-stone-600 font-semibold uppercase text-[11px]">
                         <th className="py-1 px-3 align-middle">Item Name</th>
                         <th className="py-1 px-3 align-middle">Reason</th>
                         <th className="py-1 px-3 align-middle">Qty</th>
@@ -1517,10 +1517,10 @@ export const AdminDailyStaffSummary: React.FC<AdminDailyStaffSummaryProps> = ({
             /* MONTHLY 12-MONTH INVENTORY PROFITABILITY BREAKDOWN TABLE */
             <div className="space-y-2">
               {/* Comprehensive 12-Month Table */}
-              <div className="bg-white rounded-xl border border-stone-200 shadow-2xs overflow-hidden">
+              <div className="bg-white rounded-2xl border border-stone-200 shadow-[var(--shadow-card)] overflow-hidden">
                 <div className="p-2.5 sm:p-3 border-b border-stone-100 flex flex-col md:flex-row md:items-center justify-between gap-2">
                   <div>
-                    <h4 className="font-serif font-bold text-sm text-stone-900">
+                    <h4 className="section-title text-base">
                       12-Month Inventory & Profit Performance (Past 1 Year)
                     </h4>
                     <p className="text-[11px] text-stone-500">
@@ -1535,7 +1535,7 @@ export const AdminDailyStaffSummary: React.FC<AdminDailyStaffSummaryProps> = ({
                 <div className="overflow-x-auto">
                   <table className="w-full text-left border-collapse text-xs">
                     <thead>
-                      <tr className="bg-stone-50/80 border-b border-stone-200 text-stone-500 font-bold uppercase text-[10px] tracking-wider">
+                      <tr className="bg-[var(--brand-soft)] border-b border-[var(--brand-border)] text-stone-600 font-semibold uppercase text-[10px] tracking-wider">
                         <th className="py-2 px-3">Month</th>
                         <th className="py-2 px-3">Total Sales</th>
                         <th className="py-2 px-3">Raw Materials</th>
@@ -1582,12 +1582,12 @@ export const AdminDailyStaffSummary: React.FC<AdminDailyStaffSummaryProps> = ({
                             </td>
                             <td className="py-2 px-3 text-right">
                               <span
-                                className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                                className={`badge ${
                                   item.profitMargin >= 65
-                                    ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
+                                    ? 'badge-success'
                                     : item.profitMargin >= 50
-                                    ? 'bg-amber-50 text-amber-900 border border-amber-200'
-                                    : 'bg-stone-100 text-stone-700'
+                                    ? 'badge-brand'
+                                    : ''
                                 }`}
                               >
                                 {item.profitMargin >= 65 ? 'High Margin' : 'Healthy Margin'}
@@ -1672,7 +1672,7 @@ export const AdminDailyStaffSummary: React.FC<AdminDailyStaffSummaryProps> = ({
               <button
                 onClick={handleExecuteRetentionJob}
                 disabled={runningJob}
-                className="px-3 py-1 bg-stone-800 text-white rounded-lg font-bold text-xs cursor-pointer hover:bg-black disabled:opacity-50 flex items-center gap-1.5"
+                className="px-3 py-1 bg-white border border-stone-300 text-stone-800 rounded-lg font-bold text-xs cursor-pointer hover:bg-[var(--brand-soft)] hover:border-[var(--brand-border)] hover:text-[var(--brand-text)] disabled:opacity-50 flex items-center gap-1.5"
               >
                 <RefreshCw className={`w-3.5 h-3.5 ${runningJob ? 'animate-spin' : ''}`} />
                 <span>{runningJob ? 'Running Archival...' : 'Run Archival Now'}</span>
@@ -1685,7 +1685,7 @@ export const AdminDailyStaffSummary: React.FC<AdminDailyStaffSummaryProps> = ({
             <div className="border border-stone-200 rounded-xl overflow-hidden max-h-48 overflow-y-auto">
               <table className="w-full text-left border-collapse text-[11px]">
                 <thead>
-                  <tr className="bg-stone-50 text-stone-500 font-bold border-b border-stone-200">
+                  <tr className="bg-[var(--brand-soft)] text-stone-600 font-semibold border-b border-[var(--brand-border)]">
                     <th className="py-2 px-3">Date</th>
                     <th className="py-2 px-3">Status</th>
                     <th className="py-2 px-3">Archived</th>
@@ -1701,18 +1701,18 @@ export const AdminDailyStaffSummary: React.FC<AdminDailyStaffSummaryProps> = ({
                     </tr>
                   ) : (
                     retentionLogs.map((log) => (
-                      <tr key={log.id} className="hover:bg-stone-50">
+                      <tr key={log.id} className="hover:bg-[var(--brand-soft)]/50 transition-colors">
                         <td className="py-2 px-3 font-mono text-stone-600">
                           {formatDate(log.startedAt)} {formatTime(log.startedAt)}
                         </td>
                         <td className="py-2 px-3">
                           <span
-                            className={`px-2 py-0.5 rounded-full font-bold text-[10px] ${
+                            className={`badge ${
                               log.status === 'COMPLETED'
-                                ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                                ? 'badge-success'
                                 : log.status === 'REQUIRES_REVIEW'
-                                ? 'bg-amber-50 text-amber-800 border border-amber-200'
-                                : 'bg-rose-50 text-rose-700 border border-rose-200'
+                                ? 'badge-warning'
+                                : 'badge-danger'
                             }`}
                           >
                             {log.status}
@@ -1758,7 +1758,7 @@ export const AdminDailyStaffSummary: React.FC<AdminDailyStaffSummaryProps> = ({
             <button
               onClick={() => handleExecuteSimulation(25000)}
               disabled={runningSim}
-              className="px-3 py-1.5 bg-stone-800 text-white font-bold rounded-lg cursor-pointer hover:bg-black disabled:opacity-50"
+              className="px-3 py-1.5 bg-white border border-stone-300 text-stone-800 font-bold rounded-lg cursor-pointer hover:bg-[var(--brand-soft)] hover:border-[var(--brand-border)] hover:text-[var(--brand-text)] disabled:opacity-50"
             >
               {runningSim ? 'Benchmarking...' : 'Run 25,000 Volume Test'}
             </button>
@@ -1788,7 +1788,7 @@ export const AdminDailyStaffSummary: React.FC<AdminDailyStaffSummaryProps> = ({
               <div className="border border-stone-200 rounded-xl overflow-hidden">
                 <table className="w-full text-left border-collapse text-[11px]">
                   <thead>
-                    <tr className="bg-stone-50 text-stone-500 font-bold border-b border-stone-200">
+                    <tr className="bg-[var(--brand-soft)] text-stone-600 font-semibold border-b border-[var(--brand-border)]">
                       <th className="py-2 px-3">Concurrency</th>
                       <th className="py-2 px-3">Est. RPS</th>
                       <th className="py-2 px-3">Avg Response</th>
@@ -1802,7 +1802,7 @@ export const AdminDailyStaffSummary: React.FC<AdminDailyStaffSummaryProps> = ({
                         <td className="py-2 px-3 font-mono">{sc.simulatedRps.toLocaleString()} req/s</td>
                         <td className="py-2 px-3 font-mono">{sc.avgResponseTimeMs} ms</td>
                         <td className="py-2 px-3">
-                          <span className="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 font-bold border border-emerald-200 text-[10px]">
+                          <span className="badge badge-success">
                             {sc.status}
                           </span>
                         </td>

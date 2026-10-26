@@ -53,11 +53,11 @@ export const LoginPage: React.FC<{ navigate: (route: string) => void }> = ({ nav
   };
 
   return (
-    <div className="min-h-[calc(100vh-160px)] flex items-center justify-center px-4 py-12">
-      <div className="max-w-4xl w-full bg-white rounded-3xl shadow-2xl border border-stone-200/80 overflow-hidden grid grid-cols-1 md:grid-cols-2">
+    <div className="min-h-[calc(100vh-160px)] flex items-center justify-center px-4 py-12 ambient">
+      <div className="max-w-4xl w-full glass-strong rounded-3xl overflow-hidden grid grid-cols-1 md:grid-cols-2">
         {/* Left Side: Brand Experience */}
-        <div className="bg-stone-900 text-white p-8 sm:p-12 flex flex-col justify-between relative overflow-hidden">
-          <div className="absolute inset-0 opacity-20">
+        <div className="bg-[var(--brand-soft)] text-stone-900 p-8 sm:p-12 flex flex-col justify-between relative overflow-hidden border-b md:border-b-0 md:border-r border-[var(--brand-border)]">
+          <div className="absolute inset-0 opacity-[0.1] pointer-events-none">
             <img
               src="https://images.unsplash.com/photo-1544025162-d76694265947?w=800&auto=format&fit=crop&q=80"
               alt="Dining Ambiance"
@@ -66,38 +66,38 @@ export const LoginPage: React.FC<{ navigate: (route: string) => void }> = ({ nav
           </div>
 
           <div className="relative z-10 space-y-3">
-            <div className="w-12 h-12 rounded-2xl bg-amber-600 flex items-center justify-center font-serif font-bold text-xl text-white shadow-md">
+            <div className="w-12 h-12 rounded-2xl bg-amber-800 flex items-center justify-center font-serif font-bold text-xl text-white shadow-[var(--shadow-raised)]">
               ABC
             </div>
-            <h2 className="font-serif font-bold text-2xl text-white">ABC HOTEL</h2>
-            <p className="text-xs text-stone-300 tracking-widest uppercase font-semibold">
+            <h2 className="page-title">ABC HOTEL</h2>
+            <p className="text-xs text-stone-600 tracking-widest uppercase font-semibold">
               Privilege Dining & Operations Portal
             </p>
           </div>
 
           <div className="relative z-10 space-y-4 py-8">
-            <p className="text-sm text-stone-300 leading-relaxed font-light">
+            <p className="text-sm text-stone-600 leading-relaxed font-light">
               "Indulge in an elevated culinary voyage where every reservation is guaranteed and every dish tells a story."
             </p>
-            <span className="text-xs text-amber-400 font-serif italic block">
+            <span className="text-xs text-amber-800 font-serif italic block">
               — Executive Chef & General Manager
             </span>
           </div>
 
-          <div className="relative z-10 p-4 rounded-2xl bg-white/10 border border-white/15 text-xs text-amber-300 space-y-1">
+          <div className="relative z-10 p-4 rounded-2xl bg-white/80 border border-[var(--brand-border)] shadow-[var(--shadow-xs)] text-xs text-amber-800 space-y-1">
             <span className="font-bold flex items-center gap-1.5">
-              <Shield className="w-4 h-4 text-amber-400" /> Secure Authentication Portal
+              <Shield className="w-4 h-4 text-amber-700" /> Secure Authentication Portal
             </span>
-            <p className="text-[11px] text-stone-300 leading-relaxed">
+            <p className="text-[11px] text-stone-600 leading-relaxed">
               Log in with your registered credentials to access your personalized dining, order management, or administrative dashboard.
             </p>
           </div>
         </div>
 
         {/* Right Side: Login Form */}
-        <div className="p-8 sm:p-12 flex flex-col justify-center space-y-6">
+        <div className="bg-white/85 p-8 sm:p-12 flex flex-col justify-center space-y-6">
           <div className="space-y-1">
-            <h3 className="font-serif font-bold text-2xl text-stone-900">Login to Your Account</h3>
+            <h3 className="page-title">Login to Your Account</h3>
             <p className="text-xs text-stone-500">
               Access your reservations, food order history, and privilege management suite.
             </p>
@@ -113,7 +113,7 @@ export const LoginPage: React.FC<{ navigate: (route: string) => void }> = ({ nav
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="Enter Email Address or Username"
-                  className="w-full pl-10 pr-3.5 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-xs text-stone-900 focus:border-amber-600 focus:bg-white transition-all"
+                  className="w-full pl-10 pr-3.5 py-2.5 bg-white border border-stone-200 rounded-xl text-xs text-stone-900 focus:border-amber-600 focus:bg-white transition-all"
                   required
                 />
               </div>
@@ -128,7 +128,7 @@ export const LoginPage: React.FC<{ navigate: (route: string) => void }> = ({ nav
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter Password"
-                  className="w-full pl-10 pr-3.5 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-xs text-stone-900 focus:border-amber-600"
+                  className="w-full pl-10 pr-3.5 py-2.5 bg-white border border-stone-200 rounded-xl text-xs text-stone-900 focus:border-amber-600"
                   required
                 />
               </div>
@@ -198,11 +198,11 @@ export const RegisterPage: React.FC<{ navigate: (route: string) => void }> = ({ 
   };
 
   return (
-    <div className="min-h-[calc(100vh-160px)] flex items-center justify-center px-4 py-12">
-      <div className="max-w-4xl w-full bg-white rounded-3xl shadow-2xl border border-stone-200/80 overflow-hidden grid grid-cols-1 md:grid-cols-2">
+    <div className="min-h-[calc(100vh-160px)] flex items-center justify-center px-4 py-12 ambient">
+      <div className="max-w-4xl w-full glass-strong rounded-3xl overflow-hidden grid grid-cols-1 md:grid-cols-2">
         {/* Left Side: Brand Promo */}
-        <div className="bg-stone-900 text-white p-8 sm:p-12 flex flex-col justify-between relative overflow-hidden">
-          <div className="absolute inset-0 opacity-20">
+        <div className="bg-[var(--brand-soft)] text-stone-900 p-8 sm:p-12 flex flex-col justify-between relative overflow-hidden border-b md:border-b-0 md:border-r border-[var(--brand-border)]">
+          <div className="absolute inset-0 opacity-[0.1] pointer-events-none">
             <img
               src="https://images.unsplash.com/photo-1550966871-3ed3cdb5ed0c?w=800&auto=format&fit=crop&q=80"
               alt="Dining Room"
@@ -211,35 +211,35 @@ export const RegisterPage: React.FC<{ navigate: (route: string) => void }> = ({ 
           </div>
 
           <div className="relative z-10 space-y-3">
-            <div className="w-12 h-12 rounded-2xl bg-amber-600 flex items-center justify-center font-serif font-bold text-xl text-white shadow-md">
+            <div className="w-12 h-12 rounded-2xl bg-amber-800 flex items-center justify-center font-serif font-bold text-xl text-white shadow-[var(--shadow-raised)]">
               ABC
             </div>
-            <h2 className="font-serif font-bold text-2xl text-white">ABC HOTEL</h2>
-            <p className="text-xs text-stone-300 tracking-widest uppercase font-semibold">
+            <h2 className="page-title">ABC HOTEL</h2>
+            <p className="text-xs text-stone-600 tracking-widest uppercase font-semibold">
               Member Registration
             </p>
           </div>
 
           <div className="relative z-10 space-y-4 py-8">
-            <p className="text-sm text-stone-300 leading-relaxed font-light">
+            <p className="text-sm text-stone-600 leading-relaxed font-light">
               Join the ABC Hotel Dining Circle to unlock instant table reservations, order tracking, and exclusive seasonal invitations.
             </p>
           </div>
 
-          <div className="relative z-10 p-4 rounded-2xl bg-white/10 border border-white/15 text-xs text-amber-300 space-y-1">
+          <div className="relative z-10 p-4 rounded-2xl bg-white/80 border border-[var(--brand-border)] shadow-[var(--shadow-xs)] text-xs text-amber-800 space-y-1">
             <span className="font-bold flex items-center gap-1">
               <Shield className="w-3.5 h-3.5" /> Data Protection Guarantee
             </span>
-            <p className="text-[11px] text-stone-300">
+            <p className="text-[11px] text-stone-600">
               Passwords securely hashed with bcrypt. No plain-text storage.
             </p>
           </div>
         </div>
 
         {/* Right Side: Register Form */}
-        <div className="p-8 sm:p-12 flex flex-col justify-center space-y-6">
+        <div className="bg-white/85 p-8 sm:p-12 flex flex-col justify-center space-y-6">
           <div className="space-y-1">
-            <h3 className="font-serif font-bold text-2xl text-stone-900">Create Guest Account</h3>
+            <h3 className="page-title">Create Guest Account</h3>
             <p className="text-xs text-stone-500">Register to enjoy priority dining and food ordering.</p>
           </div>
 
@@ -251,7 +251,7 @@ export const RegisterPage: React.FC<{ navigate: (route: string) => void }> = ({ 
                   type="text"
                   value={firstName}
                   onChange={(e) => setFirstName(e.target.value)}
-                  className="w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs text-stone-900 focus:border-amber-600"
+                  className="w-full px-3 py-2 bg-white border border-stone-200 rounded-xl text-xs text-stone-900 focus:border-amber-600"
                   required
                 />
               </div>
@@ -261,7 +261,7 @@ export const RegisterPage: React.FC<{ navigate: (route: string) => void }> = ({ 
                   type="text"
                   value={lastName}
                   onChange={(e) => setLastName(e.target.value)}
-                  className="w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs text-stone-900 focus:border-amber-600"
+                  className="w-full px-3 py-2 bg-white border border-stone-200 rounded-xl text-xs text-stone-900 focus:border-amber-600"
                   required
                 />
               </div>
@@ -274,7 +274,7 @@ export const RegisterPage: React.FC<{ navigate: (route: string) => void }> = ({ 
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="name@example.com"
-                className="w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs text-stone-900 focus:border-amber-600"
+                className="w-full px-3 py-2 bg-white border border-stone-200 rounded-xl text-xs text-stone-900 focus:border-amber-600"
                 required
               />
             </div>
@@ -286,7 +286,7 @@ export const RegisterPage: React.FC<{ navigate: (route: string) => void }> = ({ 
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 placeholder="+91 9876543210"
-                className="w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs font-mono text-stone-900 focus:border-amber-600"
+                className="w-full px-3 py-2 bg-white border border-stone-200 rounded-xl text-xs font-mono text-stone-900 focus:border-amber-600"
                 required
               />
             </div>
@@ -299,7 +299,7 @@ export const RegisterPage: React.FC<{ navigate: (route: string) => void }> = ({ 
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Min 8 chars, 1 uppercase, 1 digit"
-                  className="w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs text-stone-900 focus:border-amber-600"
+                  className="w-full px-3 py-2 bg-white border border-stone-200 rounded-xl text-xs text-stone-900 focus:border-amber-600"
                   required
                 />
               </div>
@@ -309,7 +309,7 @@ export const RegisterPage: React.FC<{ navigate: (route: string) => void }> = ({ 
                   type="password"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs text-stone-900 focus:border-amber-600"
+                  className="w-full px-3 py-2 bg-white border border-stone-200 rounded-xl text-xs text-stone-900 focus:border-amber-600"
                   required
                 />
               </div>

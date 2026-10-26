@@ -236,7 +236,7 @@ function MainApp() {
   // Full-screen dedicated Operations Suite view when on admin route
   if (currentRoute === 'admin') {
     return (
-      <div className="lux-ops h-screen w-full overflow-hidden bg-stone-100 text-stone-900">
+      <div className="lux-ops ambient-staff h-screen w-full overflow-hidden text-stone-900">
         <Suspense fallback={<PageLoader />}>
           <AdminDashboardPage navigate={navigate} initialTab={routeState?.tab} />
         </Suspense>

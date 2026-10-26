@@ -130,13 +130,13 @@ export const DeliveryPortalPage: React.FC<{
   const currentTabOrders = getTabOrders();
 
   return (
-    <div className="min-h-screen bg-[#f4efe7] flex flex-col font-sans">
+    <div className="min-h-screen ambient flex flex-col font-sans">
       {/* Top Navigation Bar */}
-      <header className="sticky top-0 z-30 bg-[var(--surface)]/90 backdrop-blur-xl text-stone-900 border-b border-[var(--border-subtle)] shadow-[0_10px_30px_-26px_rgba(26,23,21,0.55)]">
+      <header className="sticky top-0 z-30 glass !rounded-none !border-x-0 !border-t-0 text-stone-900">
         <div className="max-w-4xl mx-auto px-4 py-3.5 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="relative w-10 h-10 flex items-center justify-center border border-amber-600/50 text-amber-800 bg-white">
-              <span className="absolute inset-[3px] border border-amber-600/20" />
+            <div className="relative w-10 h-10 flex items-center justify-center border border-[var(--brand)] text-[var(--brand-text)] bg-white">
+              <span className="absolute inset-[3px] border border-[var(--brand-border)]" />
               <Truck className="w-[18px] h-[18px]" strokeWidth={1.6} />
             </div>
             <div>
@@ -174,16 +174,16 @@ export const DeliveryPortalPage: React.FC<{
       </header>
 
       {/* 3 Main Filter Tabs: New Order, Accepted, Delivered */}
-      <div className="bg-[#fffdf9]/90 backdrop-blur-xl border-b border-stone-200 sticky top-[65px] z-20 shadow-[0_10px_24px_-20px_rgba(26,23,21,0.5)]">
+      <div className="glass !rounded-none !border-x-0 !border-t-0 sticky top-[65px] z-20">
         <div className="max-w-4xl mx-auto px-4 py-2.5">
-          <div className="grid grid-cols-3 gap-2 bg-stone-100 p-1.5 rounded-2xl">
+          <div className="grid grid-cols-3 gap-2 bg-stone-100/80 border border-stone-200 p-1.5 rounded-2xl">
             {/* Tab 1: New Order */}
             <button
               onClick={() => setActiveTab('NEW_ORDERS')}
               className={`py-2.5 px-3 rounded-xl font-bold text-xs sm:text-sm transition-all flex items-center justify-center gap-2 cursor-pointer ${
                 activeTab === 'NEW_ORDERS'
                   ? 'bg-amber-800 text-white shadow-sm'
-                  : 'text-stone-600 hover:text-stone-900 hover:bg-stone-200/60'
+                  : 'text-stone-600 hover:text-[var(--brand-text)] hover:bg-white'
               }`}
             >
               <Package className="w-4 h-4 shrink-0" />
@@ -207,7 +207,7 @@ export const DeliveryPortalPage: React.FC<{
               className={`py-2.5 px-3 rounded-xl font-bold text-xs sm:text-sm transition-all flex items-center justify-center gap-2 cursor-pointer ${
                 activeTab === 'ACCEPTED'
                   ? 'bg-amber-800 text-white shadow-sm'
-                  : 'text-stone-600 hover:text-stone-900 hover:bg-stone-200/60'
+                  : 'text-stone-600 hover:text-[var(--brand-text)] hover:bg-white'
               }`}
             >
               <Navigation className="w-4 h-4 shrink-0" />
@@ -231,7 +231,7 @@ export const DeliveryPortalPage: React.FC<{
               className={`py-2.5 px-3 rounded-xl font-bold text-xs sm:text-sm transition-all flex items-center justify-center gap-2 cursor-pointer ${
                 activeTab === 'DELIVERED'
                   ? 'bg-amber-800 text-white shadow-sm'
-                  : 'text-stone-600 hover:text-stone-900 hover:bg-stone-200/60'
+                  : 'text-stone-600 hover:text-[var(--brand-text)] hover:bg-white'
               }`}
             >
               <CheckCircle2 className="w-4 h-4 shrink-0" />
@@ -258,7 +258,7 @@ export const DeliveryPortalPage: React.FC<{
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search by order #, customer name, phone, or address..."
-              className="w-full bg-stone-50 border border-stone-200 rounded-xl pl-9 pr-4 py-2 text-xs text-stone-800 placeholder-stone-400 focus:outline-hidden focus:ring-2 focus:ring-amber-500 focus:bg-white"
+              className="w-full bg-white border border-stone-200 rounded-xl pl-9 pr-4 py-2 text-xs text-stone-800 placeholder-stone-400 focus:outline-hidden focus:border-amber-700 focus:ring-3 focus:ring-[var(--brand-ring-soft)]"
             />
             {searchQuery && (
               <button
@@ -283,14 +283,14 @@ export const DeliveryPortalPage: React.FC<{
           </div>
         ) : currentTabOrders.length === 0 ? (
           /* Clean, friendly empty state */
-          <div className="bg-white rounded-3xl border border-stone-200/90 p-10 text-center space-y-3 my-6">
-            <div className="w-14 h-14 bg-stone-100 rounded-2xl flex items-center justify-center mx-auto text-stone-400">
-              {activeTab === 'NEW_ORDERS' && <Package className="w-7 h-7 text-amber-500" />}
-              {activeTab === 'ACCEPTED' && <Navigation className="w-7 h-7 text-blue-500" />}
-              {activeTab === 'DELIVERED' && <CheckCircle2 className="w-7 h-7 text-emerald-500" />}
+          <div className="bg-white rounded-3xl border border-stone-200/90 shadow-[var(--shadow-card)] p-10 text-center space-y-3 my-6">
+            <div className="w-14 h-14 bg-[var(--brand-soft)] border border-[var(--brand-border)] rounded-2xl flex items-center justify-center mx-auto text-stone-400">
+              {activeTab === 'NEW_ORDERS' && <Package className="w-7 h-7 text-amber-700" />}
+              {activeTab === 'ACCEPTED' && <Navigation className="w-7 h-7 text-[var(--info)]" />}
+              {activeTab === 'DELIVERED' && <CheckCircle2 className="w-7 h-7 text-[var(--success)]" />}
             </div>
 
-            <h3 className="font-bold text-base text-stone-800">
+            <h3 className="section-title text-lg">
               {searchQuery
                 ? 'No matching orders found'
                 : activeTab === 'NEW_ORDERS'
@@ -313,7 +313,7 @@ export const DeliveryPortalPage: React.FC<{
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery('')}
-                className="mt-2 px-4 py-2 bg-stone-100 hover:bg-stone-200 text-stone-700 rounded-xl text-xs font-semibold cursor-pointer"
+                className="mt-2 btn btn-secondary !min-h-9 !text-xs"
               >
                 Reset Search
               </button>
@@ -333,12 +333,20 @@ export const DeliveryPortalPage: React.FC<{
               return (
                 <div
                   key={order.id}
-                  className="bg-white rounded-2xl border border-stone-200 shadow-xs hover:shadow-md transition-all overflow-hidden"
+                  className={`bg-white rounded-2xl border border-stone-200 border-l-4 shadow-[var(--shadow-card)] hover:shadow-[var(--shadow-raised)] transition-shadow overflow-hidden ${
+                    isDelivered
+                      ? 'border-l-[var(--success)]'
+                      : isOutForDelivery || isAccepted
+                      ? 'border-l-[var(--info)]'
+                      : isKitchenReady
+                      ? 'border-l-amber-700'
+                      : 'border-l-[var(--warning)]'
+                  }`}
                 >
                   {/* Order Card Header */}
-                  <div className="bg-stone-50 px-4 py-3 border-b border-stone-200/80 flex items-center justify-between gap-3">
+                  <div className="bg-[var(--surface-muted)] px-4 py-3 border-b border-stone-200/80 flex items-center justify-between gap-3">
                     <div className="flex items-center gap-2">
-                      <span className="font-mono font-extrabold text-stone-900 text-sm sm:text-base">
+                      <span className="font-mono font-extrabold text-stone-900 text-base sm:text-lg">
                         #{order.orderNumber}
                       </span>
                       <span className="text-stone-400">•</span>
@@ -351,29 +359,29 @@ export const DeliveryPortalPage: React.FC<{
                     {/* Status Pill */}
                     <div>
                       {isKitchenReady && (
-                        <span className="px-2.5 py-1 rounded-full bg-amber-100 text-amber-900 text-xs font-bold border border-amber-300 flex items-center gap-1">
-                          <span className="w-2 h-2 rounded-full bg-amber-600 animate-ping" />
+                        <span className="badge badge-brand !text-xs !px-2.5 !py-1">
+                          <span className="w-2 h-2 rounded-full bg-amber-700" />
                           Ready for Pickup
                         </span>
                       )}
                       {isKitchenPreparing && (
-                        <span className="px-2.5 py-1 rounded-full bg-orange-100 text-orange-900 text-xs font-semibold border border-orange-200">
+                        <span className="badge badge-warning !text-xs !px-2.5 !py-1">
                           🍳 Kitchen Cooking
                         </span>
                       )}
                       {isAccepted && (
-                        <span className="px-2.5 py-1 rounded-full bg-blue-100 text-blue-900 text-xs font-bold border border-blue-200">
+                        <span className="badge badge-info !text-xs !px-2.5 !py-1">
                           🛵 Order Accepted
                         </span>
                       )}
                       {isOutForDelivery && (
-                        <span className="px-2.5 py-1 rounded-full bg-purple-100 text-purple-900 text-xs font-bold border border-purple-200 animate-pulse">
+                        <span className="badge badge-info !text-xs !px-2.5 !py-1">
                           ⚡ Out for Delivery
                         </span>
                       )}
                       {isDelivered && (
-                        <span className="px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-900 text-xs font-bold border border-emerald-200 flex items-center gap-1">
-                          <Check className="w-3 h-3 text-emerald-700" />
+                        <span className="badge badge-success !text-xs !px-2.5 !py-1">
+                          <Check className="w-3 h-3" />
                           Delivered
                         </span>
                       )}
@@ -383,9 +391,9 @@ export const DeliveryPortalPage: React.FC<{
                   {/* Order Details Body */}
                   <div className="p-4 space-y-3.5">
                     {/* Customer & Contact Info */}
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-stone-50/80 p-3 rounded-xl border border-stone-150">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-[var(--surface-muted)] p-3 rounded-xl border border-stone-200/80">
                       <div>
-                        <span className="text-[10px] text-stone-400 font-bold uppercase tracking-wider block">
+                        <span className="text-[10px] text-stone-500 font-bold uppercase tracking-wider block">
                           Customer
                         </span>
                         <p className="font-bold text-stone-900 text-sm">{order.customerName}</p>
@@ -404,7 +412,7 @@ export const DeliveryPortalPage: React.FC<{
 
                     {/* Delivery Address with Quick Maps Link */}
                     {order.deliveryAddress && (
-                      <div className="bg-amber-50/60 p-3 rounded-xl border border-amber-200/70 space-y-1">
+                      <div className="bg-[var(--brand-soft)] p-3 rounded-xl border border-[var(--brand-border)] space-y-1">
                         <div className="flex items-center justify-between">
                           <span className="text-[10px] font-bold text-amber-900 uppercase tracking-wider flex items-center gap-1">
                             <MapPin className="w-3.5 h-3.5 text-amber-700" /> Delivery Address
@@ -429,8 +437,8 @@ export const DeliveryPortalPage: React.FC<{
 
                     {/* Order Notes / Instructions */}
                     {order.notes && (
-                      <div className="bg-amber-100/50 p-2.5 rounded-xl border border-amber-200 text-xs text-amber-950 flex items-start gap-1.5">
-                        <AlertCircle className="w-3.5 h-3.5 text-amber-700 shrink-0 mt-0.5" />
+                      <div className="bg-[var(--warning-soft)] p-2.5 rounded-xl border border-[var(--warning-border)] text-xs text-stone-800 flex items-start gap-1.5">
+                        <AlertCircle className="w-3.5 h-3.5 text-[var(--warning)] shrink-0 mt-0.5" />
                         <p>
                           <strong className="font-semibold">Instructions:</strong> {order.notes}
                         </p>
@@ -438,7 +446,7 @@ export const DeliveryPortalPage: React.FC<{
                     )}
 
                     {/* Order Items & Total */}
-                    <div className="border border-stone-150 rounded-xl p-3 bg-white space-y-2">
+                    <div className="border border-stone-200 rounded-xl p-3 bg-white space-y-2">
                       <div className="flex items-center justify-between text-xs text-stone-500 font-bold uppercase tracking-wider border-b border-stone-100 pb-1.5">
                         <span>Items ({order.items.length})</span>
                         <span>Amount</span>
@@ -462,10 +470,10 @@ export const DeliveryPortalPage: React.FC<{
                         <div className="flex items-center gap-2">
                           <span className="text-xs text-stone-500 font-semibold">Payment:</span>
                           <span
-                            className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded-full ${
+                            className={`badge uppercase ${
                               order.paymentStatus === 'PAID'
-                                ? 'bg-emerald-100 text-emerald-800 border border-emerald-200'
-                                : 'bg-amber-100 text-amber-800 border border-amber-200'
+                                ? 'badge-success'
+                                : 'badge-warning'
                             }`}
                           >
                             {order.paymentMethod || 'Cash'} • {order.paymentStatus}
@@ -473,7 +481,7 @@ export const DeliveryPortalPage: React.FC<{
                         </div>
 
                         <div className="text-right">
-                          <span className="text-xs text-stone-400 mr-1.5">Total:</span>
+                          <span className="text-xs text-stone-500 mr-1.5">Total:</span>
                           <span className="text-sm font-extrabold text-stone-900 font-mono">
                             {formatCurrency(order.total)}
                           </span>
@@ -496,16 +504,16 @@ export const DeliveryPortalPage: React.FC<{
                                 )
                               }
                               disabled={isUpdating}
-                              className="w-full py-3 bg-amber-600 hover:bg-amber-700 text-white rounded-xl font-bold text-sm transition-all shadow-xs hover:shadow-md cursor-pointer flex items-center justify-center gap-2 disabled:opacity-50"
+                              className="w-full py-3 bg-amber-800 hover:bg-amber-900 text-white rounded-xl font-bold text-sm transition-all shadow-xs hover:shadow-md cursor-pointer flex items-center justify-center gap-2 disabled:opacity-50"
                             >
                               <Truck className="w-4 h-4 text-amber-100" />
                               <span>{isUpdating ? 'Accepting...' : 'Accept Food & Start Delivery'}</span>
                               <ChevronRight className="w-4 h-4 ml-auto" />
                             </button>
                           ) : (
-                            <div className="py-2.5 px-3 bg-orange-50 border border-orange-200 text-orange-900 text-xs rounded-xl flex items-center justify-between">
+                            <div className="py-2.5 px-3 bg-[var(--warning-soft)] border border-[var(--warning-border)] text-stone-800 text-xs rounded-xl flex items-center justify-between">
                               <span className="font-semibold">🍳 Kitchen is still cooking this order</span>
-                              <span className="text-[11px] text-orange-700">Ready button will unlock once food is prepared</span>
+                              <span className="text-[11px] text-[var(--warning)]">Ready button will unlock once food is prepared</span>
                             </div>
                           )}
                         </div>
@@ -526,7 +534,7 @@ export const DeliveryPortalPage: React.FC<{
                               disabled={isUpdating}
                               className="w-full py-3 bg-amber-800 hover:bg-amber-900 active:bg-amber-950 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl font-bold text-sm transition-all shadow-xs hover:shadow-md cursor-pointer flex items-center justify-center gap-2 disabled:opacity-50"
                             >
-                              <Navigation className="w-4 h-4 text-amber-200 animate-pulse" />
+                              <Navigation className="w-4 h-4 text-amber-200" />
                               <span>{isUpdating ? 'Updating...' : 'Update: Out for Delivery 🛵'}</span>
                               <ChevronRight className="w-4 h-4 ml-auto" />
                             </button>
@@ -542,7 +550,7 @@ export const DeliveryPortalPage: React.FC<{
                                 )
                               }
                               disabled={isUpdating}
-                              className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-sm transition-all shadow-xs hover:shadow-md cursor-pointer flex items-center justify-center gap-2 disabled:opacity-50"
+                              className="w-full py-3 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl font-bold text-sm transition-all shadow-xs hover:shadow-md cursor-pointer flex items-center justify-center gap-2 disabled:opacity-50"
                             >
                               <CheckCircle2 className="w-4 h-4 text-emerald-100" />
                               <span>{isUpdating ? 'Updating...' : 'Update: Mark as Delivered ✅'}</span>
