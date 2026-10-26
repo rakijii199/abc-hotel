@@ -24,6 +24,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext.tsx';
 import { AccessLevel, SectionId, hasAccess, roleDisplayName } from '../../../shared/accessControl.ts';
+import { BrandIcon, BrandName } from '../common/BrandMark.tsx';
 
 export type AdminTab =
   | 'DASHBOARD'
@@ -187,16 +188,8 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
       <div className="relative flex-1 overflow-y-auto min-h-0 scrollbar-none">
         {/* Brand Header */}
         <div className="px-5 pt-5 pb-4 flex items-center gap-3">
-          <span className="relative w-10 h-10 shrink-0 flex items-center justify-center border border-[var(--brand)] text-[var(--brand-text)] bg-white shadow-[0_6px_16px_-10px_var(--brand-ring)]">
-            <span className="absolute inset-[3px] border border-[var(--brand-border)]" />
-            <span className="font-display text-[13px] font-semibold tracking-[0.06em]">ABC</span>
-          </span>
-          <div className="min-w-0 leading-none">
-            <span className="font-display font-semibold text-stone-900 text-lg tracking-[0.16em] block">ABC HOTEL</span>
-            <span className="text-[9px] uppercase tracking-[0.3em] text-amber-700 font-semibold block mt-1.5">
-              Staff Portal
-            </span>
-          </div>
+          <BrandIcon size="md" />
+          <BrandName size="md" className="min-w-0" />
         </div>
         <div className="mx-5 h-px bg-gradient-to-r from-transparent via-stone-300/80 to-transparent" />
 

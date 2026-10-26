@@ -19,6 +19,7 @@ import {
   ArrowRight
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext.tsx';
+import { BrandIcon, BrandName } from './BrandMark.tsx';
 
 export const Footer: React.FC<{ navigate: (route: string, state?: any) => void }> = ({ navigate }) => {
   const { isAuthenticated } = useAuth();
@@ -56,16 +57,8 @@ export const Footer: React.FC<{ navigate: (route: string, state?: any) => void }
           {/* Brand & Story */}
           <div className="lg:col-span-4 space-y-5">
             <div className="flex items-center gap-3">
-              <span className="relative w-11 h-11 flex items-center justify-center border border-gold/70 bg-white/60 text-[var(--brand-text)]">
-                <span className="absolute inset-[3px] border border-gold/35" />
-                <span className="font-display text-[15px] font-semibold tracking-[0.06em]">ABC</span>
-              </span>
-              <div className="leading-none">
-                <span className="font-display text-xl font-semibold tracking-[0.18em] text-stone-900 block">ABC HOTEL</span>
-                <span className="text-[9px] tracking-[0.32em] uppercase font-semibold text-amber-700 block mt-1">
-                  Luxury Dining & Suites
-                </span>
-              </div>
+              <BrandIcon size="md" />
+              <BrandName size="md" />
             </div>
             <p className="text-sm text-stone-600 leading-relaxed max-w-sm">
               A gastronomic sanctuary where heritage recipes meet contemporary culinary mastery, dedicated to memorable

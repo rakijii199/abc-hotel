@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext.tsx';
 import { useToast } from '../context/ToastContext.tsx';
+import { BrandIcon, BrandName } from '../components/common/BrandMark.tsx';
 
 
 const SHOW_DEMO_LOGINS = import.meta.env.DEV || import.meta.env.VITE_SHOW_DEMO_LOGINS === 'true';
@@ -95,10 +96,8 @@ export const StaffLoginPage: React.FC<{ navigate: (route: string) => void }> = (
           </button>
 
           <div className="flex items-center gap-3">
-            <span className="w-12 h-12 flex items-center justify-center rounded-xl bg-amber-800 text-white shadow-[var(--shadow-raised)]">
-              <span className="font-display text-base font-semibold tracking-[0.06em]">ABC</span>
-            </span>
-            <span className="font-display text-xl font-semibold tracking-[0.16em] text-stone-900">ABC HOTEL</span>
+            <BrandIcon size="lg" />
+            <BrandName size="md" />
           </div>
 
           <div>
@@ -162,10 +161,8 @@ export const StaffLoginPage: React.FC<{ navigate: (route: string) => void }> = (
             {/* Card header */}
             <div className="flex items-start justify-between gap-3">
               <div className="flex items-center gap-2.5">
-                <span className="w-9 h-9 flex items-center justify-center rounded-lg bg-amber-800 text-white">
-                  <span className="font-display text-[13px] font-semibold tracking-[0.06em]">ABC</span>
-                </span>
-                <span className="font-display text-base font-semibold tracking-[0.14em] text-stone-900">ABC HOTEL</span>
+                <BrandIcon size="sm" />
+                <BrandName size="sm" />
               </div>
               <span className="relative inline-block -rotate-6 mt-1 mr-1 font-display italic text-2xl text-amber-800 select-none whitespace-nowrap" aria-hidden="true">
                 Welcome back!

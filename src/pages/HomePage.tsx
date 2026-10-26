@@ -127,7 +127,7 @@ export const HomePage: React.FC<{ navigate: (route: string, state?: any) => void
       {/* ------------------------------------------------------------------ */}
       <section
         ref={heroRef}
-        className="relative min-h-[100svh] ambient text-stone-900 overflow-hidden flex items-center"
+        className="relative min-h-[calc(100svh-4.5rem)] ambient text-stone-900 overflow-hidden flex items-center"
       >
         <m.div style={{ y: bgY }} className="absolute inset-0 will-change-transform">
           <img
@@ -145,7 +145,7 @@ export const HomePage: React.FC<{ navigate: (route: string, state?: any) => void
 
         <m.div
           style={{ opacity: heroFade }}
-          className="relative w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-24 sm:pt-32 lg:pt-28 grid lg:grid-cols-[1.15fr_0.85fr] gap-12 items-center"
+          className="relative w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-20 sm:pt-16 lg:pt-14 grid lg:grid-cols-[1.15fr_0.85fr] gap-12 items-center"
         >
           <m.div style={{ y: contentY }}>
             <m.p
@@ -283,7 +283,7 @@ export const HomePage: React.FC<{ navigate: (route: string, state?: any) => void
           <div ref={storyRef} className="lg:col-span-6 relative h-[420px] sm:h-[560px]">
             <m.div
               style={{ y: storyBackY }}
-              className="absolute top-0 left-0 w-[78%] h-[82%] overflow-hidden rounded-2xl lux-zoom shadow-[0_40px_80px_-40px_rgba(99,72,38,0.5)]"
+              className="absolute top-0 left-0 w-[78%] h-[82%] overflow-hidden rounded-2xl lux-zoom shadow-[0_40px_80px_-40px_rgba(48,18,52,0.5)]"
             >
               <img
                 src={luxImage(LUX_IMAGES.diningRoom, 1100)}
@@ -295,7 +295,7 @@ export const HomePage: React.FC<{ navigate: (route: string, state?: any) => void
             </m.div>
             <m.div
               style={{ y: storyFrontY }}
-              className="absolute bottom-0 right-0 w-[52%] h-[52%] overflow-hidden rounded-2xl border-[6px] border-white shadow-[0_40px_80px_-30px_rgba(99,72,38,0.55)] lux-zoom"
+              className="absolute bottom-0 right-0 w-[52%] h-[52%] overflow-hidden rounded-2xl border-[6px] border-white shadow-[0_40px_80px_-30px_rgba(48,18,52,0.55)] lux-zoom"
             >
               <img
                 src={luxImage(LUX_IMAGES.plated, 800)}

@@ -30,6 +30,7 @@ import { AdminApi } from '../api/index.ts';
 import { Order, OrderStatus } from '../types/index.ts';
 import { formatCurrency, formatTime } from '../utils/formatters.ts';
 import { OrderLineChoices } from '../components/orders/OrderLineChoices.tsx';
+import { BrandIcon } from '../components/common/BrandMark.tsx';
 
 type DeliveryTab = 'NEW_ORDERS' | 'ACCEPTED' | 'DELIVERED';
 
@@ -132,13 +133,10 @@ export const DeliveryPortalPage: React.FC<{
   return (
     <div className="min-h-screen ambient flex flex-col font-sans">
       {/* Top Navigation Bar */}
-      <header className="sticky top-0 z-30 glass !rounded-none !border-x-0 !border-t-0 text-stone-900">
+      <header className="sticky top-0 z-30 bg-white border-b border-[var(--border-subtle)] shadow-[var(--shadow-xs)] text-stone-900">
         <div className="max-w-4xl mx-auto px-4 py-3.5 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="relative w-10 h-10 flex items-center justify-center border border-[var(--brand)] text-[var(--brand-text)] bg-white">
-              <span className="absolute inset-[3px] border border-[var(--brand-border)]" />
-              <Truck className="w-[18px] h-[18px]" strokeWidth={1.6} />
-            </div>
+            <BrandIcon size="md" />
             <div>
               <h1 className="lux-display text-xl text-stone-900 !leading-tight">Delivery Portal</h1>
               <p className="text-xs text-stone-500 font-medium flex items-center gap-1.5">

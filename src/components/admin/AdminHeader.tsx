@@ -13,13 +13,16 @@ import {
   AlertTriangle,
   Menu,
   LogOut,
-  ChevronDown
+  ChevronDown,
+  Shield,
+  KeyRound
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext.tsx';
 import { AdminNotification } from '../../types/index.ts';
 import { formatDate, formatTime } from '../../utils/formatters.ts';
 import { AdminTab, NavItem, getAdminNavSections } from './AdminSidebar.tsx';
 import { roleDisplayName } from '../../../shared/accessControl.ts';
+import { BrandIcon, BrandName } from '../common/BrandMark.tsx';
 
 interface AdminHeaderProps {
   notifications: AdminNotification[];
@@ -67,7 +70,6 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({
   const sections = getAdminNavSections(user?.access, { pendingOrdersCount, pendingBookingsCount });
   const totalItems = sections.reduce((n, s) => n + s.items.length, 0);
   const flat = totalItems <= FLAT_NAV_LIMIT;
-  const roleLabel = `${roleDisplayName(user?.role)} · ${user?.effectivePrivilege === 'SUPER_ADMIN' ? 'Super Admin' : 'User'}`;
 
   // Close an open nav dropdown on outside click or Escape.
   useEffect(() => {
@@ -110,7 +112,7 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({
   };
 
   return (
-    <header className="sticky top-0 z-30 px-3 sm:px-6 pt-3">
+    <header className="relative z-40 shrink-0 px-3 sm:px-6 pt-3 pb-1">
       <div className="topbar-float mx-auto max-w-[1440px] h-16 px-3 sm:px-4 flex items-center gap-3 lg:gap-5">
         {/* Mobile / tablet: navigation lives in the drawer */}
         <button
@@ -123,14 +125,8 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({
 
         {/* Brand */}
         <div className="flex items-center gap-2.5 shrink-0">
-          <span className="relative w-9 h-9 flex items-center justify-center border border-[var(--brand)] text-[var(--brand-text)] bg-white">
-            <span className="absolute inset-[3px] border border-[var(--brand-border)]" />
-            <span className="font-display text-[12px] font-semibold tracking-[0.06em]">ABC</span>
-          </span>
-          <div className="leading-none hidden sm:block">
-            <span className="font-display font-semibold text-stone-900 text-base tracking-[0.16em] block">ABC HOTEL</span>
-            <span className="text-[9px] uppercase tracking-[0.28em] text-[var(--brand)] font-semibold block mt-1">Staff Portal</span>
-          </div>
+          <BrandIcon size="sm" />
+          <BrandName size="sm" className="hidden sm:block" />
         </div>
 
         {/* Desktop navigation */}
@@ -157,7 +153,7 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({
                       <ChevronDown className={`w-3.5 h-3.5 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
                     </button>
                     {isOpen && (
-                      <div role="menu" aria-label={section.title} className="glass-strong absolute left-0 top-full mt-2 min-w-[220px] rounded-xl p-1.5 z-50 animate-in fade-in zoom-in-95 origin-top-left">
+                      <div role="menu" aria-label={section.title} className="bg-white border border-[var(--border-subtle)] shadow-[var(--shadow-float)] absolute left-0 top-full mt-2 min-w-[220px] rounded-xl p-1.5 z-50 animate-in fade-in zoom-in-95 origin-top-left">
                         {section.items.map((item) => {
                           const Icon = item.icon;
                           const isActive = activeTab === item.id;
@@ -222,7 +218,7 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({
           </button>
 
           {notifDropdownOpen && (
-            <div className="absolute right-0 mt-2 w-80 sm:w-96 glass-strong rounded-2xl py-3 z-50 animate-in fade-in zoom-in-95 origin-top-right">
+            <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-white border border-[var(--border-subtle)] shadow-[var(--shadow-float)] rounded-2xl py-3 z-50 animate-in fade-in zoom-in-95 origin-top-right">
               <div className="px-4 pb-2 border-b border-stone-100 flex items-center justify-between">
                 <div>
                   <span className="font-serif font-bold text-sm text-stone-900">Notifications</span>
@@ -314,33 +310,54 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({
             <span className="text-xs font-bold text-stone-800 max-w-[90px] truncate hidden sm:inline-block">
               {user?.firstName || 'Admin'}
             </span>
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-amber-300 to-amber-600 text-white flex items-center justify-center text-xs font-bold">
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[var(--color-brand-500)] to-[var(--brand-hover)] text-white flex items-center justify-center text-xs font-bold">
               {user?.firstName?.[0] || 'A'}
             </div>
           </button>
 
           {staffDropdownOpen && (
-            <div className="absolute right-0 mt-2 w-56 glass-strong rounded-2xl py-2 z-50 animate-in fade-in zoom-in-95 origin-top-right">
-              <div className="px-4 py-2.5 border-b border-stone-100">
-                <p className="text-[10px] uppercase font-bold text-amber-700 tracking-[0.16em]">
-                  Hotel Staff Account
-                </p>
-                <p className="text-xs font-bold text-stone-900 truncate">
-                  {user?.firstName} {user?.lastName}
-                </p>
-                <p className="text-[11px] text-stone-400 font-mono truncate">{user?.email}</p>
-                <p className="mt-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--brand-text)]">{roleLabel}</p>
+            <div className="absolute right-0 top-full mt-2 w-64 bg-white rounded-2xl border border-[var(--border-subtle)] shadow-[var(--shadow-float)] p-1.5 z-50 animate-in fade-in zoom-in-95 origin-top-right" role="menu">
+              <div className="flex items-center gap-3 px-2.5 py-2.5">
+                <div className="w-10 h-10 shrink-0 rounded-full bg-[var(--brand-soft-hover)] text-[var(--brand-text)] flex items-center justify-center text-sm font-bold">
+                  {user?.firstName?.[0] || 'A'}
+                </div>
+                <div className="min-w-0">
+                  <p className="text-[13px] font-semibold text-stone-900 truncate">
+                    {user?.firstName} {user?.lastName}
+                  </p>
+                  <p className="text-[11px] text-[var(--brand)] truncate">{user?.email}</p>
+                </div>
               </div>
 
+              <div className="mx-1 border-t border-[var(--border-subtle)]" />
+              <dl className="px-2.5 py-2 space-y-1.5 text-xs">
+                <div className="flex items-center justify-between gap-3">
+                  <dt className="flex items-center gap-2 text-stone-500">
+                    <Shield className="w-3.5 h-3.5" /> Role
+                  </dt>
+                  <dd className="font-semibold text-stone-900 truncate">{roleDisplayName(user?.role)}</dd>
+                </div>
+                <div className="flex items-center justify-between gap-3">
+                  <dt className="flex items-center gap-2 text-stone-500">
+                    <KeyRound className="w-3.5 h-3.5" /> Privilege
+                  </dt>
+                  <dd className="font-semibold text-stone-900 truncate">
+                    {user?.effectivePrivilege === 'SUPER_ADMIN' ? 'Super Admin' : 'User'}
+                  </dd>
+                </div>
+              </dl>
+              <div className="mx-1 border-t border-[var(--border-subtle)]" />
+
               <button
+                role="menuitem"
                 onClick={() => {
                   setStaffDropdownOpen(false);
                   logout();
                 }}
-                className="w-full text-left px-4 py-2.5 text-xs text-rose-600 hover:bg-rose-50 flex items-center gap-2.5 font-bold cursor-pointer"
+                className="mt-1 w-full text-left px-2.5 h-9 rounded-lg text-xs text-stone-700 hover:bg-rose-50 hover:text-rose-700 flex items-center gap-2.5 font-medium cursor-pointer transition-colors"
               >
                 <LogOut className="w-4 h-4" />
-                <span>Log Out Admin</span>
+                <span>Sign out</span>
               </button>
             </div>
           )}

@@ -6,6 +6,7 @@ import React, { useState } from 'react';
 import { Mail, Lock, User, Phone, ArrowRight, Shield } from 'lucide-react';
 import { useAuth } from '../context/AuthContext.tsx';
 import { useToast } from '../context/ToastContext.tsx';
+import { BrandIcon } from '../components/common/BrandMark.tsx';
 
 export const LoginPage: React.FC<{ navigate: (route: string) => void }> = ({ navigate }) => {
   const { login } = useAuth();
@@ -66,10 +67,8 @@ export const LoginPage: React.FC<{ navigate: (route: string) => void }> = ({ nav
           </div>
 
           <div className="relative z-10 space-y-3">
-            <div className="w-12 h-12 rounded-2xl bg-amber-800 flex items-center justify-center font-serif font-bold text-xl text-white shadow-[var(--shadow-raised)]">
-              ABC
-            </div>
-            <h2 className="page-title">ABC HOTEL</h2>
+            <BrandIcon size="lg" />
+            <h2 className="page-title !text-[var(--brand)] tracking-[0.14em]">ABC HOTEL</h2>
             <p className="text-xs text-stone-600 tracking-widest uppercase font-semibold">
               Privilege Dining & Operations Portal
             </p>
@@ -211,10 +210,8 @@ export const RegisterPage: React.FC<{ navigate: (route: string) => void }> = ({ 
           </div>
 
           <div className="relative z-10 space-y-3">
-            <div className="w-12 h-12 rounded-2xl bg-amber-800 flex items-center justify-center font-serif font-bold text-xl text-white shadow-[var(--shadow-raised)]">
-              ABC
-            </div>
-            <h2 className="page-title">ABC HOTEL</h2>
+            <BrandIcon size="lg" />
+            <h2 className="page-title !text-[var(--brand)] tracking-[0.14em]">ABC HOTEL</h2>
             <p className="text-xs text-stone-600 tracking-widest uppercase font-semibold">
               Member Registration
             </p>

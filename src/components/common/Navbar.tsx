@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext.tsx';
 import { useCart } from '../../context/CartContext.tsx';
+import { BrandIcon, BrandName } from './BrandMark.tsx';
 
 interface NavbarProps {
   currentRoute: string;
@@ -40,8 +41,6 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
   const isSpecialRole = isStaffOrManager || isKitchen || isDelivery;
 
   // Float transparently over the cinematic home hero (customers & guests only)
-  const overlay = currentRoute === 'home' && !isSpecialRole;
-  const solid = !overlay || scrolled || mobileMenuOpen;
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
@@ -126,14 +125,12 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
 
   return (
     <header
-      className={`${overlay ? 'fixed' : 'sticky'} inset-x-0 top-0 z-40 transition-[background-color,box-shadow,border-color] duration-500 ${
-        solid
-          ? 'bg-[var(--glass-bg-strong)] backdrop-blur-xl backdrop-saturate-150 border-b border-[var(--border-subtle)] shadow-[var(--shadow-xs)]'
-          : 'bg-gradient-to-b from-[rgba(255,253,249,0.6)] to-transparent border-b border-transparent'
+      className={`sticky inset-x-0 top-0 z-40 bg-white border-b border-[var(--border-subtle)] transition-shadow duration-300 ${
+        scrolled ? 'shadow-[var(--shadow-card)]' : 'shadow-[var(--shadow-xs)]'
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className={`flex items-center justify-between transition-[height] duration-500 ${solid && !mobileMenuOpen ? 'h-16 sm:h-[4.5rem]' : 'h-16 sm:h-20'}`}>
+        <div className="flex items-center justify-between h-16 sm:h-[4.5rem]">
           {/* Brand Logo */}
           <button
             type="button"
@@ -141,26 +138,8 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
             className="flex items-center gap-3 cursor-pointer group shrink-0 text-left"
             aria-label="ABC Hotel home"
           >
-            <span className="relative w-10 h-10 sm:w-11 sm:h-11 flex items-center justify-center border border-gold/70 bg-white/60 text-[var(--brand-text)] transition-colors group-hover:border-[var(--brand)]">
-              <span className="absolute inset-[3px] border border-gold/35" />
-              <span className="font-display text-[13px] sm:text-[15px] font-semibold tracking-[0.06em]">ABC</span>
-            </span>
-            <span className="leading-none hidden min-[360px]:block">
-              <span className="font-display text-lg sm:text-xl font-semibold tracking-[0.18em] text-stone-900 block">
-                ABC HOTEL
-              </span>
-              <span className="text-[8.5px] sm:text-[9px] tracking-[0.32em] uppercase font-semibold text-amber-700 block mt-1">
-                {isDelivery
-                  ? 'Delivery Staff Portal'
-                  : isKitchen
-                  ? 'Kitchen Department KDS'
-                  : isManager
-                  ? 'Hotel Manager Suite'
-                  : isAdmin
-                  ? 'Staff Operations Suite'
-                  : 'Luxury Dining & Suites'}
-              </span>
-            </span>
+            <BrandIcon size="md" className="transition-transform group-hover:-translate-y-0.5" />
+            <BrandName size="md" className="hidden min-[360px]:block" />
           </button>
 
           {/* Desktop Navigation Links */}
@@ -437,7 +416,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate }) => {
 
       {/* Mobile Drawer */}
       {mobileMenuOpen && (
-        <div className="md:hidden fixed inset-x-0 top-16 sm:top-20 bottom-0 bg-[var(--page-bg)] border-t border-[var(--border-subtle)] z-50 overflow-y-auto pb-10 animate-[lux-drop_0.3s_var(--ease-lux)]">
+        <div className="md:hidden fixed inset-x-0 top-16 sm:top-[4.5rem] bottom-0 bg-[var(--page-bg)] border-t border-[var(--border-subtle)] z-50 overflow-y-auto pb-10 animate-[lux-drop_0.3s_var(--ease-lux)]">
           <div className="px-5 pt-6 space-y-8">
             {/* Navigation Links */}
             <nav className="space-y-1" aria-label="Mobile">

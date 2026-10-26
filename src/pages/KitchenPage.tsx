@@ -6,6 +6,7 @@ import React, { useEffect, useState } from 'react';
 import { ChefHat, LogOut, ArrowLeft } from 'lucide-react';
 import { useAuth } from '../context/AuthContext.tsx';
 import { KitchenKdsView } from '../components/kitchen/KitchenKdsView.tsx';
+import { BrandIcon, BrandName } from '../components/common/BrandMark.tsx';
 
 const KitchenClock: React.FC = () => {
   const [now, setNow] = useState(() => new Date());
@@ -26,17 +27,12 @@ export const KitchenPage: React.FC<{ navigate: (route: string) => void }> = ({ n
   return (
     <div className="min-h-screen ambient text-stone-900 flex flex-col justify-between">
       {/* Top Kitchen Header - high contrast for the pass */}
-      <header className="glass !border-x-0 !border-t-0 text-stone-900 px-4 sm:px-8 h-16 flex items-center justify-between gap-3 sticky top-0 z-40">
+      <header className="bg-white border-b border-[var(--border-subtle)] shadow-[var(--shadow-xs)] text-stone-900 px-4 sm:px-8 h-16 flex items-center justify-between gap-3 sticky top-0 z-40">
         <div className="flex items-center gap-3 min-w-0">
-          <span className="relative w-10 h-10 shrink-0 flex items-center justify-center border border-[var(--brand)] text-[var(--brand-text)] bg-white">
-            <span className="absolute inset-[3px] border border-[var(--brand-border)]" />
-            <span className="font-display text-[13px] font-semibold tracking-[0.06em]">ABC</span>
-          </span>
+          <BrandIcon size="md" />
           <div className="min-w-0">
             <div className="flex items-center gap-2.5">
-              <span className="font-display font-semibold text-stone-900 text-lg sm:text-xl tracking-[0.12em] truncate hidden sm:inline">
-                ABC HOTEL & SUITES
-              </span>
+              <BrandName size="md" className="hidden sm:inline" />
               <span className="px-2.5 py-0.5 rounded-full bg-[var(--brand-soft)] text-[var(--brand-text)] border border-[var(--brand-border)] text-[9.5px] font-bold uppercase tracking-[0.18em] shrink-0">
                 Kitchen Dept
               </span>

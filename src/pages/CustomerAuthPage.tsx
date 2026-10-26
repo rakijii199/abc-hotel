@@ -21,6 +21,7 @@ import { auth } from '../firebase/config.ts';
 import { useAuth } from '../context/AuthContext.tsx';
 import { useToast } from '../context/ToastContext.tsx';
 import { LUX_IMAGES, luxImage } from '../components/customer/Reveal.tsx';
+import { BrandIcon, BrandName } from '../components/common/BrandMark.tsx';
 
 interface CustomerAuthPageProps {
   navigate: (route: string, state?: any, replace?: boolean) => void;
@@ -311,11 +312,8 @@ export const CustomerAuthPage: React.FC<CustomerAuthPageProps> = ({
       <div className="relative max-w-xl w-full glass-strong !bg-white/90 rounded-[1.5rem] overflow-hidden animate-[lux-rise_0.7s_var(--ease-lux)]">
         {/* Header Banner */}
         <div className="bg-gradient-to-b from-[var(--brand-soft)] to-white p-5 sm:p-8 text-center relative border-b border-[var(--border-subtle)]">
-          <div className="relative w-12 h-12 flex items-center justify-center border border-[var(--brand)] text-[var(--brand-text)] bg-white mx-auto mb-3">
-            <span className="absolute inset-[3px] border border-[var(--brand-border)]" />
-            <span className="font-display font-semibold text-[15px] tracking-[0.06em]">ABC</span>
-          </div>
-          <h2 className="lux-display text-2xl sm:text-3xl tracking-[0.16em] text-stone-900">ABC HOTEL</h2>
+          <BrandIcon size="lg" className="mx-auto mb-3" />
+          <h2 className="lux-display text-2xl sm:text-3xl tracking-[0.16em] text-[var(--brand)]">ABC HOTEL</h2>
           <p className="text-[11px] sm:text-xs text-[var(--brand-text)] tracking-wider uppercase font-semibold mt-0.5 sm:mt-1">
             Privilege Customer Dining & Order Portal
           </p>

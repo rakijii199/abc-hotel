@@ -49,7 +49,7 @@ export const HeroStage: React.FC<{ dishes: MenuItem[] }> = ({ dishes }) => {
 
         {/* Main photograph: dining room */}
         <div
-          className="lux-layer top-[7%] right-[6%] w-[70%] h-[76%] overflow-hidden rounded-sm ring-1 ring-white/70 shadow-[0_50px_90px_-35px_rgba(99,72,38,0.5)]"
+          className="lux-layer top-[7%] right-[6%] w-[70%] h-[76%] overflow-hidden rounded-sm ring-1 ring-white/70 shadow-[0_50px_90px_-35px_rgba(48,18,52,0.5)]"
           style={{ '--z': '0px' } as React.CSSProperties}
         >
           <img
@@ -63,7 +63,7 @@ export const HeroStage: React.FC<{ dishes: MenuItem[] }> = ({ dishes }) => {
 
         {/* Small square: second signature dish */}
         <div
-          className="lux-layer top-[0%] left-[2%] w-[30%] aspect-square overflow-hidden border-4 border-white shadow-[0_30px_50px_-22px_rgba(99,72,38,0.5)] lux-layer-float"
+          className="lux-layer top-[0%] left-[2%] w-[30%] aspect-square overflow-hidden border-4 border-white shadow-[0_30px_50px_-22px_rgba(48,18,52,0.5)] lux-layer-float"
           style={{ '--z': '70px', animationDelay: '-3s' } as React.CSSProperties}
         >
           <img src={sideSrc} alt="" onError={hideOnError} className="w-full h-full object-cover" />
@@ -78,7 +78,7 @@ export const HeroStage: React.FC<{ dishes: MenuItem[] }> = ({ dishes }) => {
             <circle cx="100" cy="100" r="97" fill="none" stroke="currentColor" strokeOpacity="0.55" strokeWidth="0.6" />
             <circle cx="100" cy="100" r="91" fill="none" stroke="currentColor" strokeOpacity="0.35" strokeWidth="0.5" strokeDasharray="1 5" />
           </svg>
-          <div className="absolute inset-0 rounded-full overflow-hidden ring-4 ring-white shadow-[0_40px_70px_-24px_rgba(99,72,38,0.55)]">
+          <div className="absolute inset-0 rounded-full overflow-hidden ring-4 ring-white shadow-[0_40px_70px_-24px_rgba(48,18,52,0.55)]">
             <img src={plateSrc} alt="" onError={hideOnError} className="w-full h-full object-cover scale-110" />
             <div className="absolute inset-0 rounded-full bg-[radial-gradient(circle_at_30%_25%,rgba(255,255,255,0.18),transparent_55%)]" />
           </div>

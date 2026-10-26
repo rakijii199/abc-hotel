@@ -5,28 +5,28 @@
  * text-gold, font-display and do not alter any existing utility).
  * ------------------------------------------------------------------------- */
 @theme {
-  /* Primary brand colour: ABC bronze (from the gold logo). Every accent in the
-     app resolves to this one scale; the former burgundy "wine" now aliases it. */
-  --color-brand-50: #fbf7f0;
-  --color-brand-100: #f4ebdb;
-  --color-brand-200: #e9d8b9;
-  --color-brand-300: #dcc293;
-  --color-brand-400: #cfad73;
-  --color-brand-500: #b8925a;
-  --color-brand-600: #8f6c3b;
-  --color-brand-700: #7a5a30;
-  --color-brand-800: #634826;
-  --color-brand-900: #4b361d;
-  --color-brand-950: #2c1f11;
+  /* Primary brand colour: ABC plum (#722f7a). Every accent in the app
+     resolves to this one scale; "wine", "gold" and "champagne" alias it. */
+  --color-brand-50: #faf5fb;
+  --color-brand-100: #f3e8f5;
+  --color-brand-200: #e7d2eb;
+  --color-brand-300: #d5b0dc;
+  --color-brand-400: #bb84c5;
+  --color-brand-500: #9e5ba9;
+  --color-brand-600: #86448f;
+  --color-brand-700: #722f7a;
+  --color-brand-800: #5f2866;
+  --color-brand-900: #4d2253;
+  --color-brand-950: #301234;
 
-  --color-ink: #0e0c0b;
-  --color-charcoal: #1a1715;
-  --color-wine: #634826;
-  --color-wine-light: #7a5a30;
-  --color-gold: #c9a76a;
-  --color-champagne: #e6d3ac;
-  --color-ivory: #f7f2ea;
-  --color-cream: #efe7da;
+  --color-ink: #0f0e12;
+  --color-charcoal: #1c1a21;
+  --color-wine: #722f7a;
+  --color-wine-light: #86448f;
+  --color-gold: #9e5ba9;
+  --color-champagne: #e7d2eb;
+  --color-ivory: #fbf8fc;
+  --color-cream: #f4eef6;
 
   --font-display: 'Cormorant Garamond', 'Playfair Display', Georgia, serif;
   --font-lux: 'Manrope', 'Poppins', system-ui, -apple-system, 'Segoe UI', sans-serif;
@@ -39,35 +39,35 @@
  * them). Light theme only: ivory page, white surfaces, one bronze brand.
  * ------------------------------------------------------------------------- */
 :root {
-  --brand: var(--color-brand-800);
-  --brand-hover: var(--color-brand-900);
-  --brand-active: var(--color-brand-950);
-  --brand-text: var(--color-brand-900);
+  --brand: var(--color-brand-700);
+  --brand-hover: var(--color-brand-800);
+  --brand-active: var(--color-brand-900);
+  --brand-text: var(--color-brand-800);
   --brand-soft: var(--color-brand-50);
   --brand-soft-hover: var(--color-brand-100);
   --brand-border: var(--color-brand-200);
-  --brand-ring: rgba(143, 108, 59, 0.45);
-  --brand-ring-soft: rgba(184, 146, 90, 0.22);
+  --brand-ring: rgba(114, 47, 122, 0.45);
+  --brand-ring-soft: rgba(158, 91, 169, 0.22);
 
-  --page-bg: #f6f1e9;
-  --surface: #fffdf9;
-  --surface-muted: #faf7f2;
-  --border-subtle: #e5ddd1;
-  --text-strong: #1a1715;
-  --text-body: #48413a;
-  --text-muted: #7b7266;
+  --page-bg: #f8f4fa;
+  --surface: #ffffff;
+  --surface-muted: #faf8fb;
+  --border-subtle: #e9e3ee;
+  --text-strong: #1c1a21;
+  --text-body: #45404e;
+  --text-muted: #777082;
 
   /* Elevation: soft, warm, layered shadows (never pure black) */
-  --shadow-xs: 0 1px 2px rgba(43, 32, 20, 0.05);
-  --shadow-card: 0 1px 2px rgba(43, 32, 20, 0.04), 0 10px 28px -20px rgba(43, 32, 20, 0.22);
-  --shadow-raised: 0 2px 6px -2px rgba(43, 32, 20, 0.08), 0 22px 44px -24px rgba(43, 32, 20, 0.32);
-  --shadow-float: 0 6px 12px -6px rgba(43, 32, 20, 0.1), 0 36px 72px -32px rgba(43, 32, 20, 0.42);
+  --shadow-xs: 0 1px 2px rgba(48, 18, 52, 0.05);
+  --shadow-card: 0 1px 2px rgba(48, 18, 52, 0.04), 0 10px 28px -20px rgba(48, 18, 52, 0.22);
+  --shadow-raised: 0 2px 6px -2px rgba(48, 18, 52, 0.08), 0 22px 44px -24px rgba(48, 18, 52, 0.32);
+  --shadow-float: 0 6px 12px -6px rgba(48, 18, 52, 0.1), 0 36px 72px -32px rgba(48, 18, 52, 0.42);
 
   /* Glass */
   --glass-bg: rgba(255, 253, 249, 0.7);
-  --glass-bg-strong: rgba(255, 253, 249, 0.88);
+  --glass-bg-strong: rgba(255, 255, 255, 0.96);
   --glass-border: rgba(255, 255, 255, 0.7);
-  --glass-edge: rgba(99, 72, 38, 0.12);
+  --glass-edge: rgba(114, 47, 122, 0.1);
   --glass-blur: 18px;
 
   /* Semantic status colours (AA on their soft backgrounds) */
@@ -183,6 +183,7 @@
  * any staff page outside it (.theme-staff, e.g. staff login). Every brand
  * utility, token, amber-* class and component state follows this scale.
  * ------------------------------------------------------------------------- */
+.lux,
 .lux-ops,
 .theme-staff {
   --color-brand-50: #faf5fb;
@@ -247,12 +248,15 @@
   --shadow-raised: 0 2px 6px -2px rgba(48, 18, 52, 0.08), 0 22px 44px -24px rgba(48, 18, 52, 0.3);
   --shadow-float: 0 6px 12px -6px rgba(48, 18, 52, 0.1), 0 36px 72px -32px rgba(48, 18, 52, 0.4);
   --glass-bg: rgba(255, 255, 255, 0.72);
-  --glass-bg-strong: rgba(255, 255, 255, 0.9);
+  --glass-bg-strong: rgba(255, 255, 255, 0.96);
   --glass-edge: rgba(114, 47, 122, 0.1);
-
-  /* Staff UI typeface */
+}
+/* Staff UI typeface */
+.lux-ops,
+.theme-staff {
   --font-lux: 'Poppins', system-ui, -apple-system, 'Segoe UI', sans-serif;
 }
+.lux ::selection,
 .lux-ops ::selection,
 .theme-staff ::selection {
   background: var(--color-brand-200);
@@ -374,19 +378,19 @@
 }
 
 .lux-btn-gold {
-  color: var(--color-ink);
-  background: linear-gradient(135deg, #ead7ae 0%, #c9a76a 55%, #b08c50 100%);
-  box-shadow: 0 10px 30px -12px rgba(201, 167, 106, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.45);
+  color: var(--color-brand-950);
+  background: linear-gradient(135deg, var(--color-brand-100) 0%, var(--color-brand-200) 55%, var(--color-brand-300) 100%);
+  box-shadow: 0 10px 30px -12px color-mix(in srgb, var(--color-brand-400) 60%, transparent), inset 0 1px 0 rgba(255, 255, 255, 0.55);
 }
 .lux-btn-gold:hover {
-  box-shadow: 0 16px 40px -12px rgba(201, 167, 106, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.55);
+  box-shadow: 0 16px 40px -12px color-mix(in srgb, var(--color-brand-400) 75%, transparent), inset 0 1px 0 rgba(255, 255, 255, 0.6);
   transform: translateY(-1px);
 }
 
 .lux-btn-wine {
   color: var(--color-ivory);
   background: var(--color-wine);
-  box-shadow: 0 10px 30px -14px rgba(91, 26, 38, 0.8);
+  box-shadow: 0 10px 30px -14px color-mix(in srgb, var(--color-brand-900) 80%, transparent);
 }
 .lux-btn-wine:hover {
   background: var(--color-wine-light);
@@ -458,11 +462,11 @@
 
 .lux-hairline {
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(201, 167, 106, 0.6), transparent);
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--color-brand-400) 60%, transparent), transparent);
 }
 
 .lux-card {
-  background: #fffdf9;
+  background: #fff;
   border: 1px solid rgba(26, 23, 21, 0.08);
   box-shadow: 0 1px 0 rgba(255, 255, 255, 0.8) inset, 0 20px 40px -32px rgba(26, 23, 21, 0.35);
 }
@@ -730,13 +734,13 @@
 /* Soft ambient page backdrop for staff shells (warm light, no imagery) */
 .ambient {
   background:
-    radial-gradient(1100px 520px at 100% -8%, rgba(233, 216, 185, 0.5), transparent 62%),
-    radial-gradient(900px 480px at -8% 108%, rgba(244, 235, 219, 0.75), transparent 60%),
+    radial-gradient(1100px 520px at 100% -8%, color-mix(in srgb, var(--color-brand-200) 55%, transparent), transparent 62%),
+    radial-gradient(900px 480px at -8% 108%, color-mix(in srgb, var(--color-brand-100) 80%, transparent), transparent 60%),
     var(--page-bg);
 }
 
-/* Staff shell backdrop: soft warm gradient wash with large blurred glows and a
-   dot-grid accent (fixed, decorative, behind all content). */
+/* Staff shell backdrop: soft gradient wash with large blurred glows
+   (fixed, decorative, behind all content). */
 .ambient-staff {
   position: relative;
   isolation: isolate;
@@ -746,21 +750,11 @@
     radial-gradient(520px 420px at 52% 58%, rgba(255, 255, 255, 0.7), transparent 72%),
     linear-gradient(135deg, var(--color-brand-50) 0%, color-mix(in srgb, var(--color-brand-100) 55%, #fff) 52%, var(--color-brand-100) 100%);
 }
-.ambient-staff::before,
 .ambient-staff::after {
   content: '';
   position: fixed;
   pointer-events: none;
   z-index: -1;
-}
-/* Dot grid, top right */
-.ambient-staff::before {
-  top: 5.5rem;
-  right: 2.5rem;
-  width: 7.5rem;
-  height: 5.5rem;
-  background-image: radial-gradient(circle, color-mix(in srgb, var(--color-brand-500) 35%, transparent) 1.4px, transparent 1.8px);
-  background-size: 1.125rem 1.125rem;
 }
 /* Large blurred glow, bottom right */
 .ambient-staff::after {

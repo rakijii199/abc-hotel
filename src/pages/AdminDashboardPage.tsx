@@ -401,8 +401,8 @@ export const AdminDashboardPage: React.FC<{
         </div>
       )}
 
-      {/* Main Content Area (Scrolls independently) */}
-      <div ref={contentScrollRef} className="flex-1 flex flex-col min-w-0 h-full overflow-y-auto">
+      {/* Main column: fixed top bar, content scrolls below it */}
+      <div className="flex-1 flex flex-col min-w-0 h-full">
         <AdminHeader
           notifications={notifications}
           unreadCount={unreadCount}
@@ -417,7 +417,8 @@ export const AdminDashboardPage: React.FC<{
           pendingBookingsCount={stats?.pendingBookingsCount || 0}
         />
 
-        <div className="px-3 sm:px-6 py-3 sm:py-4 flex-1 max-w-[1440px] w-full mx-auto space-y-3 pb-8">
+        <div ref={contentScrollRef} className="flex-1 min-h-0 overflow-y-auto">
+        <div className="px-3 sm:px-6 py-3 sm:py-4 max-w-[1440px] w-full mx-auto space-y-3 pb-8">
           {allowedTabs.length === 0 && (
             <div className="surface p-6 text-center text-sm text-stone-600" role="alert">
               Your account has no access to the operations suite yet. Please ask a Super Admin to grant section access.
@@ -574,6 +575,7 @@ export const AdminDashboardPage: React.FC<{
               <AdminPaymentSettingsView />
             </div>
           )}
+        </div>
         </div>
       </div>
     </div>
